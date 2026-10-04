@@ -1,20 +1,34 @@
 import { useState } from "react";
 import jsPDF from "jspdf";
+import { supabase } from "./supabaseClient";
 
-// Tipos - mesma logica EasyPay mas para contratos
 type Tab = "gerar" | "profissionais";
 
 type DadosContrato = {
   empregadorNome: string; empregadorBI: string; empregadorContacto: string; empregadorEndereco: string;
-  domesticaNome: string; domesticaBI: string; domesticaContacto: string; domesticaEndereco: string;
-  salario: string; dataInicio: string; horarioEntrada: string; horarioSaida: string;
+  profissionalNome: string; profissionalBI: string; profissionalContacto: string; profissionalEndereco: string;
+  tipoTrabalho: string; salario: string; dataInicio: string; horarioEntrada: string; horarioSaida: string;
   diasSemana: string[]; tarefas: string[]; alimentacao: string; alojamento: string;
 }
 
+const tiposTrabalho = [
+  { value: "SecretÃ¡rio/a DomÃ©stico/a", tarefas: ["Limpeza geral", "Lavar roupa", "Cozinhar", "Arrumar casa", "Passar roupa"] },
+  { value: "Cozinheiro/a", tarefas: ["Preparar refeiÃ§Ãµes", "Comprar alimentos", "Limpar cozinha", "Organizar despensa"] },
+  { value: "BabÃ¡ / Cuidador de CrianÃ§as", tarefas: ["Cuidar crianÃ§as", "Preparar lanche", "Acompanhar tarefas escolares", "Dar banho", "Brincar"] },
+  { value: "Motorista Privado", tarefas: ["Conduzir empregador", "Levar crianÃ§as escola", "ManutenÃ§Ã£o bÃ¡sica viatura", "Compras"] },
+  { value: "Jardineiro", tarefas: ["Cortar relva", "Regar plantas", "Podar Ã¡rvores", "Limpar quintal", "Cuidar horta"] },
+  { value: "Lavadeiro/a e Engomador/a", tarefas: ["Lavar roupa", "Engomar", "Dobrar e guardar", "Lavar cortinas"] },
+  { value: "Cuidador de Idosos", tarefas: ["Acompanhar idoso", "Dar medicamentos", "Preparar refeiÃ§Ãµes", "Higiene", "Companhia"] },
+  { value: "Guarda / SeguranÃ§a Residencial", tarefas: ["Vigiar residÃªncia", "Controlar entradas", "Ronda noturna", "Apoio geral"] },
+  { value: "Pedreiro", tarefas: ["Assentar blocos", "Reboco", "Pavimento", "Medir e nivelar"] },
+  { value: "Carpinteiro", tarefas: ["Cortar madeira", "Montar mÃ³veis", "Portas e janelas", "Acabamento"] },
+  { value: "Empregada de Limpeza (EscritÃ³rio)", tarefas: ["Limpeza escritÃ³rio", "WC", "Vidros", "Lixo"] },
+];
+
 const profissionaisMock = [
-  { id: 1, nome: "Esperança Matsinhe", profissao: "Empregada Doméstica", zona: "Zimpeto", nota: 4.9, trabalhos: 23, foto: "EM", preco: "7.500MT/mês", verificado: true },
+  { id: 1, nome: "EsperanÃ§a Matsinhe", profissao: "SecretÃ¡rio/a DomÃ©stico/a", zona: "Zimpeto", nota: 4.9, trabalhos: 23, foto: "EM", preco: "7.500MT/mÃªs", verificado: true },
   { id: 2, nome: "Carlos Pedreiro", profissao: "Pedreiro", zona: "Matola", nota: 4.8, trabalhos: 41, foto: "CP", preco: "1.200MT/dia", verificado: true },
-  { id: 3, nome: "João Carpinteiro", profissao: "Carpinteiro", zona: "Mafalala", nota: 5.0, trabalhos: 18, foto: "JC", preco: "Sob orçamento", verificado: true },
+  { id: 3, nome: "JoÃ£o Carpinteiro", profissao: "Carpinteiro", zona: "Mafalala", nota: 5.0, trabalhos: 18, foto: "JC", preco: "Sob orÃ§amento", verificado: true },
 ];
 
 export default function App() {
@@ -25,172 +39,208 @@ export default function App() {
 
   const [dados, setDados] = useState<DadosContrato>({
     empregadorNome: "", empregadorBI: "", empregadorContacto: "", empregadorEndereco: "",
-    domesticaNome: "", domesticaBI: "", domesticaContacto: "", domesticaEndereco: "",
+    profissionalNome: "", profissionalBI: "", profissionalContacto: "", profissionalEndereco: "",
+    tipoTrabalho: "SecretÃ¡rio/a DomÃ©stico/a",
     salario: "7500", dataInicio: new Date().toISOString().split('T')[0],
     horarioEntrada: "06:00", horarioSaida: "17:00",
-    diasSemana: ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+    diasSemana: ["Segunda", "TerÃ§a", "Quarta", "Quinta", "Sexta", "SÃ¡bado"],
     tarefas: ["Limpeza geral", "Lavar roupa", "Cozinhar"],
     alimentacao: "sim", alojamento: "nao"
   });
 
+  const mudarTipo = (tipo: string) => {
+    const encontrado = tiposTrabalho.find(t => t.value === tipo);
+    setDados({ ...dados, tipoTrabalho: tipo, tarefas: encontrado ? encontrado.tarefas : dados.tarefas });
+  }
+
+  const gerarPDFBlob = () => {
+    const doc = new jsPDF();
+    let cy = 40;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+    doc.text(`CONTRATO DE TRABALHO - ${dados.tipoTrabalho.toUpperCase()}`, 105, 20, { align: "center" });
+    doc.setFontSize(9); doc.setFont("helvetica", "normal");
+    doc.text("Lei nÂº 23/2007 de 1 de Agosto e Decreto nÂº 40/2008", 105, 26, { align: "center" });
+
+    const add = (titulo: string, texto: string) => {
+      doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+      if(cy > 260){ doc.addPage(); cy=20; }
+      doc.text(doc.splitTextToSize(titulo, 180), 15, cy); cy+=7;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+      const lines = doc.splitTextToSize(texto, 180);
+      if(cy + lines.length*5 > 275){ doc.addPage(); cy=20; }
+      doc.text(lines, 15, cy); cy+= lines.length*5 + 8;
+    }
+
+    add("1. PARTES", `EMPREGADOR: ${dados.empregadorNome}, BI ${dados.empregadorBI}, Tel ${dados.empregadorContacto}, ${dados.empregadorEndereco}. PROFISSIONAL: ${dados.profissionalNome}, BI ${dados.profissionalBI}, Tel ${dados.profissionalContacto}, ${dados.profissionalEndereco}.`);
+    add(`2. OBJECTO - ${dados.tipoTrabalho.toUpperCase()}`, `FunÃ§Ã£o: ${dados.tipoTrabalho}\nTarefas acordadas:\n${dados.tarefas.map((t,i)=> `${i+1}. ${t}`).join("\n")}\n\nQualquer alteraÃ§Ã£o sÃ³ por escrito.`);
+    add("3. HORÃRIO E PROVA", `HorÃ¡rio: ${dados.horarioEntrada} Ã s ${dados.horarioSaida}, dias: ${dados.diasSemana.join(", ")}. InÃ­cio: ${dados.dataInicio}. Local: ${dados.empregadorEndereco}. Este horÃ¡rio serve como prova legal.`);
+    add("4. SALÃRIO E RECIBO M-PESA", `SalÃ¡rio: ${dados.salario} MT atÃ© dia 05 via M-Pesa para ${dados.profissionalContacto}. Comprovativo obrigatÃ³rio. Adiantamentos sÃ³ com recibo.`);
+    add("5. ALIMENTAÃ‡ÃƒO E ALOJAMENTO", `AlimentaÃ§Ã£o: ${dados.alimentacao}. Alojamento: ${dados.alojamento}.`);
+    add("6. FOLGAS E FÃ‰RIAS", `Descanso semanal Domingo + feriados. ApÃ³s 1 ano: 12 dias fÃ©rias pagas.`);
+    add("7. PERÃODO EXPERIMENTAL", `90 dias a contar de ${dados.dataInicio}. Aviso prÃ©vio 15 dias neste perÃ­odo.`);
+    add("8. DEVERES", `Profissional: cumprir horÃ¡rio, guardar sigilo, cuidar bens, zelo. Empregador: pagar em dia, respeitar dignidade, fornecer material, garantir seguranÃ§a.`);
+    add("9. RESCISÃƒO", `Justa causa: roubo, violÃªncia, falta grave. Sem justa causa: aviso 30 dias.`);
+    add("10. VALIDADE", `Validade legal Art. 29 Lei 23/2007. Contrato escrito protege ambos. ID: ${Date.now()}`);
+
+    if(cy > 240){ doc.addPage(); cy=20; }
+    doc.text(`_________________________________`, 15, cy); doc.text(`_________________________________`, 115, cy); cy+=6;
+    doc.setFontSize(8); doc.text(`${dados.empregadorNome}`, 15, cy); doc.text(`${dados.profissionalNome}`, 115, cy);
+    return doc;
+  }
+
   const gerarPDF = async () => {
     if (!pago) {
-      // SIMULAÇÃO M-PESA - igual EasyPay
-      const confirmar = confirm("Para validar: Pagar 250MT via M-Pesa para gerar contrato com validade legal?\n\n[Simulação] Clique OK para simular pagamento aprovado igual no EasyPay.\n\nDepois ligamos com API real Vodacom: *150*00#");
+      const confirmar = confirm(`Para validar contrato de ${dados.tipoTrabalho}: Pagar 250MT via M-Pesa?\n\n[SimulaÃ§Ã£o] Clique OK para aprovar.\n*150*00#`);
       if (!confirmar) return;
       setPago(true);
     }
-
     setGerando(true);
-    const doc = new jsPDF();
-    let cy = 40;
+    try {
+      const doc = gerarPDFBlob();
+      const blob = doc.output("blob");
+      try {
+        await supabase.from("contracts").insert([{ employer_name: dados.empregadorNome, employee_name: dados.profissionalNome, salary: dados.salario, tipo: dados.tipoTrabalho, data: dados }]);
+      } catch(e){ console.log(e); }
 
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14);
-    doc.text("CONTRATO DE TRABALHO DOMÉSTICO", 105, 20, { align: "center" });
-    doc.setFontSize(9); doc.setFont("helvetica", "normal");
-    doc.text("Lei nº 23/2007 de 1 de Agosto e Decreto nº 40/2008 - Regulamento do Trabalho Doméstico", 105, 26, { align: "center" });
-
-    const add = (titulo: string, texto: string) => {
-      doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text(titulo, 15, cy); cy+=6;
-      doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-      const lines = doc.splitTextToSize(texto, 180);
-      doc.text(lines, 15, cy); cy+= lines.length*5 + 8;
-      if(cy > 270){ doc.addPage(); cy=20; }
-    }
-
-    add("1. PARTES", `EMPREGADOR: ${dados.empregadorNome}, BI ${dados.empregadorBI}, Tel ${dados.empregadorContacto}, ${dados.empregadorEndereco}. TRABALHADORA: ${dados.domesticaNome}, BI ${dados.domesticaBI}, Tel ${dados.domesticaContacto}, ${dados.domesticaEndereco}.`);
-    add("2. OBJECTO E TAREFAS (Art. 4)", `Tarefas acordadas: ${dados.tarefas.join(", ")}. Qualquer alteração só por escrito. Evita entrega diferente do combinado (MDF vs Madeira).`);
-    add("3. HORÁRIO E PROVA (Art. 13)", `Horário: ${dados.horarioEntrada} às ${dados.horarioSaida}, dias: ${dados.diasSemana.join(", ")}. Local: residência empregador. Faltas justificadas em 48h. Este contrato serve como prova de horário.`);
-    add("4. SALÁRIO E ADIANTAMENTO (Art. 14)", `Salário: ${dados.salario} MT até dia 05 via M-Pesa para ${dados.domesticaContacto}. Adiantamentos só com recibo. Evita pedreiro sumir com dinheiro.`);
-    add("5. ALIMENTAÇÃO E ALOJAMENTO (Art. 17)", `Alimentação: ${dados.alimentacao}. Alojamento: ${dados.alojamento}.`);
-    add("6. FOLGAS E FÉRIAS (Art. 19)", `Descanso semanal Domingo + feriados. Após 1 ano: 12 dias férias pagas.`);
-    add("7. PERÍODO EXPERIMENTAL (Art. 8)", `90 dias experimental. Aviso prévio 15 dias.`);
-    add("8. VALIDADE", `Validade legal entre partes Art. 29 Lei 23/2007. Contrato escrito protege ambos.`);
-
-    cy+=10; doc.text(`Maputo, ${new Date().toLocaleDateString('pt-MZ')}`, 15, cy); cy+=20;
-    doc.text(`______________________________`, 15, cy); doc.text(`______________________________`, 115, cy); cy+=6;
-    doc.setFontSize(8); doc.text(`${dados.empregadorNome}`, 15, cy); doc.text(`${dados.domesticaNome}`, 115, cy);
-
-    doc.save(`Contrato-${dados.domesticaNome.replace(/\s/g,'_')}.pdf`);
-    
-    // WhatsApp - igual EasyPay
-    const msg = encodeURIComponent(`Olá ${dados.domesticaNome}! Contrato gerado por Contrata.MZ com ${dados.empregadorNome}. Salário ${dados.salario}MT. Início ${dados.dataInicio}. PDF em anexo com validade Lei 23/2007.`);
-    window.open(`https://wa.me/258${dados.domesticaContacto.replace(/\D/g,'').slice(-9)}?text=${msg}`, '_blank');
-
-    setGerando(false);
+      const file = new File([blob], `Contrato-${dados.profissionalNome.replace(/\s/g,'_')}.pdf`, { type: "application/pdf" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: `Contrato ${dados.tipoTrabalho}`, text: `Contrato ${dados.tipoTrabalho} - ${dados.profissionalNome} - ${dados.salario}MT` });
+          doc.save(`Contrato-${dados.profissionalNome}.pdf`);
+          setGerando(false); return;
+        } catch(e){}
+      }
+      doc.save(`Contrato-${dados.profissionalNome}.pdf`);
+      const msg = encodeURIComponent(`OlÃ¡ ${dados.profissionalNome}! Contrato de ${dados.tipoTrabalho} gerado com ${dados.empregadorNome}. SalÃ¡rio ${dados.salario}MT. InÃ­cio ${dados.dataInicio}. Tarefas: ${dados.tarefas.join(", ")}. PDF baixado.`);
+      window.open(`https://wa.me/258${dados.profissionalContacto.replace(/\D/g,'').slice(-9)}?text=${msg}`, '_blank');
+    } finally { setGerando(false); }
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f5f2] text-zinc-900">
-      {/* Header */}
+    <div className="min-h-screen bg-[#f8faf8] text-zinc-800">
       <header className="sticky top-0 z-10 bg-white border-b border-zinc-200">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-black text-white rounded-lg grid place-items-center font-black">C</div><b>Contrata.MZ</b><span className="text-[10px] bg-green-600 text-white px-2 py-0.5 rounded-full ml-2">BETA</span></div>
-          <div className="text-[11px] text-zinc-500">90% dos contratos em MZ são verbais. Nós resolvemos.</div>
+          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-[#00a651] text-white rounded-lg grid place-items-center font-black">C</div><b className="text-zinc-900">Contrata.MZ</b><span className="text-[10px] bg-[#00a651] text-white px-2 py-0.5 rounded-full ml-2">BETA</span></div>
+          <div className="text-[11px] text-zinc-500">90% dos contratos em MZ sÃ£o verbais. NÃ³s resolvemos.</div>
         </div>
         <div className="max-w-6xl mx-auto px-4 flex gap-2 pb-3">
-          <button onClick={()=>setTab("gerar")} className={`px-4 py-2 rounded-full text-sm font-bold ${tab==="gerar"?"bg-black text-white":"bg-zinc-100"}`}>📝 Gerar Contrato (250MT)</button>
-          <button onClick={()=>setTab("profissionais")} className={`px-4 py-2 rounded-full text-sm font-bold ${tab==="profissionais"?"bg-black text-white":"bg-zinc-100"}`}>👷 Encontrar Profissionais</button>
+          <button onClick={()=>setTab("gerar")} className={`px-4 py-2 rounded-full text-sm font-bold border ${tab==="gerar"?"bg-[#00a651] text-white border-[#00a651]":"bg-white text-zinc-700 border-zinc-200"}`}>ðŸ“ Gerar Contrato (250MT)</button>
+          <button onClick={()=>setTab("profissionais")} className={`px-4 py-2 rounded-full text-sm font-bold border ${tab==="profissionais"?"bg-[#00a651] text-white border-[#00a651]":"bg-white text-zinc-700 border-zinc-200"}`}>ðŸ‘· Encontrar Profissionais</button>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
         {tab==="gerar" ? (
           <>
-            <div className="bg-white rounded-[24px] shadow-sm border p-6">
-              <h1 className="text-2xl font-black leading-tight">Contrato de Empregada Doméstica<br/><span className="text-zinc-400 text-lg font-normal">com validade legal em 3 minutos</span></h1>
+            <div className="bg-white rounded-[24px] shadow-sm border border-zinc-200 p-6">
+              <h1 className="text-2xl font-black leading-tight text-zinc-900">Contrato de Trabalho<br/><span className="text-zinc-500 text-lg font-normal">com validade legal em 3 minutos</span></h1>
               
               <div className="flex gap-2 my-6">
-                {[1,2,3].map(n=><div key={n} className={`h-2 flex-1 rounded-full ${step>=n?"bg-black":"bg-zinc-200"}`} />)}
+                {[1,2,3].map(n=><div key={n} className={`h-2 flex-1 rounded-full ${step>=n?"bg-[#00a651]":"bg-zinc-200"}`} />)}
               </div>
 
               {step===1 && (
                 <div className="space-y-4">
-                  <h2 className="font-bold">1. Quem contrata?</h2>
-                  <input className="w-full border border-zinc-200 p-3 rounded-xl" placeholder="Nome completo" value={dados.empregadorNome} onChange={e=>setDados({...dados, empregadorNome: e.target.value})} />
+                  <h2 className="font-bold text-zinc-900">1. Quem contrata?</h2>
+                  <input className="w-full border border-zinc-200 p-3 rounded-xl bg-white" placeholder="Nome completo" value={dados.empregadorNome} onChange={e=>setDados({...dados, empregadorNome: e.target.value})} />
                   <div className="grid grid-cols-2 gap-3">
-                    <input className="border border-zinc-200 p-3 rounded-xl" placeholder="Nº BI" value={dados.empregadorBI} onChange={e=>setDados({...dados, empregadorBI: e.target.value})} />
-                    <input className="border border-zinc-200 p-3 rounded-xl" placeholder="WhatsApp 82/84" value={dados.empregadorContacto} onChange={e=>setDados({...dados, empregadorContacto: e.target.value})} />
+                    <input className="border border-zinc-200 p-3 rounded-xl bg-white" placeholder="NÂº BI" value={dados.empregadorBI} onChange={e=>setDados({...dados, empregadorBI: e.target.value})} />
+                    <input className="border border-zinc-200 p-3 rounded-xl bg-white" placeholder="WhatsApp 82/84" value={dados.empregadorContacto} onChange={e=>setDados({...dados, empregadorContacto: e.target.value})} />
                   </div>
-                  <input className="w-full border border-zinc-200 p-3 rounded-xl" placeholder="Bairro - ex: Zimpeto" value={dados.empregadorEndereco} onChange={e=>setDados({...dados, empregadorEndereco: e.target.value})} />
-                  <button onClick={()=>setStep(2)} className="w-full bg-black text-white p-3.5 rounded-xl font-bold">Continuar →</button>
+                  <input className="w-full border border-zinc-200 p-3 rounded-xl bg-white" placeholder="Bairro - ex: Zimpeto" value={dados.empregadorEndereco} onChange={e=>setDados({...dados, empregadorEndereco: e.target.value})} />
+                  <button onClick={()=>setStep(2)} className="w-full bg-[#00a651] text-white p-3.5 rounded-xl font-bold hover:bg-[#008a44]">Continuar â†’</button>
                 </div>
               )}
               {step===2 && (
                 <div className="space-y-4">
-                  <h2 className="font-bold">2. Quem vai trabalhar?</h2>
-                  <input className="w-full border border-zinc-200 p-3 rounded-xl" placeholder="Nome da trabalhadora" value={dados.domesticaNome} onChange={e=>setDados({...dados, domesticaNome: e.target.value})} />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input className="border border-zinc-200 p-3 rounded-xl" placeholder="BI dela" value={dados.domesticaBI} onChange={e=>setDados({...dados, domesticaBI: e.target.value})} />
-                    <input className="border border-zinc-200 p-3 rounded-xl" placeholder="WhatsApp dela" value={dados.domesticaContacto} onChange={e=>setDados({...dados, domesticaContacto: e.target.value})} />
+                  <h2 className="font-bold text-zinc-900">2. Quem vai trabalhar?</h2>
+                  
+                  <div>
+                    <label className="text-[11px] uppercase font-bold text-zinc-500">Tipo de Trabalho *</label>
+                    <select className="w-full border border-zinc-200 p-3 rounded-xl bg-white font-medium" value={dados.tipoTrabalho} onChange={e=> mudarTipo(e.target.value)}>
+                      {tiposTrabalho.map(t=> <option key={t.value} value={t.value}>{t.value}</option>)}
+                    </select>
                   </div>
-                  <div className="flex gap-2"><button onClick={()=>setStep(1)} className="px-4 py-3 rounded-xl bg-zinc-100">←</button><button onClick={()=>setStep(3)} className="flex-1 bg-black text-white p-3.5 rounded-xl font-bold">Continuar →</button></div>
+
+                  <input className="w-full border border-zinc-200 p-3 rounded-xl bg-white" placeholder="Nome do profissional" value={dados.profissionalNome} onChange={e=>setDados({...dados, profissionalNome: e.target.value})} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input className="border border-zinc-200 p-3 rounded-xl bg-white" placeholder="BI" value={dados.profissionalBI} onChange={e=>setDados({...dados, profissionalBI: e.target.value})} />
+                    <input className="border border-zinc-200 p-3 rounded-xl bg-white" placeholder="WhatsApp" value={dados.profissionalContacto} onChange={e=>setDados({...dados, profissionalContacto: e.target.value})} />
+                  </div>
+                  <div className="flex gap-2"><button onClick={()=>setStep(1)} className="px-4 py-3 rounded-xl bg-zinc-100 border border-zinc-200">â†</button><button onClick={()=>setStep(3)} className="flex-1 bg-[#00a651] text-white p-3.5 rounded-xl font-bold hover:bg-[#008a44]">Continuar â†’</button></div>
                 </div>
               )}
               {step===3 && (
                 <div className="space-y-4">
-                  <h2 className="font-bold">3. Condições (isso vira prova legal)</h2>
+                  <h2 className="font-bold text-zinc-900">3. CondiÃ§Ãµes - {dados.tipoTrabalho}</h2>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">Salário MT</label><input className="w-full border border-zinc-200 p-3 rounded-xl" value={dados.salario} onChange={e=>setDados({...dados, salario: e.target.value})} /></div>
-                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">Início</label><input type="date" className="w-full border border-zinc-200 p-3 rounded-xl" value={dados.dataInicio} onChange={e=>setDados({...dados, dataInicio: e.target.value})} /></div>
-                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">Entrada</label><input type="time" className="w-full border border-zinc-200 p-3 rounded-xl" value={dados.horarioEntrada} onChange={e=>setDados({...dados, horarioEntrada: e.target.value})} /></div>
-                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">Saída</label><input type="time" className="w-full border border-zinc-200 p-3 rounded-xl" value={dados.horarioSaida} onChange={e=>setDados({...dados, horarioSaida: e.target.value})} /></div>
+                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">SalÃ¡rio MT</label><input className="w-full border border-zinc-200 p-3 rounded-xl bg-white" value={dados.salario} onChange={e=>setDados({...dados, salario: e.target.value})} /></div>
+                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">InÃ­cio</label><input type="date" className="w-full border border-zinc-200 p-3 rounded-xl bg-white" value={dados.dataInicio} onChange={e=>setDados({...dados, dataInicio: e.target.value})} /></div>
+                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">Entrada</label><input type="time" className="w-full border border-zinc-200 p-3 rounded-xl bg-white" value={dados.horarioEntrada} onChange={e=>setDados({...dados, horarioEntrada: e.target.value})} /></div>
+                    <div><label className="text-[11px] uppercase font-bold text-zinc-500">SaÃ­da</label><input type="time" className="w-full border border-zinc-200 p-3 rounded-xl bg-white" value={dados.horarioSaida} onChange={e=>setDados({...dados, horarioSaida: e.target.value})} /></div>
                   </div>
-                  <div><label className="text-[11px] uppercase font-bold text-zinc-500">Tarefas (separadas por vírgula)</label><input className="w-full border border-zinc-200 p-3 rounded-xl" value={dados.tarefas.join(", ")} onChange={e=>setDados({...dados, tarefas: e.target.value.split(",").map(s=>s.trim())})} /></div>
+                  <div>
+                    <label className="text-[11px] uppercase font-bold text-zinc-500">Tarefas - {dados.tipoTrabalho} (pode editar)</label>
+                    <textarea className="w-full border border-zinc-200 p-3 rounded-xl bg-white min-h-[80px]" value={dados.tarefas.join(", ")} onChange={e=>setDados({...dados, tarefas: e.target.value.split(",").map(s=>s.trim()).filter(Boolean)})} />
+                    <p className="text-[11px] text-zinc-500 mt-1">SugestÃ£o automÃ¡tica baseada no tipo selecionado. Pode adicionar mais.</p>
+                  </div>
                   
                   <div className="bg-green-50 border border-green-200 p-4 rounded-xl text-[13px] leading-snug">
-                    <b className="text-green-800">✓ O que este PDF resolve (que o verbal não resolve):</b><br/>
-                    • Horário com prova → empregada falta? Tem prova.<br/>
-                    • Salário + adiantamento com recibo → pedreiro some? Tem prova.<br/>
-                    • Tarefas listadas → carpinteiro entrega MDF? Tem prova.
+                    <b className="text-green-800">âœ“ O que este PDF resolve:</b><br/>
+                    â€¢ HorÃ¡rio com prova â†’ falta? Tem prova.<br/>
+                    â€¢ SalÃ¡rio + recibo M-Pesa â†’ sumiu? Tem prova.<br/>
+                    â€¢ Tarefas de {dados.tipoTrabalho} listadas â†’ entrega errada? Tem prova.
                   </div>
 
-                  <button disabled={gerando} onClick={gerarPDF} className="w-full bg-[#00a651] text-white p-4 rounded-xl font-black text-[16px] shadow-lg shadow-green-200">
-                    {gerando ? "Gerando PDF..." : pago ? "📄 Baixar PDF + Enviar WhatsApp" : "🔒 Pagar 250MT via M-Pesa e Gerar PDF"}
+                  <button disabled={gerando} onClick={gerarPDF} className="w-full bg-[#00a651] text-white p-4 rounded-xl font-black text-[16px] shadow-lg shadow-green-100 hover:bg-[#008a44]">
+                    {gerando ? "Gerando PDF..." : pago ? `ðŸ“„ Baixar Contrato de ${dados.tipoTrabalho} + WhatsApp` : "ðŸ”’ Pagar 250MT via M-Pesa e Gerar PDF"}
                   </button>
-                  <p className="text-[11px] text-center text-zinc-400">Checkout M-Pesa igual EasyPay. Hoje simulado, amanhã ligamos API Vodacom M-Pesa.</p>
+                  <p className="text-[11px] text-center text-zinc-400">M-Pesa igual EasyPay. Hoje simulado, amanhÃ£ API Vodacom.</p>
                 </div>
               )}
             </div>
 
             <div className="space-y-4">
-              <div className="bg-black text-white rounded-[24px] p-6">
+              <div className="bg-[#00a651] text-white rounded-[24px] p-6 shadow-sm">
                 <h3 className="font-black text-lg">Por que 250MT vale?</h3>
-                <p className="text-sm text-zinc-300 mt-2">Em Moçambique, sem contrato escrito, a lei presume a favor do trabalhador (Art. 29 Lei 23/2007). Um processo por falta de prova custa 15.000MT+ de indemnização.</p>
+                <p className="text-sm text-green-50 mt-2">Sem contrato escrito, a lei presume a favor do trabalhador (Art. 29 Lei 23/2007). Processo sem prova custa 15.000MT+ de indemnizaÃ§Ã£o.</p>
                 <div className="mt-4 grid grid-cols-2 gap-3 text-center">
-                  <div className="bg-white/10 rounded-xl p-3"><div className="text-2xl font-black">90%</div><div className="text-[11px]">contratos verbais</div></div>
-                  <div className="bg-white/10 rounded-xl p-3"><div className="text-2xl font-black">3 min</div><div className="text-[11px]">para gerar</div></div>
+                  <div className="bg-white/20 rounded-xl p-3"><div className="text-2xl font-black">90%</div><div className="text-[11px]">contratos verbais</div></div>
+                  <div className="bg-white/20 rounded-xl p-3"><div className="text-2xl font-black">3 min</div><div className="text-[11px]">para gerar</div></div>
                 </div>
               </div>
-              <div className="bg-white rounded-[24px] border p-6">
-                <h4 className="font-bold text-sm">Preview do contrato</h4>
-                <div className="mt-3 text-[11px] font-mono bg-zinc-50 p-3 rounded-xl leading-relaxed">
-                  CONTRATO DE TRABALHO DOMÉSTICO<br/>Lei 23/2007 + Dec 40/2008<br/><br/>1. PARTES: {dados.empregadorNome || "___"} e {dados.domesticaNome || "___"}<br/>2. TAREFAS: {dados.tarefas.slice(0,2).join(", ")}<br/>3. HORÁRIO: {dados.horarioEntrada}-{dados.horarioSaida}<br/>4. SALÁRIO: {dados.salario}MT<br/>...
+              <div className="bg-white rounded-[24px] border border-zinc-200 p-6">
+                <h4 className="font-bold text-sm text-zinc-900">Preview - {dados.tipoTrabalho}</h4>
+                <div className="mt-3 text-[11px] font-mono bg-[#f8faf8] p-3 rounded-xl leading-relaxed max-h-[400px] overflow-auto border border-zinc-100">
+                  CONTRATO DE TRABALHO<br/>{dados.tipoTrabalho.toUpperCase()}<br/>Lei 23/2007 + Dec 40/2008<br/><br/>
+                  1. PARTES: {dados.empregadorNome || "___"} e {dados.profissionalNome || "___"}<br/>
+                  2. TIPO: {dados.tipoTrabalho}<br/>
+                  3. TAREFAS ({dados.tarefas.length}):<br/>
+                  {dados.tarefas.map((t,i)=> `&nbsp;&nbsp;${i+1}. ${t}<br/>`).join("")}
+                  4. HORÃRIO: {dados.horarioEntrada}-{dados.horarioSaida}<br/>
+                  5. INÃCIO: {dados.dataInicio}<br/>
+                  6. SALÃRIO: {dados.salario}MT<br/>
                 </div>
               </div>
             </div>
           </>
         ) : (
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-black mb-4">Profissionais verificados em Maputo</h2>
-            <p className="text-sm text-zinc-500 mb-6">PASSO 2 - Semana que vem: adicionamos login e perfis. Hoje é só visual para validar.</p>
+            <h2 className="text-2xl font-black mb-4 text-zinc-900">Profissionais verificados em Maputo</h2>
             <div className="grid md:grid-cols-3 gap-4">
               {profissionaisMock.map(p=>(
-                <div key={p.id} className="bg-white rounded-[20px] border p-4">
+                <div key={p.id} className="bg-white rounded-[20px] border border-zinc-200 p-4 shadow-sm">
                   <div className="flex items-start justify-between">
-                    <div className="w-12 h-12 bg-zinc-900 text-white rounded-full grid place-items-center font-black">{p.foto}</div>
-                    {p.verificado && <span className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-full">✓ Verificado BI</span>}
+                    <div className="w-12 h-12 bg-[#00a651] text-white rounded-full grid place-items-center font-black">{p.foto}</div>
+                    {p.verificado && <span className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-full">âœ“ Verificado BI</span>}
                   </div>
-                  <h3 className="font-bold mt-3">{p.nome}</h3>
-                  <p className="text-sm text-zinc-500">{p.profissao} • {p.zona}</p>
-                  <p className="text-sm mt-2">⭐ {p.nota} ({p.trabalhos} trabalhos)</p>
-                  <p className="text-sm font-bold mt-1">{p.preco}</p>
-                  <button onClick={()=>{setTab("gerar"); setDados({...dados, domesticaNome: p.profissao==="Empregada Doméstica"? p.nome : dados.domesticaNome})}} className="w-full mt-3 bg-black text-white p-2.5 rounded-xl text-sm font-bold">Contratar com contrato</button>
+                  <h3 className="font-bold mt-3 text-zinc-900">{p.nome}</h3>
+                  <p className="text-sm text-zinc-500">{p.profissao} â€¢ {p.zona}</p>
+                  <p className="text-sm mt-2">â­ {p.nota} ({p.trabalhos} trabalhos)</p>
+                  <p className="text-sm font-bold mt-1 text-zinc-900">{p.preco}</p>
+                  <button onClick={()=>{setTab("gerar"); setDados({...dados, profissionalNome: p.nome, tipoTrabalho: p.profissao})}} className="w-full mt-3 bg-white border border-zinc-200 text-zinc-900 p-2.5 rounded-xl text-sm font-bold hover:bg-zinc-50">Contratar com contrato</button>
                 </div>
               ))}
-            </div>
-            <div className="mt-6 bg-amber-50 border border-amber-200 p-4 rounded-xl text-sm">
-              <b>Próxima semana:</b> Cada profissional terá login com telefone + código SMS (Supabase Auth), foto do BI, fotos de trabalhos, avaliações. Cliente clica Contratar → já preenche contrato automático + paga 250MT + envia WhatsApp para os dois.
             </div>
           </div>
         )}

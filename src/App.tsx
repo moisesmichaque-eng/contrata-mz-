@@ -5,84 +5,61 @@ const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, 
 type Lang = "pt" | "en";
 const T = {
   pt: {
-    encontrar: "ENCONTRAR", mercado: "Mercado", contratos: "CONTRATOS", biblioteca: "Biblioteca", meus: "MEUS CONTRATOS", gestao: "GestÃ£o",
-    modeloNegocio: "MODELO DE NEGÃ“CIO â€¢ TRUST FIRST",
-    modeloDesc: "Mercado digital moÃ§ambicano onde cada serviÃ§o termina com contrato formal, seguro e enviado por WhatsApp.",
-    modeloDetalhe: "Contratante paga 5% sobre valor. Ex: 20.000 MZN â†’ taxa 1.000 MZN. Plataforma gere notificaÃ§Ãµes, pagamento e PDF com validade jurÃ­dica.",
+    encontrar: "ENCONTRAR", mercado: "Mercado", contratos: "CONTRATOS", biblioteca: "Biblioteca", meus: "MEUS CONTRATOS", gestao: "Gestao",
+    modeloNegocio: "MODELO DE NEGOCIO - TRUST FIRST",
+    modeloDesc: "Mercado digital mocambicano onde cada servico termina com contrato formal, seguro e enviado por WhatsApp.",
+    modeloDetalhe: "Contratante paga 5% sobre valor. Ex: 20.000 MZN taxa 1.000 MZN. Plataforma gere notificacoes, pagamento e PDF com validade juridica.",
     estados: "ESTADOS", rascunho: "Rascunho", enviado: "Enviado", activo: "Activo", terminado: "Terminado",
-    fluxo: "FLUXO", f1: "Encontrar â†’", f2: "Negociar â†’", f3: "Contrato â†’", f4: "WhatsApp",
-    filtros: "Filtros Inteligentes", categoria: "CATEGORIA", todas: "Todas", domestico: "DomÃ©stico", construcao: "ConstruÃ§Ã£o", servicos: "ServiÃ§os", consultoria: "Consultoria", outros: "Outros",
-    provincia: "PROVÃNCIA", avaliacao: "AVALIAÃ‡ÃƒO", disponibilidade: "DISPONIBILIDADE", disponivel: "DisponÃ­vel", ocupado: "Ocupado",
+    fluxo: "FLUXO", f1: "Encontrar ->", f2: "Negociar ->", f3: "Contrato ->", f4: "WhatsApp",
+    filtros: "Filtros Inteligentes", categoria: "CATEGORIA", todas: "Todas", domestico: "Domestico", construcao: "Construcao", servicos: "Servicos", consultoria: "Consultoria", outros: "Outros",
+    provincia: "PROVINCIA", avaliacao: "AVALIACAO", disponibilidade: "DISPONIBILIDADE", disponivel: "Disponivel", ocupado: "Ocupado",
     verPerfil: "Ver Perfil", contactar: "Contactar", verificado: "Verificado",
-    bibliotecaTitulo: "Biblioteca 10+ MVP", contratoFormula: "CONTRATO = MODELO + CAMPOS + REGRAS + CLÃUSULAS",
+    bibliotecaTitulo: "Biblioteca 10+ MVP", contratoFormula: "CONTRATO = MODELO + CAMPOS + REGRAS + CLAUSULAS",
     dadosContratante: "1. DADOS DO CONTRATANTE (Empregador/Empresa)",
     dadosContratado: "2. DADOS DO CONTRATADO (Trabalhador/Empresa)",
-    condicoes: "3. CONDIÃ‡Ã•ES ESPECÃFICAS",
+    condicoes: "3. CONDICOES ESPECIFICAS",
     tarefas: "4. TAREFAS E RESPONSABILIDADES - Checklist",
-    acrescentar: "Acrescentar tarefas / DescriÃ§Ã£o livre (para empresas ou serviÃ§os particulares)",
-    formaPag: "Forma de pagamento - 4 opÃ§Ãµes inclui banco",
-    preview: "Preview DinÃ¢mico",
+    acrescentar: "Acrescentar tarefas / Descricao livre (para empresas ou servicos particulares)",
+    formaPag: "Forma de pagamento - 4 opcoes inclui banco",
+    preview: "Preview Dinamico",
     gerar: "Gerar PDF + WhatsApp",
-    voltar: "â† Voltar",
-    novo: "Novo contrato",
-    reiniciar: "Reiniciar sem refresh",
-    nomeCompleto: "Nome completo / Empresa",
-    bi: "NÃºmero BI / NUIT",
-    contacto: "Contacto",
-    localBairro: "Local / Bairro",
-    provinciaField: "ProvÃ­ncia",
-    valorTotal: "Valor Total MZN",
-    prazo: "Prazo dias",
-    salario: "SalÃ¡rio mensal MT",
-    descricaoLivre: "DescriÃ§Ã£o livre das actividades (para consultoria, serviÃ§os, empresas)"
+    voltar: "<- Voltar", novo: "Novo contrato", reiniciar: "Reiniciar sem refresh",
+    nomeCompleto: "Nome completo / Empresa", bi: "Numero BI / NUIT", contacto: "Contacto", localBairro: "Local / Bairro", provinciaField: "Provincia",
+    valorTotal: "Valor Total MZN", prazo: "Prazo dias", salario: "Salario mensal MT", descricaoLivre: "Descricao livre das actividades (para consultoria, servicos, empresas)"
   },
   en: {
     encontrar: "FIND", mercado: "Market", contratos: "CONTRACTS", biblioteca: "Library", meus: "MY CONTRACTS", gestao: "Management",
-    modeloNegocio: "BUSINESS MODEL â€¢ TRUST FIRST",
+    modeloNegocio: "BUSINESS MODEL - TRUST FIRST",
     modeloDesc: "Mozambican digital market where each service ends with formal contract, secure and sent via WhatsApp.",
-    modeloDetalhe: "Client pays 5% fee. Ex: 20,000 MZN â†’ fee 1,000 MZN. Platform manages notifications, payment and legally valid PDF.",
+    modeloDetalhe: "Client pays 5% fee. Ex: 20,000 MZN fee 1,000 MZN. Platform manages notifications, payment and legally valid PDF.",
     estados: "STATUS", rascunho: "Draft", enviado: "Sent", activo: "Active", terminado: "Finished",
-    fluxo: "FLOW", f1: "Find â†’", f2: "Negotiate â†’", f3: "Contract â†’", f4: "WhatsApp",
+    fluxo: "FLOW", f1: "Find ->", f2: "Negotiate ->", f3: "Contract ->", f4: "WhatsApp",
     filtros: "Smart Filters", categoria: "CATEGORY", todas: "All", domestico: "Domestic", construcao: "Construction", servicos: "Services", consultoria: "Consulting", outros: "Others",
     provincia: "PROVINCE", avaliacao: "RATING", disponibilidade: "AVAILABILITY", disponivel: "Available", ocupado: "Busy",
     verPerfil: "View Profile", contactar: "Contact", verificado: "Verified",
     bibliotecaTitulo: "Library 10+ MVP", contratoFormula: "CONTRACT = MODEL + FIELDS + RULES + CLAUSES",
-    dadosContratante: "1. CLIENT DATA (Employer/Company)",
-    dadosContratado: "2. CONTRACTOR DATA (Worker/Company)",
-    condicoes: "3. SPECIFIC CONDITIONS",
-    tarefas: "4. TASKS AND RESPONSIBILITIES - Checklist",
-    acrescentar: "Add tasks / Free description (for companies or private services)",
-    formaPag: "Payment method - 4 options includes bank",
-    preview: "Dynamic Preview",
-    gerar: "Generate PDF + WhatsApp",
-    voltar: "â† Back",
-    novo: "New contract",
-    reiniciar: "Restart without refresh",
-    nomeCompleto: "Full name / Company",
-    bi: "ID Number / NUIT",
-    contacto: "Contact",
-    localBairro: "Location / Neighborhood",
-    provinciaField: "Province",
-    valorTotal: "Total Value MZN",
-    prazo: "Deadline days",
-    salario: "Monthly salary MT",
-    descricaoLivre: "Free description of activities (for consulting, services, companies)"
+    dadosContratante: "1. CLIENT DATA (Employer/Company)", dadosContratado: "2. CONTRACTOR DATA (Worker/Company)",
+    condicoes: "3. SPECIFIC CONDITIONS", tarefas: "4. TASKS AND RESPONSIBILITIES - Checklist",
+    acrescentar: "Add tasks / Free description (for companies or private services)", formaPag: "Payment method - 4 options includes bank",
+    preview: "Dynamic Preview", gerar: "Generate PDF + WhatsApp", voltar: "<- Back", novo: "New contract", reiniciar: "Restart without refresh",
+    nomeCompleto: "Full name / Company", bi: "ID Number / NUIT", contacto: "Contact", localBairro: "Location / Neighborhood", provinciaField: "Province",
+    valorTotal: "Total Value MZN", prazo: "Deadline days", salario: "Monthly salary MT", descricaoLivre: "Free description of activities (for consulting, services, companies)"
   }
 };
 
 type TipoContrato = "Secretario/a Domestico/a" | "Motorista Particular" | "Pedreiro" | "Carpinteiro" | "Serralheiro" | "Eletricista" | "Canalizador" | "Pintor" | "Servicos/Consultoria" | "Outros/Particular";
 
-const MODELOS: Record<TipoContrato, { titulo: string, checklist: string[], campos: string[], desc: string }> = {
-  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa", "Lavar louca e organizar cozinha", "Arrumar quartos e fazer camas", "Lavar, passar e dobrar roupa", "Organizar despensa e fazer compras", "Cozinhar refeicoes"], campos: ["salario","horario"], desc: "Domestico - salario mensal, horario, dias, alimentacao" },
-  "Motorista Particular": { titulo: "CONTRATO - MOTORISTA PARTICULAR", checklist: ["Conduzir empregador e familia", "Manter viatura limpa e abastecida", "Verificar oleo, agua, pneus", "Fazer recados e compras"], campos: ["salario","viatura"], desc: "Motorista - viatura, carta, combustivel" },
-  "Pedreiro": { titulo: "CONTRATO DE EMPREITADA - PEDREIRO", checklist: ["Alvenaria de blocos", "Reboco interior e exterior", "Assentar tijoleira e ceramica", "Fundacoes e vigas", "Acabamentos"], campos: ["valor","prazo","local","metros"], desc: "Pedreiro - casa com pa, alvenaria" },
-  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar e montar moveis em madeira", "Instalar portas", "Instalar janelas", "Instalar armarios", "Medir e cortar madeira", "Aplicar verniz e acabamento"], campos: ["portas","janelas","material","valor","prazo","local"], desc: "Portas, janelas, mobiliario madeira" },
-  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes", "Fabricar grades", "Soldar estruturas metalicas - maquina de soldar", "Instalar portoes", "Reparos em ferro"], campos: ["portoes","valor","prazo","local"], desc: "Soldar, portoes, grades com maquina soldar" },
-  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico", "Instalar tomadas e interruptores", "Instalar iluminacao", "Passar cabos e fios", "Testar instalacao"], campos: ["pontos","valor","prazo","local"], desc: "Instalacoes eletricas, quadro" },
-  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua", "Instalar esgotos", "Instalar sanita e lavatorio", "Reparar fugas"], campos: ["valor","prazo","local"], desc: "Canalizacao e esgotos" },
-  "Pintor": { titulo: "CONTRATO - PINTOR", checklist: ["Preparar parede (lixar e massajar)", "Pintura interior", "Pintura exterior", "Aplicar textura", "Pintar teto"], campos: ["metros","tinta","valor","prazo","local"], desc: "Pintura interior e exterior" },
-  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS - CONSULTORIA/SERVICOS", checklist: ["Consultoria empresarial", "Servicos administrativos", "Servicos tecnicos", "Assessoria juridica/contabil", "Marketing e comunicacao", "Formacao e treinamento"], campos: ["valor","prazo","local","descricaoLivre"], desc: "Empresas, consultoria, servicos gerais" },
-  "Outros/Particular": { titulo: "CONTRATO PARTICULAR - OUTROS SERVICOS", checklist: ["Servico personalizado - descrever abaixo"], campos: ["descricaoLivre","valor","prazo","local"], desc: "Formulario livre para cliente escrever descricao" },
+const MODELOS: Record<TipoContrato, { titulo: string, checklist: string[], desc: string }> = {
+  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa", "Lavar louca e organizar cozinha", "Arrumar quartos e fazer camas", "Lavar, passar e dobrar roupa", "Organizar despensa e fazer compras", "Cozinhar refeicoes"], desc: "Domestico - salario mensal, horario, dias, alimentacao" },
+  "Motorista Particular": { titulo: "CONTRATO - MOTORISTA PARTICULAR", checklist: ["Conduzir empregador e familia", "Manter viatura limpa e abastecida", "Verificar oleo, agua, pneus", "Fazer recados e compras"], desc: "Motorista - viatura, carta, combustivel" },
+  "Pedreiro": { titulo: "CONTRATO DE EMPREITADA - PEDREIRO", checklist: ["Alvenaria de blocos", "Reboco interior e exterior", "Assentar tijoleira e ceramica", "Fundacoes e vigas", "Acabamentos"], desc: "Pedreiro - casa com pa, alvenaria" },
+  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar e montar moveis em madeira", "Instalar portas", "Instalar janelas", "Instalar armarios", "Medir e cortar madeira", "Aplicar verniz e acabamento"], desc: "Portas, janelas, mobiliario madeira" },
+  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes", "Fabricar grades", "Soldar estruturas metalicas - maquina de soldar", "Instalar portoes", "Reparos em ferro"], desc: "Soldar, portoes, grades com maquina soldar" },
+  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico", "Instalar tomadas e interruptores", "Instalar iluminacao", "Passar cabos e fios", "Testar instalacao"], desc: "Instalacoes eletricas, quadro" },
+  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua", "Instalar esgotos", "Instalar sanita e lavatorio", "Reparar fugas"], desc: "Canalizacao e esgotos" },
+  "Pintor": { titulo: "CONTRATO - PINTOR", checklist: ["Preparar parede (lixar e massajar)", "Pintura interior", "Pintura exterior", "Aplicar textura", "Pintar teto"], desc: "Pintura interior e exterior" },
+  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS - CONSULTORIA", checklist: ["Consultoria empresarial", "Servicos administrativos", "Servicos tecnicos", "Assessoria juridica/contabil", "Marketing e comunicacao", "Formacao e treinamento"], desc: "Empresas, consultoria, servicos gerais" },
+  "Outros/Particular": { titulo: "CONTRATO PARTICULAR - OUTROS SERVICOS", checklist: ["Servico personalizado - descrever abaixo"], desc: "Formulario livre para cliente escrever descricao" },
 };
 
 const FORMAS_PAG = [
@@ -95,12 +72,12 @@ const FORMAS_PAG = [
 const PROVINCIAS = ["Maputo Cidade", "Maputo - Matola", "Maputo - Machava", "Gaza - Xai-Xai", "Gaza - Chokwe", "Inhambane", "Sofala - Beira", "Nampula", "Tete"];
 
 const PROFISSIONAIS = [
-  { ini:"ML", nome:"Maria Langa", func:"Empregada DomÃ©stica", cat:"DomÃ©stico", local:"Maputo - Polana", nota:"4.9", trab:"23 trabalhos", anos:"8 anos", disp:"DisponÃ­vel", preco:"8.000 MZN" },
-  { ini:"JM", nome:"JoÃ£o Manuel", func:"Carpinteiro", cat:"ConstruÃ§Ã£o", local:"Matola - Machava", nota:"4.8", trab:"34 trabalhos", anos:"7 anos", disp:"DisponÃ­vel", preco:"Sob consulta" },
-  { ini:"PM", nome:"Pedro Massingue", func:"Pedreiro", cat:"ConstruÃ§Ã£o", local:"Maputo - Zimpeto", nota:"4.7", trab:"56 trabalhos", anos:"12 anos", disp:"Ocupado", preco:"1.200 MZN/dia" },
-  { ini:"EC", nome:"EsperanÃ§a Cossa", func:"Eletricista", cat:"ConstruÃ§Ã£o", local:"Maputo - Sommershield", nota:"4.9", trab:"41 trabalhos", anos:"6 anos", disp:"DisponÃ­vel", preco:"1.500 MZN/dia" },
-  { ini:"SC", nome:"ServiÃ§os Lda", func:"Consultoria Empresarial", cat:"ServiÃ§os", local:"Maputo - Central", nota:"5.0", trab:"12 projetos", anos:"3 anos", disp:"DisponÃ­vel", preco:"15.000 MZN" },
-  { ini:"CT", nome:"Carlos Tivane", func:"Motorista", cat:"DomÃ©stico", local:"Matola - Liberdade", nota:"4.8", trab:"29 trabalhos", anos:"7 anos", disp:"DisponÃ­vel", preco:"12.000 MZN" },
+  { ini:"ML", nome:"Maria Langa", func:"Empregada Domestica", cat:"Domestico", local:"Maputo - Polana", nota:"4.9", trab:"23 trabalhos", anos:"8 anos", disp:"Disponivel", preco:"8.000 MZN" },
+  { ini:"JM", nome:"Joao Manuel", func:"Carpinteiro", cat:"Construcao", local:"Matola - Machava", nota:"4.8", trab:"34 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"Sob consulta" },
+  { ini:"PM", nome:"Pedro Massingue", func:"Pedreiro", cat:"Construcao", local:"Maputo - Zimpeto", nota:"4.7", trab:"56 trabalhos", anos:"12 anos", disp:"Ocupado", preco:"1.200 MZN/dia" },
+  { ini:"EC", nome:"Esperanca Cossa", func:"Eletricista", cat:"Construcao", local:"Maputo - Sommershield", nota:"4.9", trab:"41 trabalhos", anos:"6 anos", disp:"Disponivel", preco:"1.500 MZN/dia" },
+  { ini:"SC", nome:"Servicos Lda", func:"Consultoria Empresarial", cat:"Servicos", local:"Maputo - Central", nota:"5.0", trab:"12 projetos", anos:"3 anos", disp:"Disponivel", preco:"15.000 MZN" },
+  { ini:"CT", nome:"Carlos Tivane", func:"Motorista", cat:"Domestico", local:"Matola - Liberdade", nota:"4.8", trab:"29 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"12.000 MZN" },
 ];
 
 export default function App(){
@@ -108,7 +85,7 @@ export default function App(){
   const [tab, setTab] = useState<"encontrar"|"contratos"|"meus">("encontrar");
   const [tipo, setTipo] = useState<TipoContrato>("Carpinteiro");
   const [tarefasSel, setTarefasSel] = useState<string[]>(MODELOS["Carpinteiro"].checklist.slice(0,2));
-  const [tarefasExtra, setTarefasExtra] = useState("Instalar 15 portas e janelas, Aplicar verniz e acabamento valor");
+  const [tarefasExtra, setTarefasExtra] = useState("Instalar 15 portas e janelas, Aplicar verniz e acabamento");
   const [descricaoLivre, setDescricaoLivre] = useState("");
   const [gerando, setGerando] = useState(false);
   const [gerado, setGerado] = useState(false);
@@ -121,7 +98,7 @@ export default function App(){
     empregadorNome:"", empregadorBI:"", empregadorTel:"", empregadorBairro:"", empregadorProvincia:"Maputo - Matola",
     trabalhadorNome:"", trabalhadorBI:"", trabalhadorTel:"",
     salario:"15000", valorTotal:"45000", prazo:"25", localObra:"Matola, Machava", provincia:"Maputo - Matola",
-    qtdPortas:"15", qtdJanelas:"0", qtdArmarios:"0", material:"Madeira", quemFornece:"Contratado",
+    qtdPortas:"15", qtdJanelas:"0", material:"Madeira", quemFornece:"Contratado",
     metros:"120", formaPag:"mpesa", horaEntrada:"07:00", horaSaida:"16:00", dataInicio:new Date().toISOString().split("T")[0]
   });
 
@@ -132,7 +109,7 @@ export default function App(){
 
   const profissionaisFiltrados = useMemo(()=>{
     if(filtroCat==="Todas") return PROFISSIONAIS;
-    return PROFISSIONAIS.filter(p=>p.cat===filtroCat || (filtroCat==="ServiÃ§os" && p.cat==="ServiÃ§os") || (filtroCat==="Outros" && p.cat==="Outros"));
+    return PROFISSIONAIS.filter(p=>p.cat===filtroCat || (filtroCat==="Servicos" && p.cat==="Servicos"));
   },[filtroCat]);
 
   const resetAll=()=>{ setTarefasSel(modelo.checklist.slice(0,2)); setTarefasExtra(""); setDescricaoLivre(""); setGerado(false); window.scrollTo({top:0,behavior:"smooth"}); };
@@ -207,9 +184,9 @@ export default function App(){
         </div>
 
         <div className="mt-4 flex gap-2 p-1 bg-white border border-zinc-200 rounded-[14px] w-fit">
-          <button onClick={()=>setTab("encontrar")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="encontrar"?"bg-[#00a651] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.encontrar} â€¢ {L.mercado}</button>
-          <button onClick={()=>setTab("contratos")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="contratos"?"bg-[#2563eb] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.contratos} â€¢ {L.biblioteca}</button>
-          <button onClick={()=>setTab("meus")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="meus"?"bg-[#00a651] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.meus} â€¢ {L.gestao}</button>
+          <button onClick={()=>setTab("encontrar")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="encontrar"?"bg-[#00a651] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.encontrar} - {L.mercado}</button>
+          <button onClick={()=>setTab("contratos")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="contratos"?"bg-[#2563eb] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.contratos} - {L.biblioteca}</button>
+          <button onClick={()=>setTab("meus")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="meus"?"bg-[#00a651] text-white":"text-zinc-600 hover:bg-zinc-50"}`}>{L.meus} - {L.gestao}</button>
         </div>
       </div>
 
@@ -218,19 +195,18 @@ export default function App(){
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4">
             <div className="bg-white border border-zinc-200 rounded-[16px] p-4 h-fit sticky top-[100px]">
               <div className="font-semibold text-[13px]">{L.filtros}</div>
-              <div className="mt-4"><div className="text-[11px] font-bold text-zinc-500 uppercase">{L.categoria}</div><div className="mt-2 flex flex-wrap gap-1.5">{[L.todas,"DomÃ©stico","ConstruÃ§Ã£o",L.servicos,L.consultoria,L.outros].map(cat=>{const active=filtroCat===cat || (cat===L.todas && filtroCat==="Todas"); return <button key={cat} onClick={()=>setFiltroCat(cat===L.todas?"Todas":cat)} className={`px-3 py-1.5 rounded-full text-[11px] font-medium border ${active?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-200"}`}>{cat}</button>})}</div></div>
+              <div className="mt-4"><div className="text-[11px] font-bold text-zinc-500 uppercase">{L.categoria}</div><div className="mt-2 flex flex-wrap gap-1.5">{[L.todas,"Domestico","Construcao",L.servicos,L.consultoria,L.outros].map(cat=>{const active=filtroCat===cat || (cat===L.todas && filtroCat==="Todas"); return <button key={cat} onClick={()=>setFiltroCat(cat===L.todas?"Todas":cat)} className={`px-3 py-1.5 rounded-full text-[11px] font-medium border ${active?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-200"}`}>{cat}</button>})}</div></div>
               <div className="mt-4"><div className="text-[11px] font-bold text-zinc-500 uppercase">{L.provincia}</div><div className="mt-2 flex flex-wrap gap-1.5"><button className="px-3 py-1.5 rounded-full bg-[#00a651] text-white text-[11px]">{L.todas}</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">Maputo</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">Matola</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">Gaza</button></div></div>
               <div className="mt-4"><div className="text-[11px] font-bold text-zinc-500 uppercase">{L.avaliacao}</div><div className="mt-2 flex gap-1.5"><button className="px-3 py-1.5 rounded-full bg-[#00a651] text-white text-[11px]">{L.todas}</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">4.5+</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">4.8+</button></div></div>
               <div className="mt-4"><div className="text-[11px] font-bold text-zinc-500 uppercase">{L.disponibilidade}</div><div className="mt-2 flex gap-1.5"><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">{L.todas}</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">{L.disponivel}</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">{L.ocupado}</button></div></div>
-              <div className="mt-6 p-3 rounded-[12px] bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800"><div className="font-semibold">Como funciona?</div><div className="mt-1">1. Encontre profissional<br/>2. Negocie valor<br/>3. Gere contrato formal<br/>4. Envie por WhatsApp com PDF</div></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profissionaisFiltrados.map(p=>(
                 <div key={p.nome} className="bg-white border border-zinc-200 rounded-[16px] p-4 hover:shadow-md transition">
-                  <div className="flex items-start gap-3"><div className="w-10 h-10 rounded-full bg-[#00a651] text-white grid place-items-center font-bold text-[13px]">{p.ini}</div><div className="flex-1"><div className="flex items-center gap-2"><span className="font-semibold text-[13px]">{p.nome}</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">{L.verificado}</span></div><div className="text-[11px] text-zinc-500">{p.func} â€¢ {p.local}</div><div className="text-[11px] mt-1">{p.nota} â€¢ {p.trab} â€¢ {p.anos}</div></div></div>
-                  <div className="mt-3 flex items-center justify-between"><span className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${p.disp==="DisponÃ­vel"?"bg-emerald-50 border border-emerald-200 text-emerald-700":"bg-amber-50 border border-amber-200 text-amber-700"}`}>{p.disp}</span><span className="text-[12px] font-semibold">{p.preco}</span></div>
-                  <div className="mt-3 grid grid-cols-2 gap-2"><button className="h-[36px] rounded-[10px] border border-zinc-200 bg-white text-[12px] font-medium hover:bg-zinc-50">{L.verPerfil}</button><button onClick={()=>{setTab("contratos"); const map:any={DomÃ©stico:"Secretario/a Domestico/a", ConstruÃ§Ã£o:"Pedreiro", ServiÃ§os:"Servicos/Consultoria"}; const t=map[p.cat]||"Carpinteiro"; setTipo(t as any);}} className="h-[36px] rounded-[10px] bg-[#00a651] text-white text-[12px] font-semibold hover:bg-[#008a43]">{L.contactar}</button></div>
+                  <div className="flex items-start gap-3"><div className="w-10 h-10 rounded-full bg-[#00a651] text-white grid place-items-center font-bold text-[13px]">{p.ini}</div><div className="flex-1"><div className="flex items-center gap-2"><span className="font-semibold text-[13px]">{p.nome}</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">{L.verificado}</span></div><div className="text-[11px] text-zinc-500">{p.func} - {p.local}</div><div className="text-[11px] mt-1">{p.nota} - {p.trab} - {p.anos}</div></div></div>
+                  <div className="mt-3 flex items-center justify-between"><span className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${p.disp==="Disponivel"?"bg-emerald-50 border border-emerald-200 text-emerald-700":"bg-amber-50 border border-amber-200 text-amber-700"}`}>{p.disp}</span><span className="text-[12px] font-semibold">{p.preco}</span></div>
+                  <div className="mt-3 grid grid-cols-2 gap-2"><button className="h-[36px] rounded-[10px] border border-zinc-200 bg-white text-[12px] font-medium hover:bg-zinc-50">{L.verPerfil}</button><button onClick={()=>{setTab("contratos"); const map:any={Domestico:"Secretario/a Domestico/a", Construcao:"Pedreiro", Servicos:"Servicos/Consultoria"}; const t=map[p.cat]||"Carpinteiro"; setTipo(t as any);}} className="h-[36px] rounded-[10px] bg-[#00a651] text-white text-[12px] font-semibold hover:bg-[#008a43]">{L.contactar}</button></div>
                 </div>
               ))}
             </div>
@@ -245,7 +221,7 @@ export default function App(){
               <div className="mt-3 space-y-2">
                 {(Object.keys(MODELOS) as TipoContrato[]).map(t=>{
                   const a=tipo===t;
-                  return <button key={t} onClick={()=>mudarTipo(t)} className={`w-full text-left p-3 rounded-[12px] border flex gap-2.5 items-start ${a?"bg-emerald-50 border-emerald-300":"bg-white border-zinc-200 hover:bg-zinc-50"}`}><div className="w-7 h-7 rounded-full bg-white border border-zinc-200 grid place-items-center text-[11px] font-bold">{t.slice(0,2).toUpperCase()}</div><div className="flex-1"><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500 line-clamp-1">{MODELOS[t].desc}</div></div><div className={`w-4 h-4 rounded-full border grid place-items-center text-[10px] ${a?"bg-[#00a651] border-[#00a651] text-white":"border-zinc-300"}`}>{a?"âœ“":""}</div></button>
+                  return <button key={t} onClick={()=>mudarTipo(t)} className={`w-full text-left p-3 rounded-[12px] border flex gap-2.5 items-start ${a?"bg-emerald-50 border-emerald-300":"bg-white border-zinc-200 hover:bg-zinc-50"}`}><div className="w-7 h-7 rounded-full bg-white border border-zinc-200 grid place-items-center text-[11px] font-bold">{t.slice(0,2).toUpperCase()}</div><div className="flex-1"><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500 line-clamp-1">{MODELOS[t].desc}</div></div><div className={`w-4 h-4 rounded-full border grid place-items-center text-[10px] ${a?"bg-[#00a651] border-[#00a651] text-white":"border-zinc-300"}`}>{a?"v":""}</div></button>
                 })}
               </div>
             </div>
@@ -258,7 +234,7 @@ export default function App(){
                 <div className="bg-blue-50 border border-blue-200 rounded-[12px] p-3">
                   <div className="font-semibold text-[12px] text-blue-800">{L.dadosContratante}</div>
                   <div className="mt-2 grid grid-cols-2 gap-2">
-                    <div><label className="text-[10px] font-bold uppercase">{L.nomeCompleto}</label><input value={form.empregadorNome} onChange={e=>upd("empregadorNome",e.target.value)} placeholder="Michaque Moises Moises / Empresa XYZ Lda" className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 text-[13px]" /></div>
+                    <div><label className="text-[10px] font-bold uppercase">{L.nomeCompleto}</label><input value={form.empregadorNome} onChange={e=>upd("empregadorNome",e.target.value)} placeholder="Michaque Moises / Empresa XYZ Lda" className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 text-[13px]" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.bi}</label><input value={form.empregadorBI} onChange={e=>upd("empregadorBI",e.target.value)} placeholder="BI / NUIT" className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.contacto}</label><input value={form.empregadorTel} onChange={e=>upd("empregadorTel",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.localBairro}</label><input value={form.empregadorBairro} onChange={e=>upd("empregadorBairro",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div>
@@ -279,11 +255,10 @@ export default function App(){
                 <div className="bg-white border border-zinc-200 rounded-[12px] p-3">
                   <div className="font-semibold text-[12px]">{L.condicoes} - {tipo}</div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <div><label className="text-[10px] font-bold uppercase">{tipo==="Secretario/a Domestico/a"||tipo==="Motorista Particular"?L.salario:L.valorTotal}</label><input value={form.valorTotal} onChange={e=>{upd("valorTotal",e.target.value); upd("salario",e.target.value)}} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px] font-semibold" /></div>
+                    <div><label className="text-[10px] font-bold uppercase">{L.valorTotal}</label><input value={form.valorTotal} onChange={e=>{upd("valorTotal",e.target.value); upd("salario",e.target.value)}} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px] font-semibold" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.prazo}</label><input value={form.prazo} onChange={e=>upd("prazo",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.localBairro}</label><input value={form.localObra} onChange={e=>upd("localObra",e.target.value)} placeholder="Xai-Xai, Machava, Polana..." className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]" /></div>
                     <div><label className="text-[10px] font-bold uppercase">{L.provinciaField}</label><select value={form.provincia} onChange={e=>upd("provincia",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]">{PROVINCIAS.map(p=><option key={p}>{p}</option>)}</select></div>
-                    {tipo==="Carpinteiro" && (<><div><label className="text-[10px] font-bold uppercase">Qtd Portas</label><input value={form.qtdPortas} onChange={e=>upd("qtdPortas",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border" /></div><div><label className="text-[10px] font-bold uppercase">Material</label><select value={form.material} onChange={e=>upd("material",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]"><option>Madeira</option><option>MDF</option><option>Ferro</option><option>Tijolo</option></select></div></>)}
                   </div>
                 </div>
 
@@ -295,9 +270,9 @@ export default function App(){
                       return <button key={t} onClick={()=>toggleTarefa(t)} className={`px-3 py-1.5 rounded-full text-[11px] border ${ativo?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-200 hover:bg-zinc-50"}`}>{t}</button>
                     })}
                   </div>
-                  <div className="mt-3"><label className="text-[10px] font-bold uppercase">{L.acrescentar}</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: Instalar 15 portas e janelas, Aplicar verniz e acabamento valor" className="mt-1 w-full min-h-[60px] p-3 rounded-[10px] border border-zinc-200 text-[12px]" /></div>
+                  <div className="mt-3"><label className="text-[10px] font-bold uppercase">{L.acrescentar}</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: Instalar 15 portas e janelas, Aplicar verniz e acabamento" className="mt-1 w-full min-h-[60px] p-3 rounded-[10px] border border-zinc-200 text-[12px]" /></div>
                   {(tipo==="Servicos/Consultoria" || tipo==="Outros/Particular") && (
-                    <div className="mt-3"><label className="text-[10px] font-bold uppercase">{L.descricaoLivre} - Formulario particular</label><textarea value={descricaoLivre} onChange={e=>setDescricaoLivre(e.target.value)} placeholder="Escreva aqui livremente as actividades: Ex: Empresa XYZ contrata para consultoria contabil mensal, elaboracao de relatorios, auditoria..." className="mt-1 w-full min-h-[90px] p-3 rounded-[10px] border-2 border-blue-200 bg-blue-50/30 text-[12px]" /></div>
+                    <div className="mt-3"><label className="text-[10px] font-bold uppercase">{L.descricaoLivre} - Formulario particular</label><textarea value={descricaoLivre} onChange={e=>setDescricaoLivre(e.target.value)} placeholder="Escreva aqui livremente as actividades: Ex: Empresa XYZ contrata para consultoria contabil mensal..." className="mt-1 w-full min-h-[90px] p-3 rounded-[10px] border-2 border-blue-200 bg-blue-50/30 text-[12px]" /></div>
                   )}
                   <div className="mt-2 text-[11px] text-zinc-600">Total {todasTarefas.length} tarefas: {todasTarefas.join(", ")}</div>
                 </div>
@@ -307,7 +282,7 @@ export default function App(){
                   <div className="mt-2 grid grid-cols-2 gap-2">{FORMAS_PAG.map(f=>{const a=form.formaPag===f.id; return <button key={f.id} onClick={()=>upd("formaPag",f.id)} className={`text-left p-2.5 rounded-[10px] border ${a?"border-[#00a651] bg-emerald-50 ring-2 ring-emerald-100":"bg-zinc-50 border-zinc-200"}`}><div className="text-[11px] font-semibold">{f.nome}</div><div className="text-[10px] font-mono mt-1">{f.num}</div></button>})}</div>
                 </div>
 
-                <div className="flex gap-2"><button onClick={()=>setTab("encontrar")} className="h-[44px] w-[44px] rounded-[12px] bg-white border border-zinc-200 grid place-items-center font-bold">â†</button><button disabled={gerando} onClick={compartilhar} className="flex-1 h-[44px] rounded-[12px] bg-[#00a651] text-white font-semibold text-[13px]">{gerando?"Gerando...":`${L.gerar} - ${tipo}`}</button></div>
+                <div className="flex gap-2"><button onClick={()=>setTab("encontrar")} className="h-[44px] w-[44px] rounded-[12px] bg-white border border-zinc-200 grid place-items-center font-bold"><- </button><button disabled={gerando} onClick={compartilhar} className="flex-1 h-[44px] rounded-[12px] bg-[#00a651] text-white font-semibold text-[13px]">{gerando?"Gerando...":`${L.gerar} - ${tipo}`}</button></div>
 
                 {gerado && (<div className="bg-emerald-50 border border-emerald-200 rounded-[12px] p-3"><div className="text-[12px] font-semibold text-emerald-800">Contrato gerado com sucesso</div><div className="mt-2 grid grid-cols-3 gap-2"><button onClick={()=>gerarPDF()} className="h-[36px] rounded-[8px] bg-white border text-[11px]">Baixar de novo</button><button onClick={compartilhar} className="h-[36px] rounded-[8px] bg-[#00a651] text-white text-[11px]">WhatsApp com PDF</button><button onClick={resetAll} className="h-[36px] rounded-[8px] bg-[#2563eb] text-white text-[11px]">{L.novo}</button></div><div className="mt-2 flex gap-2"><button onClick={resetAll} className="flex-1 h-[32px] rounded-[8px] bg-white border text-[10px]">{L.voltar} inicio</button><button onClick={resetAll} className="flex-1 h-[32px] rounded-[8px] bg-white border text-[10px]">{L.reiniciar}</button></div></div>)}
               </div>
@@ -339,7 +314,6 @@ export default function App(){
               <div className="bg-emerald-50 border border-emerald-200 rounded-[12px] p-3"><div className="text-[11px] font-bold text-emerald-800">Activo (3)</div><div className="mt-2 text-[11px]">Pedro Massingue - Pedreiro<br/>Esperanca Cossa - Eletricista<br/>Servicos Lda - Consultoria</div></div>
               <div className="bg-zinc-50 border border-zinc-200 rounded-[12px] p-3"><div className="text-[11px] font-bold text-zinc-700">Terminado (5)</div><div className="mt-2 text-[11px]">Varios contratos concluidos</div></div>
             </div>
-            <div className="mt-6 text-center text-[12px] text-zinc-500">Lista completa de contratos com filtro por estado, provincia, tipo de trabalho. Clique em ENCONTRAR para ver profissionais e gerar novo contrato.</div>
           </div>
         )}
       </main>

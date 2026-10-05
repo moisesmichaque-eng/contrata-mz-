@@ -56,26 +56,115 @@ export default function App(){
   const scrollParaForm=()=>{ setTimeout(()=>{ formRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); },120); };
   const escolherTipo=(t:TipoContrato)=>{ setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,3)); setPagina(1); if(window.innerWidth<1024){ setBibAberta(false); } scrollParaForm(); };
   const irPagina=(p:Pagina)=>{ setPagina(p); scrollParaForm(); };
-  const gerarPDF=async()=>{
+
+  const gerarPDFCompleto=async()=>{
     const { jsPDF } = await import("jspdf");
     const doc=new jsPDF({unit:"mm",format:"a4"});
-    const W=doc.internal.pageSize.getWidth(); let y=20;
-    doc.setFillColor(0,166,81); doc.rect(0,0,W,16,"F");
-    doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("CONTRATA.MZ - Um projeto da ESSE",10,10);
-    y=24; doc.setTextColor(30,30,30); doc.setFontSize(11); doc.text(MODELOS[tipo].titulo+" - "+tipo+" - 6 PAGINAS",10,y); y+=8;
-    doc.setFontSize(9); doc.text("CONTRATANTE: "+form.empNome+" BI "+form.empBI+" Tel "+form.empTel+" "+form.empBairro,10,y); y+=6;
-    doc.text("CONTRATADO: "+form.trabNome+" BI "+form.trabBI+" Tel "+form.trabTel+" Funcao "+tipo,10,y); y+=6;
-    doc.text("VALOR: "+form.valor+" MZN - PRAZO: "+form.prazo+" dias - LOCAL: "+form.local,10,y); y+=8;
-    todas.forEach((t,i)=>{ doc.text((i+1)+". "+semAcento(t),12,y); y+=5; if(y>270){doc.addPage(); y=20;} });
-    y+=6; doc.text("ANEXOS ("+anexos.length+"): "+anexos.map(a=>a.nome).join(", "),10,y); y+=10;
-    doc.setDrawColor(0,51,160); doc.rect(W/2-50,y,100,30);
-    doc.setTextColor(0,51,160); doc.setFontSize(12); doc.text("ESSE",W/2-8,y+8);
-    doc.setFontSize(7); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-25,y+12);
-    doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-28,y+16);
-    doc.text("Xai-Xai - Mocambique - Dono Contrata.MZ",W/2-30,y+20);
-    doc.text("Gerado "+new Date().toLocaleDateString(),W/2-15,y+26);
-    doc.save("Contrato-"+form.trabNome.replace(/\s+/g,"-")+".pdf");
+    const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); let y=20;
+    const M=15;
+    const checkPage=(h=20)=>{ if(y+h>H-25){ doc.addPage(); y=20; } };
+    // HEADER VERDE
+    doc.setFillColor(0,166,81); doc.rect(0,0,W,18,"F");
+    doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("CONTRATA.MZ - Um projeto da ESSE",M,11);
+    y=26; doc.setTextColor(20,20,20);
+    // TITULO
+    doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.text(MODELOS[tipo].titulo.toUpperCase()+" - "+tipo.toUpperCase()+" - 6 PAGINAS - CONTRATO COMPLETO",M,y); y+=4;
+    doc.setDrawColor(0,166,81); doc.setLineWidth(0.5); doc.line(M,y,W-M,y); y+=6;
+    // PAGINA 1 - CONTRATANTE
+    checkPage(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 1 - DADOS DO CONTRATANTE (Quem contrata)",M,y); y+=6;
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    doc.text("Nome / Empresa: "+form.empNome,M,y); y+=5;
+    doc.text("BI / NUIT: "+form.empBI+" | Contacto: "+form.empTel+" | Bairro/Local: "+form.empBairro+" - "+form.provincia,M,y); y+=8;
+    // PAGINA 2 - CONTRATADO
+    checkPage(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 2 - DADOS DO CONTRATADO (Quem faz o servico)",M,y); y+=6;
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    doc.text("Nome: "+form.trabNome+" | BI / NUIT: "+form.trabBI+" | Tel: "+form.trabTel+" | Funcao: "+tipo,M,y); y+=8;
+    // PAGINA 3 - CONDICOES
+    checkPage(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 3 - CONDICOES GERAIS",M,y); y+=6;
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    doc.text("Valor Total: "+form.valor+" MZN | Prazo: "+form.prazo+" dias | Local da Obra/Servico: "+form.local+" - "+form.provincia,M,y); y+=8;
+    // PAGINA 4 - TAREFAS
+    checkPage(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 4 - TAREFAS E RESPONSABILIDADES + CLAUSULA LOUCA",M,y); y+=6;
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    todas.forEach((t,i)=>{
+      const linhas = doc.splitTextToSize((i+1)+". "+semAcento(t), W-M*2-5);
+      linhas.forEach((l:string)=>{ checkPage(6); doc.text(l, M+2, y); y+=5; });
+    });
+    y+=2;
+    if(tipo==="Secretario/a Domestico/a"){
+      checkPage(25);
+      doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.text("CLAUSULA LOUCA (atualizada):",M,y); y+=5;
+      doc.setFontSize(9); doc.setFont("helvetica","normal");
+      const clausula = "A empregada zela pela louca, avisa quebras, nao paga quebra acidental. So paga se houver negligencia grave comprovada, maximo 25% do salario parcelado. Utensilios antigos/desgastados nao sao responsabilidade da empregada salvo negligencia grave.";
+      const clinhas = doc.splitTextToSize(semAcento(clausula), W-M*2);
+      clinhas.forEach((l:string)=>{ checkPage(5); doc.text(l,M,y); y+=4; });
+      y+=4;
+    }
+    // PAGINA 5 - ANEXOS
+    checkPage(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 5 - ANEXOS - Fotos, Projetos, Documentos ("+anexos.length+")",M,y); y+=6;
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    if(anexos.length===0){
+      doc.text("Nenhum anexo adicionado. Para pedreiro anexe foto da obra ou projeto, para carpinteiro foto da porta modelo.",M,y); y+=5;
+    } else {
+      anexos.forEach((a,i)=>{
+        checkPage(6);
+        doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho,M,y); y+=5;
+      });
+      y+=2;
+      doc.setFontSize(9); doc.text("Fotos/projetos anexados fazem parte integrante do contrato - enviar via WhatsApp junto com este PDF.",M,y); y+=6;
+    }
+    // PAGINA 6 - ASSINATURAS E CARIMBO ESSE NO MEIO ONDE DIZ GERADO POR CONTRATA.MZ
+    checkPage(60);
+    doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("PAGINA 6 - ASSINATURAS E VALIDACAO",M,y); y+=8;
+    // CARIMBO ESSE - NO MEIO DO DOCUMENTO ONDE DIZ GERADO POR CONTRATA.MZ
+    doc.setDrawColor(0,51,160); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,36);
+    doc.setTextColor(0,51,160); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("ESSE",W/2-10,y+9);
+    doc.setFontSize(8); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-28,y+14);
+    doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-30,y+18);
+    doc.text("Xai-Xai - Mocambique - Dono Contrata.MZ",W/2-32,y+22);
+    doc.text("Gerado por Contrata.MZ em "+new Date().toLocaleDateString(),W/2-30,y+28);
+    doc.setTextColor(20,20,20);
+    y+=48;
+    checkPage(50);
+    doc.setFontSize(10); doc.setFont("helvetica","normal");
+    doc.text("Assinaturas:",M,y); y+=12;
+    const col1=M, col2=W/2+10;
+    doc.line(col1,y,col1+60,y); doc.line(col2,y,col2+60,y);
+    y+=4; doc.setFontSize(9);
+    doc.text(semAcento(form.empNome||"Contratante"),col1,y); doc.text(semAcento(form.trabNome||"Contratado"),col2,y);
+    y+=6; doc.setFontSize(8); doc.text("Contratante",col1,y); doc.text("Contratado - "+tipo,col2,y);
+    y+=10;
+    doc.setFontSize(8); doc.setTextColor(100,100,100);
+    doc.text("Contrata.MZ - Um projeto da ESSE - NUIT 401 866 876 - Xai-Xai - Mocambique - Todos os pagamentos vao para contas ESSE: M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Standard Bank 000301170814421100321",M,y, {maxWidth: W-M*2});
+    return doc;
   };
+  const gerarPDF=async()=>{
+    const doc = await gerarPDFCompleto();
+    const nome = "Contrato-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf";
+    doc.save(nome);
+  };
+  const compartilharFree=async()=>{
+    try{
+      const doc = await gerarPDFCompleto();
+      const nome = "Contrato-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf";
+      const blob = doc.output("blob");
+      const textoContrato = `CONTRATO ${semAcento(tipo).toUpperCase()} - ${semAcento(form.trabNome)}%0AValor: ${form.valor} MZN - Prazo: ${form.prazo} dias%0AContratante: ${semAcento(form.empNome)}%0AContratado: ${semAcento(form.trabNome)}%0A${todas.length} tarefas - ${anexos.length} anexos%0AGerado por Contrata.MZ - Projeto ESSE - NUIT 401 866 876`;
+      // Tenta partilhar com arquivo (Android/Chrome)
+      const file = new File([blob], nome, {type:"application/pdf"});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({title:nome, text: `Contrato ${tipo} - ${form.trabNome} - ${form.valor} MZN`, files:[file]} as any);
+        return;
+      }
+      // Fallback: baixa PDF e abre WhatsApp com texto
+      doc.save(nome);
+      window.open(`https://wa.me/?text=${textoContrato}`, "_blank");
+    }catch(e){
+      console.error(e);
+      await gerarPDF();
+      window.open(`https://wa.me/?text=Contrato ${encodeURIComponent(tipo)} gerado por Contrata.MZ`, "_blank");
+    }
+  };
+
   const pagar=async()=>{
     if(metodo!=="banco" && !telPag){ alert("Digite seu numero"); return; }
     setProcessando(true); await new Promise(r=>setTimeout(r,1500));
@@ -126,13 +215,13 @@ export default function App(){
                 {pagina===3 && (<div className="space-y-4"><div className="font-bold text-[12px]">PAGINA 3 - CONDICOES</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Valor Total MZN *</label><input value={form.valor} onChange={e=>setForm({...form,valor:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 font-bold" /></div><div><label className="text-[10px] font-bold uppercase">Prazo dias</label><input value={form.prazo} onChange={e=>setForm({...form,prazo:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div><div><label className="text-[10px] font-bold uppercase">Local Obra / Servico</label><input value={form.local} onChange={e=>setForm({...form,local:e.target.value})} placeholder="Maputo, Polana" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div><label className="text-[10px] font-bold uppercase">Provincia</label><input value={form.provincia} onChange={e=>setForm({...form,provincia:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div className="flex gap-2"><button onClick={()=>irPagina(2)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">Voltar Pag 2</button><button onClick={()=>irPagina(4)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">Proximo Pag 4 Tarefas</button></div></div>)}
                 {pagina===4 && (<div className="space-y-4"><div className="font-bold text-[12px]">PAGINA 4 - TAREFAS E CLAUSULA LOUCA</div>{tipo==="Secretario/a Domestico/a" && (<div className="p-2.5 rounded-[10px] bg-amber-50 border-2 border-amber-200 text-[11px]"><b>Clausula Louca atualizada:</b> Empregada zela pela louca, avisa quebras, nao paga quebra acidental. So paga se negligencia grave comprovada, max 25% salario parcelado.</div>)}<div className="flex flex-wrap gap-2">{MODELOS[tipo].checklist.map(t=>{const ativo=tarefasSel.includes(t); return <button key={t} onClick={()=>setTarefasSel(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t])} className={`px-3 py-2 rounded-full text-[11px] border text-left ${ativo?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-300"}`}>{t}</button>})}</div><div><label className="text-[10px] font-bold uppercase">Acrescentar tarefas - Unico campo (substitui Descricao livre)</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: Instalar 15 portas, seguir projeto anexo..." className="mt-1 w-full min-h-[80px] p-3 rounded-[10px] border-2 text-[12px]" /></div><div className="text-[11px] text-zinc-600">{todas.length} tarefas selecionadas</div><div className="flex gap-2"><button onClick={()=>irPagina(3)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">Voltar Pag 3</button><button onClick={()=>irPagina(5)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">Proximo Pag 5 Anexos</button></div></div>)}
                 {pagina===5 && (<div className="space-y-4"><div className="border-2 border-dashed border-blue-400 rounded-[16px] p-5"><div className="font-bold text-[13px]">PAGINA 5 - ANEXOS - Fotos, Projetos, Documentos</div><div className="text-[11px] text-zinc-600 mt-1">Pedreiro: foto da obra/projeto. Carpinteiro: foto da porta modelo. Pintor: cor desejada. Este campo substitui Descricao livre duplicada removida.</div><label className="mt-4 w-full min-h-[120px] border-2 border-dashed rounded-[12px] grid place-items-center p-5 cursor-pointer hover:bg-blue-50"><input type="file" multiple accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={e=>handleFiles(e.target.files)} /><div className="text-center"><div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 grid place-items-center mx-auto text-[20px]">+</div><div className="font-bold text-[12px] mt-2">Clique para anexar foto ou projeto</div><div className="text-[10px] text-zinc-500">JPG, PNG, PDF max 5MB - ate 10 arquivos</div></div></label>{anexos.length>0 && <div className="mt-4 grid grid-cols-1 gap-2">{anexos.map(a=>(<div key={a.id} className="flex gap-2 items-center border-2 p-2 rounded-[10px] bg-white"><div className="w-12 h-12 bg-blue-100 rounded-[8px] overflow-hidden grid place-items-center">{a.url ? <img src={a.url} alt={a.nome} className="w-full h-full object-cover" /> : <span className="text-[9px] font-bold">{a.nome.split(".").pop()?.toUpperCase()}</span>}</div><div className="flex-1 min-w-0"><div className="text-[11px] font-bold truncate">{a.nome}</div><div className="text-[10px] text-zinc-500">{a.tamanho}</div></div><button onClick={()=>setAnexos(p=>p.filter(x=>x.id!==a.id))} className="w-7 h-7 bg-red-50 text-red-600 rounded-full grid place-items-center">x</button></div>))}</div>}</div><div className="flex gap-2"><button onClick={()=>irPagina(4)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">Voltar Pag 4</button><button onClick={()=>irPagina(6)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">Proximo Pag 6 Preview + Pagar</button></div></div>)}
-                {pagina===6 && (<div className="space-y-4"><div className="font-bold text-[13px]">PAGINA 6 - PREVIEW FINAL + 2 OPCOES</div><div className="bg-zinc-50 border-2 rounded-[12px] p-4"><div className="font-bold text-[12px]">Resumo: {tipo} - {form.valor} MZN - {todas.length} tarefas - {anexos.length} anexos</div><div className="text-[11px] text-zinc-600 mt-1">Como estava antes - escolha como gerar</div><div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3"><button onClick={gerarPDF} className="h-[60px] rounded-[12px] bg-[#00a651] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>FREE Gratis - Para testar agora</span><span className="text-[10px] font-normal opacity-90">Direito - WhatsApp + PDF</span></button><button onClick={()=>setShowPag(true)} className="h-[60px] rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>PAGO 200MT - Vai para tuas contas</span><span className="text-[10px] font-normal opacity-90">Azul - M-Pesa e-Mola mKesh Banco</span></button></div></div><button onClick={()=>irPagina(5)} className="w-full h-[44px] border-2 rounded-[10px] font-bold">Voltar Pag 5 Anexos</button></div>)}
+                {pagina===6 && (<div className="space-y-4"><div className="font-bold text-[13px]">PAGINA 6 - PREVIEW FINAL + 2 OPCOES</div><div className="bg-zinc-50 border-2 rounded-[12px] p-4"><div className="font-bold text-[12px]">Resumo: {tipo} - {form.valor} MZN - {todas.length} tarefas - {anexos.length} anexos</div><div className="text-[11px] text-zinc-600 mt-1">Como estava antes - escolha como gerar</div><div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3"><button onClick={compartilharFree} className="h-[60px] rounded-[12px] bg-[#00a651] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>FREE Gratis - Para testar agora</span><span className="text-[10px] font-normal opacity-90">Direito - WhatsApp + PDF</span></button><button onClick={()=>setShowPag(true)} className="h-[60px] rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>PAGO 200MT - Vai para tuas contas</span><span className="text-[10px] font-normal opacity-90">Azul - M-Pesa e-Mola mKesh Banco</span></button></div></div><button onClick={()=>irPagina(5)} className="w-full h-[44px] border-2 rounded-[10px] font-bold">Voltar Pag 5 Anexos</button></div>)}
               </div>
             </div>
             <div className="bg-white border rounded-[16px] p-4 h-fit lg:sticky lg:top-[100px]">
               <div className="flex items-center justify-between"><span className="text-[11px] font-bold uppercase">Preview - Pag {pagina}/6 - Sempre Aberto</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border text-[10px] font-bold">{anexos.length} anexos</span></div>
               <div className="mt-3 h-[520px] overflow-auto bg-[#f8fafc] border rounded-[10px] p-3 text-[10px] font-mono leading-relaxed">{MODELOS[tipo].titulo}<br/>{tipo}<br/><br/>Pag1 Contratante: {form.empNome} BI {form.empBI}<br/>Pag2 Contratado: {form.trabNome} BI {form.trabBI}<br/>Pag3 Valor: {form.valor} MZN Prazo: {form.prazo} Local: {form.local}<br/>Pag4 Tarefas: {todas.slice(0,5).join(", ")}<br/>Pag5 Anexos: {anexos.length} - {anexos.map(a=>a.nome).join(", ")}<br/><br/>ESSE - NUIT 401 866 876 - Xai-Xai<br/>Gerado por Contrata.MZ no meio do documento onde diz Gerado por Contrata.MZ</div>
-              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={gerarPDF} className="h-[42px] bg-[#00a651] text-white rounded-[10px] font-bold text-[11px]">FREE Gratis</button><button onClick={()=>setShowPag(true)} className="h-[42px] bg-[#2563eb] text-white rounded-[10px] font-bold text-[11px]">PAGO 200MT</button></div>
+              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={compartilharFree} className="h-[42px] bg-[#00a651] text-white rounded-[10px] font-bold text-[11px]">FREE Gratis</button><button onClick={()=>setShowPag(true)} className="h-[42px] bg-[#2563eb] text-white rounded-[10px] font-bold text-[11px]">PAGO 200MT</button></div>
               <div className="mt-3 flex items-center gap-2"><img src={ESSE_LOGO} alt="ESSE" className="h-8 w-auto" /><span className="text-[8px] text-zinc-500">ESSE - ENERGY SOLUTIONS<br/>NUIT 401 866 876<br/>Xai-Xai - Mocambique<br/>Dono do projeto Contrata.MZ</span></div>
             </div>
           </div>

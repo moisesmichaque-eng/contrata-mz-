@@ -1,252 +1,135 @@
 import { useState, useMemo } from "react";
+const ESSE_LOGO = "data:image/png;base64,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";
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 type Lang = "pt" | "en";
 type Pagina = 1|2|3;
-const T = {
-  pt: {
-    encontrar: "ENCONTRAR", mercado: "Mercado", contratos: "CONTRATOS", biblioteca: "Biblioteca", meus: "MEUS CONTRATOS", gestao: "Gestao",
-    modeloNegocio: "MODELO DE NEGOCIO - TRUST FIRST", modeloDesc: "Mercado digital mocambicano onde cada servico termina com contrato formal, seguro e enviado por WhatsApp.", modeloDetalhe: "3 PAGINAS SIMPLES: 1-Dados, 2-Condicoes e Tarefas, 3-Anexos e Preview. 2 formas: FREE e PAGO 200MT fixo.",
-    estados: "ESTADOS", rascunho: "Rascunho", enviado: "Enviado", activo: "Activo", terminado: "Terminado",
-    fluxo: "FLUXO", f1: "Encontrar ->", f2: "Negociar ->", f3: "Contrato ->", f4: "WhatsApp",
-    filtros: "Filtros Inteligentes", categoria: "CATEGORIA", todas: "Todas", domestico: "Domestico", construcao: "Construcao", servicos: "Servicos", consultoria: "Consultoria", outros: "Outros",
-    provincia: "PROVINCIA", avaliacao: "AVALIACAO", disponibilidade: "DISPONIBILIDADE", disponivel: "Disponivel", ocupado: "Ocupado",
-    verPerfil: "Ver Perfil", contactar: "Contactar", verificado: "Verificado",
-    bibliotecaTitulo: "Biblioteca 10+ MVP", contratoFormula: "CONTRATO = MODELO + CAMPOS + REGRAS + CLAUSULAS + ANEXOS - 3 PAGINAS",
-    dadosContratante: "1. DADOS DO CONTRATANTE", dadosContratado: "2. DADOS DO CONTRATADO",
-    condicoes: "CONDICOES E TAREFAS",
-    tarefas: "TAREFAS E RESPONSABILIDADES - Checklist",
-    anexos: "ANEXOS - Fotos, Projetos, Documentos",
-    acrescentar: "Acrescentar tarefas",
-    preview: "Preview Dinamico - Sempre Aberto",
-    gerar: "Gerar PDF + WhatsApp",
-    voltar: "<- Voltar", novo: "Novo contrato", reiniciar: "Reiniciar",
-    nomeCompleto: "Nome completo / Empresa", bi: "Numero BI / NUIT", contacto: "Contacto", localBairro: "Local / Bairro", provinciaField: "Provincia",
-    valorTotal: "Valor Total MZN", prazo: "Prazo dias", salario: "Salario mensal MT",
-    modoFree: "FREE - Gratis", modoPago: "PAGO 200MT",
-    freeDesc: "Testar com amigos", pagoDesc: "Valor unico futuro",
-    pag1: "Pagina 1 - Dados", pag2: "Pagina 2 - Tarefas e Condicoes", pag3: "Pagina 3 - Anexos e Preview",
-    proximo: "Proximo ->", anterior: "<- Anterior",
-    anexarTitulo: "Anexar Fotos, Projeto ou Documento",
-    anexarDesc: "Ex: Pedreiro - foto da obra ou projeto. Carpinteiro - foto da porta modelo. Pintor - cor desejada.",
-    arraste: "Clique para anexar foto ou projeto",
-    tiposAceitos: "JPG, PNG, PDF (max 5MB)",
-    anexosAdicionados: "Anexos",
-    nenhumAnexo: "Nenhum anexo. Para pedreiro anexe foto da obra ou projeto.",
-    btnFree: "Gerar FREE - Gratis",
-    btnPago: "Pagar 200MT - Gerar PDF"
-  },
-  en: {
-    encontrar: "FIND", mercado: "Market", contratos: "CONTRACTS", biblioteca: "Library", meus: "MY CONTRACTS", gestao: "Management",
-    modeloNegocio: "BUSINESS MODEL - TRUST FIRST", modeloDesc: "Mozambican digital market - 3 pages simple.", modeloDetalhe: "3 PAGES: 1-Data, 2-Tasks, 3-Attachments and Preview.",
-    estados: "STATUS", rascunho: "Draft", enviado: "Sent", activo: "Active", terminado: "Finished",
-    fluxo: "FLOW", f1: "Find ->", f2: "Negotiate ->", f3: "Contract ->", f4: "WhatsApp",
-    filtros: "Smart Filters", categoria: "CATEGORY", todas: "All", domestico: "Domestic", construcao: "Construction", servicos: "Services", consultoria: "Consulting", outros: "Others",
-    provincia: "PROVINCE", avaliacao: "RATING", disponibilidade: "AVAILABILITY", disponivel: "Available", ocupado: "Busy",
-    verPerfil: "View Profile", contactar: "Contact", verificado: "Verified",
-    bibliotecaTitulo: "Library 10+ MVP", contratoFormula: "CONTRACT = MODEL + FIELDS + RULES + CLAUSES + ATTACHMENTS - 3 PAGES",
-    dadosContratante: "1. CLIENT DATA", dadosContratado: "2. CONTRACTOR DATA", condicoes: "CONDITIONS AND TASKS", tarefas: "TASKS", anexos: "ATTACHMENTS",
-    acrescentar: "Add tasks", preview: "Dynamic Preview - Always Open", gerar: "Generate PDF + WhatsApp", voltar: "<- Back", novo: "New contract", reiniciar: "Restart",
-    nomeCompleto: "Full name / Company", bi: "ID Number", contacto: "Contact", localBairro: "Location", provinciaField: "Province",
-    valorTotal: "Total Value MZN", prazo: "Deadline days", salario: "Monthly salary MT",
-    modoFree: "FREE", modoPago: "PAID 200MT", freeDesc: "Free test", pagoDesc: "Fixed value future",
-    pag1: "Page 1 - Data", pag2: "Page 2 - Tasks and Conditions", pag3: "Page 3 - Attachments and Preview",
-    proximo: "Next ->", anterior: "<- Previous",
-    anexarTitulo: "Attach Photos, Project or Document", anexarDesc: "Ex: Mason - photo of work or project.", arraste: "Click to attach photo or project", tiposAceitos: "JPG, PNG, PDF (max 5MB)", anexosAdicionados: "Attachments", nenhumAnexo: "No attachments.",
-    btnFree: "Generate FREE", btnPago: "Pay 200MT - Generate PDF"
-  }
-};
 type TipoContrato = "Secretario/a Domestico/a" | "Motorista Particular" | "Pedreiro" | "Carpinteiro" | "Serralheiro" | "Eletricista" | "Canalizador" | "Pintor" | "Servicos/Consultoria" | "Outros/Particular";
 const MODELOS: Record<TipoContrato, { titulo: string, checklist: string[], desc: string }> = {
-  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa","Lavar louca e organizar cozinha - zelar pela louca, repor se partir por negligencia","Arrumar quartos e fazer camas","Lavar, passar e dobrar roupa","Organizar despensa e fazer compras","Cozinhar refeicoes","Zelar pelos utensilios, louca e eletrodomesticos - avisar quebras","Nao se responsabiliza por quebra de louca antiga/desgastada salvo negligencia grave"], desc: "Domestico - clausula louca" },
-  "Motorista Particular": { titulo: "CONTRATO - MOTORISTA PARTICULAR", checklist: ["Conduzir empregador e familia","Manter viatura limpa e abastecida","Verificar oleo, agua, pneus","Fazer recados e compras"], desc: "Motorista" },
+  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa","Lavar louca e organizar cozinha - zelar pela louca","Arrumar quartos e fazer camas","Lavar, passar e dobrar roupa","Organizar despensa","Cozinhar refeicoes","Zelar por utensilios, louca e eletrodomesticos - avisar quebras","Nao se responsabiliza por quebra de louca antiga salvo negligencia grave - max 25% salario"], desc: "Domestico - clausula louca" },
   "Pedreiro": { titulo: "CONTRATO DE EMPREITADA - PEDREIRO", checklist: ["Alvenaria de blocos","Reboco interior e exterior","Assentar tijoleira e ceramica","Fundacoes e vigas","Acabamentos","Seguir projeto/foto anexa"], desc: "Pedreiro - anexar foto/projeto" },
-  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar e montar moveis em madeira","Instalar portas","Instalar janelas","Instalar armarios","Medir e cortar madeira","Aplicar verniz e acabamento"], desc: "Portas, janelas - anexar modelo" },
-  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes","Fabricar grades","Soldar estruturas metalicas","Instalar portoes","Reparos em ferro"], desc: "Soldar, portoes" },
-  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico","Instalar tomadas e interruptores","Instalar iluminacao","Passar cabos e fios","Testar instalacao"], desc: "Eletrica" },
-  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua","Instalar esgotos","Instalar sanita e lavatorio","Reparar fugas"], desc: "Canalizacao" },
+  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar moveis em madeira","Instalar portas","Instalar janelas","Instalar armarios","Medir e cortar madeira","Aplicar verniz"], desc: "Carpinteiro" },
+  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes","Fabricar grades","Soldar estruturas","Instalar portoes","Reparos em ferro"], desc: "Serralheiro" },
+  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico","Instalar tomadas","Instalar iluminacao","Passar cabos","Testar instalacao"], desc: "Eletrica" },
+  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua","Instalar esgotos","Instalar sanita","Reparar fugas"], desc: "Canalizacao" },
   "Pintor": { titulo: "CONTRATO - PINTOR", checklist: ["Preparar parede","Pintura interior","Pintura exterior","Aplicar textura","Pintar teto","Usar cor conforme foto anexa"], desc: "Pintura" },
-  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS - CONSULTORIA", checklist: ["Consultoria empresarial","Servicos administrativos","Servicos tecnicos","Assessoria juridica/contabil","Marketing e comunicacao","Formacao e treinamento"], desc: "Empresas" },
-  "Outros/Particular": { titulo: "CONTRATO PARTICULAR - OUTROS SERVICOS", checklist: ["Servico personalizado - descrever no campo acrescentar"], desc: "Formulario livre" },
+  "Motorista Particular": { titulo: "CONTRATO - MOTORISTA", checklist: ["Conduzir empregador","Manter viatura limpa","Verificar oleo e agua","Fazer recados"], desc: "Motorista" },
+  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS", checklist: ["Consultoria empresarial","Servicos administrativos","Servicos tecnicos","Assessoria juridica","Marketing","Formacao"], desc: "Empresas" },
+  "Outros/Particular": { titulo: "CONTRATO PARTICULAR", checklist: ["Servico personalizado - descrever em acrescentar"], desc: "Outros" },
 };
-const PAGAMENTOS_OWNER = {
-  mpesa: { numero: "840532899", display: "M-Pesa", cor: "bg-[#e4002b]" },
-  emola: { numero: "864341779", display: "e-Mola", cor: "bg-[#ff6b00]" },
-  mkesh: { numero: "823832513", display: "mKesh", cor: "bg-[#00a651]" },
-  banco: { numero: "000301170814421100321", banco: "Standard Bank", display: "Standard Bank", cor: "bg-[#0033a0]", nib: "000301170814421100321" }
+const PAGAMENTOS = {
+  mpesa: { n: "840532899", d: "M-Pesa", c: "bg-[#e4002b]" },
+  emola: { n: "864341779", d: "e-Mola", c: "bg-[#ff6b00]" },
+  mkesh: { n: "823832513", d: "mKesh", c: "bg-[#00a651]" },
+  banco: { n: "000301170814421100321", d: "Standard Bank", c: "bg-[#0033a0]" }
 };
-const PROVINCIAS = ["Maputo Cidade","Maputo - Matola","Maputo - Machava","Gaza - Xai-Xai","Gaza - Chokwe","Inhambane","Sofala - Beira","Nampula","Tete"];
-const PROFISSIONAIS = [
-  { ini:"ML", nome:"Maria Langa", func:"Empregada Domestica", cat:"Domestico", local:"Maputo - Polana", nota:"4.9", trab:"23 trabalhos", anos:"8 anos", disp:"Disponivel", preco:"8.000 MZN" },
-  { ini:"JM", nome:"Joao Manuel", func:"Carpinteiro", cat:"Construcao", local:"Matola - Machava", nota:"4.8", trab:"34 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"Sob consulta" },
-  { ini:"PM", nome:"Pedro Massingue", func:"Pedreiro", cat:"Construcao", local:"Maputo - Zimpeto", nota:"4.7", trab:"56 trabalhos", anos:"12 anos", disp:"Ocupado", preco:"1.200 MZN/dia" },
-  { ini:"EC", nome:"Esperanca Cossa", func:"Eletricista", cat:"Construcao", local:"Maputo - Sommershield", nota:"4.9", trab:"41 trabalhos", anos:"6 anos", disp:"Disponivel", preco:"1.500 MZN/dia" },
-  { ini:"SC", nome:"Servicos Lda", func:"Consultoria Empresarial", cat:"Servicos", local:"Maputo - Central", nota:"5.0", trab:"12 projetos", anos:"3 anos", disp:"Disponivel", preco:"15.000 MZN" },
-  { ini:"CT", nome:"Carlos Tivane", func:"Motorista", cat:"Domestico", local:"Matola - Liberdade", nota:"4.8", trab:"29 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"12.000 MZN" },
-];
+const PROVINCIAS = ["Maputo Cidade","Maputo - Matola","Maputo - Machava","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete"];
 type Anexo = { id:string, nome:string, tamanho:string, url:string };
 export default function App(){
-  const [lang, setLang] = useState<Lang>("pt");
-  const [tab, setTab] = useState<"encontrar"|"contratos"|"meus">("encontrar");
-  const [tipo, setTipo] = useState<TipoContrato>("Secretario/a Domestico/a");
-  const [tarefasSel, setTarefasSel] = useState<string[]>(MODELOS["Secretario/a Domestico/a"].checklist.slice(0,3));
-  const [tarefasExtra, setTarefasExtra] = useState("");
-  const [gerando, setGerando] = useState(false);
-  const [gerado, setGerado] = useState(false);
-  const [filtroCat, setFiltroCat] = useState("Todas");
-  const [pagina, setPagina] = useState<Pagina>(1);
-  const [anexos, setAnexos] = useState<Anexo[]>([]);
-  const [showPagamento, setShowPagamento] = useState(false);
-  const [metodoPag, setMetodoPag] = useState<"mpesa"|"emola"|"mkesh"|"banco">("mpesa");
-  const [processandoPag, setProcessandoPag] = useState(false);
-  const [telefonePag, setTelefonePag] = useState("");
-  const [showPinPopup, setShowPinPopup] = useState(false);
-  const L = T[lang]; const modelo = MODELOS[tipo];
-  const [form, setForm] = useState({ empregadorNome:"", empregadorBI:"", empregadorTel:"", empregadorBairro:"", empregadorProvincia:"Maputo - Matola", trabalhadorNome:"", trabalhadorBI:"", trabalhadorTel:"", valorTotal:"8000", prazo:"30", localObra:"Maputo, Polana", provincia:"Maputo - Matola" });
-  const todasTarefas = useMemo(()=>{ const extra=tarefasExtra.split(",").map(t=>t.trim()).filter(Boolean); return [...tarefasSel,...extra]; },[tarefasSel,tarefasExtra]);
-  const profissionaisFiltrados = useMemo(()=>{ if(filtroCat==="Todas") return PROFISSIONAIS; return PROFISSIONAIS.filter(p=>p.cat===filtroCat); },[filtroCat]);
-  const handleFiles = (files: FileList | null) => {
-    if(!files) return;
-    const novos: Anexo[] = Array.from(files).slice(0,5).map(f=>{
-      const url = f.type.startsWith("image/") ? URL.createObjectURL(f) : "";
-      return { id: Math.random().toString(36).slice(2), nome: f.name, tamanho: (f.size/1024/1024).toFixed(2)+" MB", url };
-    });
-    setAnexos(prev=>[...prev, ...novos].slice(0,10));
-  };
-  const removerAnexo = (id:string) => setAnexos(prev=>prev.filter(a=>a.id!==id));
-  const resetAll=()=>{ setTarefasSel(modelo.checklist.slice(0,2)); setTarefasExtra(""); setGerado(false); setAnexos([]); setPagina(1); };
+  const [lang,setLang]=useState<Lang>("pt");
+  const [tipo,setTipo]=useState<TipoContrato>("Pedreiro");
+  const [tarefasSel,setTarefasSel]=useState<string[]>(MODELOS["Pedreiro"].checklist.slice(0,3));
+  const [tarefasExtra,setTarefasExtra]=useState("");
+  const [pagina,setPagina]=useState<Pagina>(1);
+  const [anexos,setAnexos]=useState<Anexo[]>([]);
+  const [showPag,setShowPag]=useState(false);
+  const [metodo,setMetodo]=useState<"mpesa"|"emola"|"mkesh"|"banco">("mpesa");
+  const [telPag,setTelPag]=useState("");
+  const [processando,setProcessando]=useState(false);
+  const [showPin,setShowPin]=useState(false);
+  const [form,setForm]=useState({ empNome:"", empBI:"", empTel:"", empBairro:"", trabNome:"", trabBI:"", trabTel:"", valor:"45000", prazo:"25", local:"Matola, Machava" });
+  const todas=useMemo(()=>{ const extra=tarefasExtra.split(",").map(t=>t.trim()).filter(Boolean); return [...tarefasSel,...extra]; },[tarefasSel,tarefasExtra]);
+  const handleFiles=(files:FileList|null)=>{ if(!files) return; const novos:Anexo[]=Array.from(files).slice(0,5).map(f=>{ const url=f.type.startsWith("image/")?URL.createObjectURL(f):""; return {id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url}; }); setAnexos(p=>[...p,...novos].slice(0,10)); };
   const gerarPDF=async()=>{
-    setGerando(true);
-    try{
-      let jsPDF:any;
-      try{ const m=await import("jspdf"); jsPDF=m.jsPDF||m.default; }catch{
-        await new Promise<void>((res)=>{ const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload=()=>res(); document.head.appendChild(s); });
-        jsPDF=(window as any).jspdf.jsPDF;
-      }
-      const doc=new jsPDF({unit:"mm",format:"a4"}); const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(), M=20, CW=W-M*2; let y=M;
-      const check=(n=15)=>{ if(y+n>H-20){doc.addPage(); y=M;} };
-      const add=(txt:string,fs=10,bold=false,ind=0)=>{ const cl=semAcento(txt); doc.setFontSize(fs); doc.setFont("helvetica",bold?"bold":"normal"); const ls=doc.splitTextToSize(cl,CW-ind); for(const l of ls){check(6); doc.text(l,M+ind,y); y+=5.5;} };
-      doc.setFillColor(0,166,81); doc.rect(0,0,W,16,"F"); doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("CONTRATA.MZ",M,10);
-      y=24; doc.setTextColor(30,30,30); add(`${modelo.titulo} - ${tipo.toUpperCase()} - 3 PAGINAS`,12,true); y+=2; doc.setDrawColor(0,166,81); doc.line(M,y,W-M,y); y+=6;
-      add("PAGINA 1 - DADOS DAS PARTES",11,true); y+=1;
-      add(`CONTRATANTE: ${form.empregadorNome}, BI ${form.empregadorBI}, Tel ${form.empregadorTel}, ${form.empregadorBairro} - ${form.empregadorProvincia}`,10); y+=1;
-      add(`CONTRATADO: ${form.trabalhadorNome}, BI ${form.trabalhadorBI}, Tel ${form.trabalhadorTel}, Funcao ${tipo}`,10); y+=5;
-      add("PAGINA 2 - CONDICOES E TAREFAS",11,true); y+=1;
-      add(`Valor: ${form.valorTotal} MZN - Prazo: ${form.prazo} dias - Local: ${form.localObra} - ${form.provincia}`,10); y+=1;
-      todasTarefas.forEach((t,i)=>{ add(`${i+1}. ${t}`,10,false,4); }); y+=2;
-      if(tipo==="Secretario/a Domestico/a"){ add("CLAUSULA LOUCA: Zelar pela louca, avisar quebras, nao paga quebra acidental salvo negligencia grave - max 25% salario parcelado.",9,true); y+=3; }
-      add(`PAGINA 3 - ANEXOS (${anexos.length})`,11,true); y+=1;
-      if(anexos.length===0){ add("Nenhum anexo.",9); } else { anexos.forEach((a,i)=>{ add(`${i+1}. ${a.nome} - ${a.tamanho}`,9); }); add("Fotos/projetos anexados fazem parte integrante do contrato - ver arquivos via WhatsApp.",9); }
-      y+=8; check(40); add("Assinaturas:",10,true); y+=10; const c1=M, c2=W/2+10; doc.line(c1,y+10,c1+55,y+10); doc.line(c2,y+10,c2+55,y+10); doc.setFontSize(8); doc.text(semAcento(form.empregadorNome),c1,y+14); doc.text(semAcento(form.trabalhadorNome),c2,y+14);
-      doc.save(`Contrato-${form.trabalhadorNome.replace(/\s+/g,"-")}.pdf`); setGerado(true);
-      return {blob:doc.output("blob"), fileName:`Contrato-${form.trabalhadorNome}.pdf`};
-    } finally{ setGerando(false); }
+    const { jsPDF } = await import("jspdf");
+    const doc=new jsPDF({unit:"mm",format:"a4"});
+    const W=doc.internal.pageSize.getWidth(); let y=20;
+    doc.setFillColor(0,166,81); doc.rect(0,0,W,16,"F");
+    doc.setTextColor(255,255,255); doc.setFontSize(14); doc.text("CONTRATA.MZ - Projeto ESSE",10,10);
+    y=24; doc.setTextColor(0,0,0); doc.setFontSize(11); doc.text(MODELOS[tipo].titulo+" - "+tipo,10,y); y+=8;
+    doc.setFontSize(9); doc.text("CONTRATANTE: "+form.empNome+" BI "+form.empBI+" Tel "+form.empTel,10,y); y+=6;
+    doc.text("CONTRATADO: "+form.trabNome+" BI "+form.trabBI+" Tel "+form.trabTel,10,y); y+=6;
+    doc.text("VALOR: "+form.valor+" MZN - PRAZO: "+form.prazo+" dias - LOCAL: "+form.local,10,y); y+=8;
+    todas.forEach((t,i)=>{ doc.text((i+1)+". "+semAcento(t),12,y); y+=5; if(y>270){doc.addPage(); y=20;} });
+    y+=6; doc.text("ANEXOS ("+anexos.length+"): "+anexos.map(a=>a.nome).join(", "),10,y); y+=10;
+    doc.setDrawColor(0,51,160); doc.rect(W/2-50,y,100,30);
+    doc.setTextColor(0,51,160); doc.setFontSize(12); doc.text("ESSE",W/2-8,y+8);
+    doc.setFontSize(7); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-25,y+12);
+    doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-28,y+16);
+    doc.text("Xai-Xai - Mocambique",W/2-18,y+20);
+    doc.text("Gerado por Contrata.MZ - "+new Date().toLocaleDateString(),W/2-28,y+26);
+    doc.save("Contrato-"+form.trabNome+".pdf");
   };
-  const compartilharFree=async()=>{
-    const txt=`CONTRATO ${semAcento(tipo).toUpperCase()} - ${form.trabalhadorNome} - ${form.valorTotal} MZN - ${todasTarefas.length} tarefas - ${anexos.length} anexos - FREE`;
-    try{ const {blob,fileName}=await gerarPDF() as any; const file=new File([blob],fileName,{type:"application/pdf"}); if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({title:fileName, text:txt, files:[file]} as any); return; } }catch{}
-    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,"_blank");
-  };
-  const confirmarPagamento200 = async () => {
-    if((metodoPag==="mpesa"||metodoPag==="emola"||metodoPag==="mkesh") && !telefonePag){ alert("Digite seu numero"); return; }
-    setProcessandoPag(true); await new Promise(r=>setTimeout(r,1500));
-    if(metodoPag!=="banco"){ setShowPinPopup(true); setTimeout(async ()=>{ setShowPinPopup(false); setProcessandoPag(false); setShowPagamento(false); await gerarPDF(); }, 3000); }
-    else { await new Promise(r=>setTimeout(r,1000)); setProcessandoPag(false); setShowPagamento(false); await gerarPDF(); }
+  const pagar=async()=>{
+    if(metodo!=="banco" && !telPag){ alert("Digite numero"); return; }
+    setProcessando(true);
+    await new Promise(r=>setTimeout(r,1500));
+    if(metodo!=="banco"){ setShowPin(true); setTimeout(()=>{ setShowPin(false); setProcessando(false); setShowPag(false); gerarPDF(); },3000); }
+    else { setProcessando(false); setShowPag(false); gerarPDF(); }
   };
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-zinc-800">
-      <header className="sticky top-0 z-20 bg-white border-b"><div className="mx-auto max-w-[1280px] px-4 h-[64px] flex items-center justify-between"><div className="flex items-center gap-2.5"><div className="w-9 h-9 rounded-[12px] bg-[#00a651] text-white grid place-items-center font-bold">C</div><div><div className="font-bold text-[15px]">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500">ENCONTRE. NEGOCIE. FORMALIZE.</div></div></div><div className="flex p-1 bg-zinc-100 rounded-[10px]"><button onClick={()=>setLang("pt")} className={`px-3 py-1 rounded-[8px] text-[11px] font-semibold ${lang==="pt"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-3 py-1 rounded-[8px] text-[11px] font-semibold ${lang==="en"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>EN</button></div></div></header>
+    <div className="min-h-screen bg-[#f8fafc]">
+      <header className="sticky top-0 z-20 bg-white border-b shadow-sm">
+        <div className="mx-auto max-w-[1280px] px-4 h-[72px] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-[12px] bg-[#00a651] text-white grid place-items-center font-bold">C</div>
+            <div><div className="font-bold text-[15px] leading-none">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500">ENCONTRE. NEGOCIE. FORMALIZE.</div><div className="text-[8px] text-zinc-400">Um projeto da ESSE</div></div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="hidden md:block text-right mr-2"><div className="text-[9px] font-bold text-zinc-400 uppercase">Projeto de</div><div className="text-[11px] font-bold">ESSE - Energy Solutions</div><div className="text-[8px] text-zinc-500">NUIT 401 866 876 | Xai-Xai</div></div>
+            <img src={ESSE_LOGO} alt="ESSE" className="h-[42px] w-auto" />
+            <div className="flex p-1 bg-zinc-100 rounded-[10px]"><button onClick={()=>setLang("pt")} className={`px-3 py-1 rounded-[8px] text-[11px] font-bold ${lang==="pt"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-3 py-1 rounded-[8px] text-[11px] font-bold ${lang==="en"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>EN</button></div>
+          </div>
+        </div>
+      </header>
       <div className="mx-auto max-w-[1280px] px-4 pt-4">
-        <div className="bg-[#1a1a1a] text-white rounded-[16px] p-4 flex flex-col md:flex-row justify-between gap-3"><div><div className="text-[11px] font-bold text-white/60">{L.modeloNegocio}</div><div className="text-[15px] font-semibold mt-1 max-w-[560px]">{L.modeloDesc}</div><div className="text-[12px] text-white/60 mt-1">{L.modeloDetalhe}</div></div><div className="bg-[#00a651] text-white rounded-[12px] p-3 text-[11px] min-w-[130px]"><div className="font-bold text-[10px]">3 PAGINAS</div><div className="mt-1 leading-4">Pag 1: Dados<br/>Pag 2: Tarefas<br/>Pag 3: Anexos + Preview</div></div></div>
-        <div className="mt-4 flex gap-2 p-1 bg-white border rounded-[14px] w-fit"><button onClick={()=>setTab("encontrar")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="encontrar"?"bg-[#00a651] text-white":"text-zinc-600"}`}>{L.encontrar}</button><button onClick={()=>setTab("contratos")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="contratos"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>{L.contratos}</button><button onClick={()=>setTab("meus")} className={`px-4 py-2 rounded-[10px] text-[13px] font-semibold ${tab==="meus"?"bg-[#00a651] text-white":"text-zinc-600"}`}>{L.meus}</button></div>
-        {tab==="contratos" && (
-          <div className="mt-4 bg-white border-2 rounded-[14px] p-1.5 flex gap-1.5 w-fit">
-            {[1,2,3].map(p=>{
-              const ativo = pagina===p;
-              const label = p===1?L.pag1:p===2?L.pag2:L.pag3;
-              return <button key={p} onClick={()=>setPagina(p as Pagina)} className={`px-4 py-2.5 rounded-[10px] text-[12px] font-bold ${ativo?"bg-[#2563eb] text-white shadow":"bg-zinc-100 text-zinc-600 hover:bg-zinc-200"}`}>{p}. {label} {p===3 && anexos.length>0?`(${anexos.length})`:""}</button>
-            })}
-          </div>
-        )}
+        <div className="bg-[#1a1a1a] text-white rounded-[16px] p-4 flex justify-between">
+          <div><div className="text-[11px] font-bold text-white/60">3 PAGINAS SIMPLES</div><div className="text-[14px] font-bold mt-1">Mercado digital - Projeto da ESSE - Sem descricao livre duplicada</div></div>
+          <div className="bg-[#00a651] text-white rounded-[12px] p-3 text-[11px]"><div className="font-bold">3 PAGINAS</div><div>1: Dados<br/>2: Tarefas<br/>3: Anexos</div></div>
+        </div>
+        <div className="mt-4 flex gap-2 p-1 bg-white border rounded-[14px] w-fit">
+          {[1,2,3].map(p=> <button key={p} onClick={()=>setPagina(p as Pagina)} className={`px-4 py-2.5 rounded-[10px] text-[12px] font-bold ${pagina===p?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>{p}. {p===1?"Pagina 1 - Dados":p===2?"Pagina 2 - Tarefas":"Pagina 3 - Anexos"} {p===3&&anexos.length>0?`(${anexos.length})`:""}</button>)}
+        </div>
       </div>
-      <main className="mx-auto max-w-[1280px] px-4 py-6">
-        {tab==="encontrar" && (<div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4"><div className="bg-white border rounded-[16px] p-4 h-fit"><div className="font-semibold text-[13px]">{L.filtros}</div><div className="mt-4 flex flex-wrap gap-1.5">{[L.todas,"Domestico","Construcao","Servicos","Consultoria","Outros"].map(cat=>{const active=filtroCat===cat || (cat===L.todas && filtroCat==="Todas"); return <button key={cat} onClick={()=>setFiltroCat(cat===L.todas?"Todas":cat)} className={`px-3 py-1.5 rounded-full text-[11px] border ${active?"bg-[#00a651] text-white":"bg-white"}`}>{cat}</button>})}</div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">{profissionaisFiltrados.map(p=>(<div key={p.nome} className="bg-white border rounded-[16px] p-4"><div className="flex items-start gap-3"><div className="w-10 h-10 rounded-full bg-[#00a651] text-white grid place-items-center font-bold">{p.ini}</div><div><div className="font-semibold text-[13px]">{p.nome}</div><div className="text-[11px] text-zinc-500">{p.func} - {p.local}</div></div></div><div className="mt-3 grid grid-cols-2 gap-2"><button className="h-[36px] rounded-[10px] border text-[12px]">{L.verPerfil}</button><button onClick={()=>{setTab("contratos"); setPagina(1);}} className="h-[36px] rounded-[10px] bg-[#00a651] text-white text-[12px]">{L.contactar}</button></div></div>))}</div></div>)}
-        {tab==="contratos" && (
-          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr_340px] gap-4">
-            <div className="bg-white border rounded-[16px] p-3 h-fit sticky top-[100px]"><div className="font-semibold text-[13px]">{L.bibliotecaTitulo}</div><div className="text-[10px] text-zinc-500 mt-1">{L.contratoFormula}</div><div className="mt-3 space-y-2">{(Object.keys(MODELOS) as TipoContrato[]).map(t=>{const a=tipo===t; return <button key={t} onClick={()=>{setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,3)); setGerado(false); setPagina(1);}} className={`w-full text-left p-3 rounded-[12px] border flex gap-2.5 ${a?"bg-emerald-50 border-emerald-300":"bg-white"}`}><div className="w-7 h-7 rounded-full bg-white border grid place-items-center text-[11px] font-bold">{t.slice(0,2).toUpperCase()}</div><div className="flex-1"><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500">{MODELOS[t].desc}</div></div></button>})}</div></div>
-            <div className="bg-white border rounded-[16px] p-5">
-              <div className="flex items-center justify-between"><h3 className="font-bold text-[14px]">{modelo.titulo}</h3><span className="px-2 py-0.5 rounded-full bg-blue-50 border text-[10px] font-bold">Pagina {pagina}/3</span></div>
-              <div className="mt-5">
-                {pagina===1 && (
-                  <div className="space-y-5">
-                    <div className="bg-blue-50 border-2 rounded-[12px] p-4"><div className="font-bold text-[13px] text-blue-800">PAGINA 1 - DADOS DAS PARTES</div>
-                      <div className="mt-3"><div className="font-semibold text-[11px] uppercase text-blue-700">{L.dadosContratante}</div><div className="mt-2 grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Nome / Empresa *</label><input value={form.empregadorNome} onChange={e=>setForm({...form, empregadorNome:e.target.value})} placeholder="Michaque Moises" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">BI / NUIT *</label><input value={form.empregadorBI} onChange={e=>setForm({...form, empregadorBI:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Contacto</label><input value={form.empregadorTel} onChange={e=>setForm({...form, empregadorTel:e.target.value})} placeholder="84xxxxxxx" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Local / Bairro</label><input value={form.empregadorBairro} onChange={e=>setForm({...form, empregadorBairro:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div></div></div>
-                      <div className="mt-4"><div className="font-semibold text-[11px] uppercase text-emerald-700">{L.dadosContratado}</div><div className="mt-2 grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Nome Trabalhador *</label><input value={form.trabalhadorNome} onChange={e=>setForm({...form, trabalhadorNome:e.target.value})} placeholder="Maria Langa" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">BI / NUIT</label><input value={form.trabalhadorBI} onChange={e=>setForm({...form, trabalhadorBI:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Contacto</label><input value={form.trabalhadorTel} onChange={e=>setForm({...form, trabalhadorTel:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Funcao</label><input value={tipo} disabled className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 bg-zinc-100 text-[12px] font-bold" /></div></div></div>
-                    </div>
-                    <div className="flex justify-end"><button onClick={()=>setPagina(2)} className="px-8 py-3 rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px]">Proximo -> Pagina 2 - Tarefas</button></div>
-                  </div>
-                )}
-                {pagina===2 && (
-                  <div className="space-y-5">
-                    <div className="bg-white border-2 rounded-[12px] p-4"><div className="font-bold text-[13px]">PAGINA 2 - CONDICOES, TAREFAS E CLAUSULA LOUCA</div>
-                      <div className="mt-4 grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Valor Total MZN *</label><input value={form.valorTotal} onChange={e=>setForm({...form, valorTotal:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 font-bold" /></div><div><label className="text-[10px] font-bold uppercase">Prazo dias</label><input value={form.prazo} onChange={e=>setForm({...form, prazo:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div className="col-span-2"><label className="text-[10px] font-bold uppercase">Local Obra / Servico</label><input value={form.localObra} onChange={e=>setForm({...form, localObra:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div>
-                      <div className="mt-5"><div className="font-semibold text-[12px]">Checklist de Tarefas - {tipo}</div>{tipo==="Secretario/a Domestico/a" && (<div className="mt-2 p-2.5 rounded-[10px] bg-amber-50 border-2 border-amber-200 text-[11px]"><b>Clausula Louca atualizada:</b> Empregada zela pela louca, avisa quebras, nao paga quebra acidental. So paga se negligencia grave comprovada, max 25% salario parcelado.</div>)}<div className="mt-3 flex flex-wrap gap-2">{modelo.checklist.map(t=>{const ativo=tarefasSel.includes(t); return <button key={t} onClick={()=>setTarefasSel(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t])} className={`px-3 py-2 rounded-full text-[11px] border text-left ${ativo?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-300"}`}>{t}</button>})}</div><div className="mt-4"><label className="text-[10px] font-bold uppercase">{L.acrescentar} - Unica descricao agora</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: Instalar 15 portas, aplicar verniz, seguir projeto anexo..." className="mt-1 w-full min-h-[80px] p-3 rounded-[10px] border-2 text-[12px]" /></div><div className="mt-2 text-[11px] text-zinc-600">{todasTarefas.length} tarefas selecionadas</div></div>
-                    </div>
-                    <div className="flex justify-between"><button onClick={()=>setPagina(1)} className="px-6 py-3 rounded-[12px] border-2 font-bold text-[13px]"><- Pagina 1</button><button onClick={()=>setPagina(3)} className="px-8 py-3 rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px]">Proximo -> Pagina 3 - Anexos</button></div>
-                  </div>
-                )}
-                {pagina===3 && (
-                  <div className="space-y-5">
-                    <div className="bg-white border-2 border-dashed border-blue-400 rounded-[16px] p-5">
-                      <div className="font-bold text-[14px]">PAGINA 3 - {L.anexarTitulo}</div><div className="text-[11px] text-zinc-600 mt-1">{L.anexarDesc}</div>
-                      <label className="mt-4 w-full min-h-[130px] border-2 border-dashed border-zinc-300 rounded-[12px] grid place-items-center p-6 cursor-pointer hover:bg-blue-50 hover:border-[#2563eb] transition"><input type="file" multiple accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={e=>handleFiles(e.target.files)} /><div className="text-center"><div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 grid place-items-center mx-auto text-[22px]">+</div><div className="font-bold text-[13px] mt-2">{L.arraste}</div><div className="text-[10px] text-zinc-500 mt-1">{L.tiposAceitos}</div></div></label>
-                      <div className="mt-4"><div className="font-bold text-[12px]">{L.anexosAdicionados} ({anexos.length}/10)</div>{anexos.length===0 ? (<div className="mt-2 p-4 rounded-[10px] bg-zinc-50 border text-[11px] text-zinc-500"><b>Exemplos por tipo:</b><br/>- Pedreiro: foto da casa, projeto, planta baixa<br/>- Carpinteiro: foto de porta modelo desejada<br/>- Pintor: foto da cor/parede<br/>- Eletricista: esquema eletrico<br/>- Consultoria: briefing, docs empresa</div>) : (<div className="mt-2 grid grid-cols-2 gap-2">{anexos.map(a=>(<div key={a.id} className="border-2 rounded-[10px] p-2 flex gap-2 items-center bg-white"><div className="w-12 h-12 rounded-[8px] bg-blue-100 grid place-items-center text-[9px] font-bold">{a.url ? <img src={a.url} alt={a.nome} className="w-full h-full object-cover rounded-[8px]" /> : a.nome.split(".").pop()?.toUpperCase()}</div><div className="flex-1 min-w-0"><div className="text-[11px] font-semibold truncate">{a.nome}</div><div className="text-[10px] text-zinc-500">{a.tamanho}</div></div><button onClick={()=>removerAnexo(a.id)} className="w-7 h-7 rounded-full bg-red-50 text-red-600 grid place-items-center">x</button></div>))}</div>)}</div>
-                    </div>
-                    {/* DOIS BOTOES LADO A LADO - FREE E PAGO */}
-                    <div className="bg-zinc-50 border-2 rounded-[12px] p-4">
-                      <div className="font-bold text-[13px]">Escolha como gerar - 2 formas</div><div className="text-[11px] text-zinc-600 mt-1">Lado direito FREE para testar, lado azul PAGO 200MT fixo futuro</div>
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <button disabled={gerando} onClick={compartilharFree} className="h-[56px] rounded-[12px] bg-[#00a651] text-white font-bold text-[14px] flex flex-col items-center justify-center leading-tight"><span>ðŸŸ¢ {L.btnFree}</span><span className="text-[10px] font-normal opacity-90">Para testar com amigos agora</span></button>
-                        <button onClick={()=>setShowPagamento(true)} className="h-[56px] rounded-[12px] bg-[#2563eb] text-white font-bold text-[14px] flex flex-col items-center justify-center leading-tight"><span>ðŸ”µ {L.btnPago}</span><span className="text-[10px] font-normal opacity-90">M-Pesa e-Mola mKesh Banco - 200MT</span></button>
-                      </div>
-                      {gerado && (<div className="mt-3 p-2 rounded-[8px] bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 font-semibold">PDF gerado! {anexos.length} anexos vao junto via WhatsApp</div>)}
-                    </div>
-                    <div className="flex justify-start"><button onClick={()=>setPagina(2)} className="px-6 py-3 rounded-[12px] border-2 font-bold text-[13px]"><- Voltar Pagina 2</button></div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="bg-white border rounded-[16px] p-4 h-fit sticky top-[140px]"><div className="flex items-center justify-between"><span className="text-[11px] font-bold uppercase">Preview - Pag {pagina}/3 - Sempre Aberto</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border text-[10px] font-bold">{anexos.length} anexos</span></div><div className="mt-3 h-[640px] overflow-auto bg-[#f8fafc] border rounded-[10px] p-3 text-[10px] font-mono leading-relaxed">{modelo.titulo}<br/>Tipo: {tipo.toUpperCase()}<br/><br/>PAGINA 1 - PARTES:<br/>Contratante: {form.empregadorNome} BI {form.empregadorBI}<br/>Contratado: {form.trabalhadorNome} BI {form.trabalhadorBI}<br/><br/>PAGINA 2 - CONDICOES E TAREFAS:<br/>Valor: {form.valorTotal} MZN | Prazo: {form.prazo} dias | Local: {form.localObra}<br/><br/>{todasTarefas.map((t,i)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>{tipo==="Secretario/a Domestico/a" && (<>CLAUSULA LOUCA: Zela pela louca, nao paga quebra acidental salvo negligencia grave 25% max.<br/><br/></>)}PAGINA 3 - ANEXOS ({anexos.length}):<br/>{anexos.length===0?"Nenhum anexo - cliente pode anexar foto/projeto":anexos.map((a,i)=>`${i+1}. ${a.nome} (${a.tamanho})`).join("<br/>")}<br/><br/>3 PAGINAS - {new Date().toLocaleDateString()}</div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={()=>gerarPDF()} className="h-[38px] rounded-[10px] bg-zinc-800 text-white text-[11px] font-semibold">Ver PDF</button><button onClick={compartilharFree} className="h-[38px] rounded-[10px] bg-[#00a651] text-white text-[11px] font-semibold">WhatsApp FREE</button></div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={compartilharFree} className="h-[42px] rounded-[10px] bg-[#00a651] text-white font-bold text-[12px]">FREE Gratis</button><button onClick={()=>setShowPagamento(true)} className="h-[42px] rounded-[10px] bg-[#2563eb] text-white font-bold text-[12px]">PAGO 200MT</button></div></div>
+      <main className="mx-auto max-w-[1280px] px-4 py-6 grid grid-cols-1 lg:grid-cols-[300px_1fr_340px] gap-4">
+        <div className="bg-white border rounded-[16px] p-3 h-fit">
+          <div className="font-bold text-[13px]">Biblioteca - 3 Paginas</div>
+          <div className="mt-3 space-y-2">{(Object.keys(MODELOS) as TipoContrato[]).map(t=>{const a=tipo===t; return <button key={t} onClick={()=>{setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,3));}} className={`w-full text-left p-3 rounded-[12px] border ${a?"bg-emerald-50 border-emerald-300":"bg-white"}`}><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500">{MODELOS[t].desc}</div></button>})}</div>
+        </div>
+        <div className="bg-white border rounded-[16px] p-5">
+          <h3 className="font-bold text-[14px]">{MODELOS[tipo].titulo} - Pagina {pagina}/3</h3>
+          {pagina===1 && (<div className="mt-4 space-y-3"><div><label className="text-[10px] font-bold uppercase">Contratante Nome *</label><input value={form.empNome} onChange={e=>setForm({...form,empNome:e.target.value})} className="w-full h-[42px] px-3 border-2 rounded-[10px]" /></div><div><label className="text-[10px] font-bold uppercase">Contratante BI *</label><input value={form.empBI} onChange={e=>setForm({...form,empBI:e.target.value})} className="w-full h-[42px] px-3 border-2 rounded-[10px]" /></div><div><label className="text-[10px] font-bold uppercase">Contratado Nome *</label><input value={form.trabNome} onChange={e=>setForm({...form,trabNome:e.target.value})} className="w-full h-[42px] px-3 border-2 rounded-[10px]" /></div><div className="grid grid-cols-2 gap-2"><div><label className="text-[10px] font-bold uppercase">Valor MZN</label><input value={form.valor} onChange={e=>setForm({...form,valor:e.target.value})} className="w-full h-[42px] px-3 border-2 rounded-[10px] font-bold" /></div><div><label className="text-[10px] font-bold uppercase">Prazo dias</label><input value={form.prazo} onChange={e=>setForm({...form,prazo:e.target.value})} className="w-full h-[42px] px-3 border-2 rounded-[10px]" /></div></div><button onClick={()=>setPagina(2)} className="w-full mt-4 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">Proximo Pagina 2</button></div>)}
+          {pagina===2 && (<div className="mt-4 space-y-3"><div className="flex flex-wrap gap-2">{MODELOS[tipo].checklist.map(t=>{const ativo=tarefasSel.includes(t); return <button key={t} onClick={()=>setTarefasSel(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t])} className={`px-3 py-2 rounded-full text-[11px] border ${ativo?"bg-[#00a651] text-white":"bg-white"}`}>{t}</button>})}</div><div><label className="text-[10px] font-bold uppercase">Acrescentar tarefas - unico campo</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: seguir projeto anexo" className="w-full min-h-[80px] p-3 border-2 rounded-[10px]" /></div><div className="flex gap-2"><button onClick={()=>setPagina(1)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">Voltar</button><button onClick={()=>setPagina(3)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">Proximo Pagina 3 - Anexos</button></div></div>)}
+          {pagina===3 && (<div className="mt-4 space-y-4"><div className="border-2 border-dashed border-blue-400 rounded-[16px] p-5"><div className="font-bold text-[13px]">Pagina 3 - Anexar Fotos, Projeto ou Documento</div><div className="text-[11px] text-zinc-600 mt-1">Pedreiro: foto obra/projeto. Carpinteiro: foto porta modelo. Este campo substitui Descricao livre removida.</div><label className="mt-4 w-full min-h-[120px] border-2 border-dashed rounded-[12px] grid place-items-center p-6 cursor-pointer hover:bg-blue-50"><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e=>handleFiles(e.target.files)} /><div className="text-center"><div className="w-10 h-10 bg-blue-100 rounded-full grid place-items-center mx-auto">+</div><div className="font-bold text-[12px] mt-2">Clique para anexar</div><div className="text-[10px] text-zinc-500">JPG, PNG, PDF max 5MB</div></div></label><div className="mt-3">{anexos.map(a=> <div key={a.id} className="flex gap-2 items-center border p-2 rounded-[8px] mt-1"><div className="w-10 h-10 bg-blue-100 rounded-[8px] overflow-hidden">{a.url && <img src={a.url} className="w-full h-full object-cover" />}</div><div className="flex-1"><div className="text-[11px] font-bold truncate">{a.nome}</div><div className="text-[10px] text-zinc-500">{a.tamanho}</div></div><button onClick={()=>setAnexos(p=>p.filter(x=>x.id!==a.id))} className="w-6 h-6 bg-red-50 text-red-600 rounded-full">x</button></div>)}</div></div><div className="bg-zinc-50 border-2 rounded-[12px] p-4"><div className="font-bold text-[13px]">2 Formas de Gerar</div><div className="mt-3 grid grid-cols-2 gap-3"><button onClick={gerarPDF} className="h-[56px] rounded-[12px] bg-[#00a651] text-white font-bold text-[13px]">FREE Gratis - Direito - Para testar agora</button><button onClick={()=>setShowPag(true)} className="h-[56px] rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px]">PAGO 200MT - Azul - Vai para tuas contas</button></div></div><button onClick={()=>setPagina(2)} className="w-full h-[44px] border-2 rounded-[10px] font-bold">Voltar Pagina 2</button></div>)}
+        </div>
+        <div className="bg-white border rounded-[16px] p-4 h-fit sticky top-[90px]">
+          <div className="font-bold text-[11px] uppercase">Preview - Pag {pagina}/3 - Sempre Aberto</div>
+          <div className="mt-3 h-[500px] overflow-auto bg-[#f8fafc] border rounded-[10px] p-3 text-[10px] font-mono">
+            {MODELOS[tipo].titulo}<br/>{tipo}<br/><br/>Contratante: {form.empNome}<br/>Contratado: {form.trabNome}<br/>Valor: {form.valor} MZN<br/><br/>{todas.map((t,i)=> (i+1)+". "+t).join("<br/>")}<br/><br/>Anexos: {anexos.length} - {anexos.map(a=>a.nome).join(", ")}<br/><br/>ESSE - NUIT 401 866 876 - Xai-Xai<br/>Gerado por Contrata.MZ no meio do documento
           </div>
-        )}
-        {tab==="meus" && (<div className="bg-white border rounded-[16px] p-6"><div className="font-bold text-[16px]">{L.meus} - {L.gestao} - 3 Paginas</div><div className="mt-2 text-[11px] text-zinc-500">Agora com sistema de 3 paginas e anexos no lugar de descricao livre duplicada</div></div>)}
+          <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={gerarPDF} className="h-[40px] bg-[#00a651] text-white rounded-[10px] font-bold text-[11px]">FREE Gratis</button><button onClick={()=>setShowPag(true)} className="h-[40px] bg-[#2563eb] text-white rounded-[10px] font-bold text-[11px]">PAGO 200MT</button></div>
+          <div className="mt-3 flex items-center gap-2"><img src={ESSE_LOGO} className="h-8" /><span className="text-[8px] text-zinc-500">ESSE - ENERGY SOLUTIONS<br/>NUIT 401 866 876<br/>Xai-Xai - Mocambique</span></div>
+        </div>
       </main>
-      {showPagamento && (
+      {showPag && (
         <div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4">
-          <div className="bg-white rounded-[16px] w-full max-w-[420px] p-5 shadow-2xl">
-            <div className="flex items-center justify-between"><div><div className="font-bold text-[15px]">Pagamento 200MT - Contas do Dono</div><div className="text-[11px] text-zinc-600">Valor unico qualquer contrato - vai para tuas contas</div></div><button onClick={()=>setShowPagamento(false)} className="w-8 h-8 rounded-full bg-zinc-100 grid place-items-center">x</button></div>
-            <div className="mt-3 p-3 rounded-[10px] bg-blue-50 border border-blue-200 text-[11px]"><b>Contas internas (nao visiveis no site publico):</b><br/>M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Standard Bank 000301170814421100321<br/>Cliente escolhe operadora e recebe popup PIN no celular.</div>
-            <div className="mt-4 space-y-2">
-              {(Object.keys(PAGAMENTOS_OWNER) as Array<keyof typeof PAGAMENTOS_OWNER>).map(key=>{
-                const p = PAGAMENTOS_OWNER[key]; const active = metodoPag===key;
-                return (<button key={key} onClick={()=>setMetodoPag(key)} className={`w-full text-left p-3 rounded-[12px] border-2 flex items-center gap-3 ${active?"border-[#00a651] bg-emerald-50":"border-zinc-200 bg-white"}`}><div className={`w-10 h-10 rounded-[10px] ${p.cor} text-white grid place-items-center font-bold text-[12px]`}>{p.display.slice(0,2).toUpperCase()}</div><div className="flex-1"><div className="font-semibold text-[13px]">{p.display}</div><div className="text-[10px] text-zinc-500">{key==="banco"?`Standard Bank **** ${p.nib.slice(-4)}`:"Recebera popup PIN no celular"}</div></div><div className={`w-5 h-5 rounded-full border-2 grid place-items-center ${active?"bg-[#00a651] border-[#00a651] text-white":"border-zinc-300"}`}>{active?"âœ“":""}</div></button>)
-              })}
-            </div>
-            {metodoPag!=="banco" ? (<div className="mt-4"><label className="text-[11px] font-bold uppercase">Seu Numero {PAGAMENTOS_OWNER[metodoPag].display} (para receber popup PIN)</label><input value={telefonePag} onChange={e=>setTelefonePag(e.target.value)} placeholder="84xxxxxxx" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[14px]" /></div>) : (<div className="mt-4 p-3 rounded-[10px] bg-blue-50 border text-[11px]">Banco: Standard Bank<br/>NIB: {PAGAMENTOS_OWNER.banco.nib}<br/>Valor: 200MT fixo</div>)}
-            <div className="mt-5 grid grid-cols-2 gap-2"><button onClick={()=>setShowPagamento(false)} className="h-[44px] rounded-[10px] border text-[13px] font-semibold">Usar FREE Gratis</button><button disabled={processandoPag} onClick={confirmarPagamento200} className="h-[44px] rounded-[10px] bg-[#2563eb] text-white font-bold text-[13px]">{processandoPag?"Processando...":`Pagar 200MT - ${PAGAMENTOS_OWNER[metodoPag].display}`}</button></div>
+          <div className="bg-white rounded-[16px] w-full max-w-[400px] p-5">
+            <div className="font-bold">Pagamento 200MT - Contas ESSE</div>
+            <div className="text-[11px] text-zinc-600 mt-1">M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Standard Bank 000301170814421100321</div>
+            <div className="mt-4 space-y-2">{Object.entries(PAGAMENTOS).map(([k,v]:any)=>{const ativo=metodo===k; return <button key={k} onClick={()=>setMetodo(k as any)} className={`w-full text-left p-3 rounded-[12px] border-2 flex items-center gap-2 ${ativo?"border-emerald-500 bg-emerald-50":"bg-white"}`}><div className={`w-8 h-8 rounded-[8px] ${v.c} text-white grid place-items-center font-bold text-[10px]`}>{v.d.slice(0,2)}</div><div><div className="font-bold text-[12px]">{v.d}</div><div className="text-[10px] text-zinc-500">{v.n}</div></div></button>})}</div>
+            {metodo!=="banco" && <div className="mt-3"><label className="text-[10px] font-bold uppercase">Seu numero {(PAGAMENTOS as any)[metodo].d}</label><input value={telPag} onChange={e=>setTelPag(e.target.value)} placeholder="84xxxxxxx" className="w-full h-[42px] px-3 border-2 rounded-[10px] mt-1" /></div>}
+            <div className="mt-4 grid grid-cols-2 gap-2"><button onClick={()=>setShowPag(false)} className="h-[44px] border rounded-[10px] font-bold">FREE</button><button disabled={processando} onClick={pagar} className="h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">{processando?"Processando...":"Pagar 200MT"}</button></div>
           </div>
         </div>
       )}
-      {showPinPopup && (
+      {showPin && (
         <div className="fixed inset-0 z-[60] bg-black/60 grid place-items-center p-4">
-          <div className="bg-white rounded-[16px] w-full max-w-[320px] p-5 text-center shadow-2xl">
-            <div className={`w-12 h-12 rounded-full ${PAGAMENTOS_OWNER[metodoPag].cor} text-white grid place-items-center mx-auto font-bold`}>{PAGAMENTOS_OWNER[metodoPag].display.slice(0,1)}</div>
-            <div className="font-bold text-[14px] mt-3">Pedido Enviado para {telefonePag}</div>
-            <div className="text-[11px] text-zinc-600 mt-2">Recebeu popup no celular {PAGAMENTOS_OWNER[metodoPag].display}. Digite PIN para confirmar 200MT para conta {PAGAMENTOS_OWNER[metodoPag].numero}</div>
-            <div className="mt-4 flex justify-center gap-1">{[1,2,3,4].map(i=><div key={i} className="w-8 h-8 rounded-[8px] bg-zinc-100 border grid place-items-center font-bold">*</div>)}</div>
-            <div className="mt-3 text-[10px] text-zinc-500">Aguardando PIN...</div>
+          <div className="bg-white rounded-[16px] w-full max-w-[300px] p-5 text-center">
+            <div className="font-bold text-[14px]">Pedido Enviado para {telPag}</div>
+            <div className="text-[11px] text-zinc-600 mt-2">Popup no celular. Digite PIN para pagar 200MT para conta {(PAGAMENTOS as any)[metodo].n}</div>
           </div>
         </div>
       )}
+      <footer className="mt-10 bg-[#0f172a] text-white py-6"><div className="mx-auto max-w-[1280px] px-4 flex justify-between items-center"><div className="flex items-center gap-3"><img src={ESSE_LOGO} className="h-10 bg-white rounded-[8px] p-1" /><div><div className="font-bold text-[12px]">ESSE - ENERGY SOLUTIONS & SERVICES</div><div className="text-[10px] text-white/60">NUIT 401 866 876 - Xai-Xai - Dono do projeto Contrata.MZ</div></div></div></div></footer>
     </div>
   );
 }

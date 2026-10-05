@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { supabase } from "./supabaseClient";
 
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/Ã§/g,"c").replace(/Ã‡/g,"C");
 
@@ -27,20 +26,28 @@ const FORMAS_PAG = [
 ];
 
 const CONTRATOS = [
-  { id:"domestico", nome:"Secretario/a Domestico/a", cat:"Domestico", desc:"Limpeza, arrumacao, cozinha" },
-  { id:"pedreiro", nome:"Pedreiro", cat:"Construcao", desc:"Casa com pa, alvenaria, reboco" },
+  { id:"domestico", nome:"Secretario/a Domestico/a", cat:"Domestico", desc:"Formalizacao de trabalho domestico completo" },
+  { id:"motorista", nome:"Motorista Particular", cat:"Domestico", desc:"Motorista particular e familiar" },
+  { id:"pedreiro", nome:"Pedreiro", cat:"Construcao", desc:"Alvenaria, reboco, fundacoes" },
   { id:"carpinteiro", nome:"Carpinteiro", cat:"Construcao", desc:"Portas, janelas, mobiliario" },
-  { id:"serralheiro", nome:"Serralheiro", cat:"Construcao", desc:"Portoes, grades, soldar" },
+  { id:"serralheiro", nome:"Serralheiro", cat:"Construcao", desc:"Portoes, grades, estruturas" },
   { id:"eletricista", nome:"Eletricista", cat:"Construcao", desc:"Instalacoes eletricas" },
-  { id:"motorista", nome:"Motorista Particular", cat:"Domestico", desc:"Carro, Toyota, Maputo" },
-  { id:"pintor", nome:"Pintor", cat:"Construcao", desc:"Pintura interior e exterior" },
   { id:"canalizador", nome:"Canalizador", cat:"Construcao", desc:"Canalizacao e esgotos" },
+  { id:"pintor", nome:"Pintor", cat:"Construcao", desc:"Pintura interior e exterior" },
+];
+
+const PROFISSIONAIS = [
+  { ini:"ML", nome:"Maria Langa", func:"Secretario/a Domestico/a", local:"Maputo - Polana", nota:"4.9", trab:"23 trabalhos", anos:"8 anos", disp:"Disponivel", preco:"8.000 MZN" },
+  { ini:"JM", nome:"Joao Manuel", func:"Carpinteiro", local:"Matola - Machava", nota:"4.8", trab:"34 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"Sob consulta" },
+  { ini:"PM", nome:"Pedro Massingue", func:"Pedreiro", local:"Maputo - Zimpeto", nota:"4.7", trab:"56 trabalhos", anos:"12 anos", disp:"Ocupado", preco:"1.200 MZN/dia" },
+  { ini:"EC", nome:"Esperanca Cossa", func:"Eletricista", local:"Maputo - Sommershield", nota:"4.9", trab:"41 trabalhos", anos:"6 anos", disp:"Disponivel", preco:"1.500 MZN/dia" },
+  { ini:"AM", nome:"Ana Massingue", func:"Baba", local:"Maputo - Central", nota:"4.9", trab:"18 trabalhos", anos:"4 anos", disp:"Disponivel", preco:"6.000 MZN" },
+  { ini:"CT", nome:"Carlos Tivane", func:"Motorista", local:"Matola - Liberdade", nota:"4.8", trab:"29 trabalhos", anos:"7 anos", disp:"Disponivel", preco:"12.000 MZN" },
 ];
 
 export default function App(){
   const [tab,setTab]=useState<"encontrar"|"contratos"|"meus">("contratos");
   const [sel,setSel]=useState("carpinteiro");
-  const [step,setStep]=useState(1);
   const [gerando,setGerando]=useState(false);
   const [gerado,setGerado]=useState(false);
   const [checkServ,setCheckServ]=useState<string[]>(["Portas","Janelas"]);
@@ -57,14 +64,12 @@ export default function App(){
   });
 
   const tarefasArr = useMemo(()=> form.tarefas.split(",").map(t=>t.trim()).filter(Boolean),[form.tarefas]);
-
   const upd=(k:string,v:any)=> setForm((p:any)=>({...p,[k]:v}));
-  const toggleDia=(d:string)=> setForm(p=>({...p, diasSemana: p.diasSemana.includes(d) ? p.diasSemana.filter(x=>x!==d) : [...p.diasSemana,d]}));
   const toggleCheck=(s:string)=> setCheckServ(p=> p.includes(s) ? p.filter(x=>x!==s) : [...p,s]);
 
   const resetAll=()=>{
     setForm({ empregadorNome:"", empregadorBI:"", empregadorTel:"", empregadorBairro:"", trabalhadorNome:"", trabalhadorBI:"", trabalhadorTel:"", trabalhadorTipo:"Secretario/a Domestico/a", salario:"15000", dataInicio:new Date().toISOString().split("T")[0], horaEntrada:"07:00", horaSaida:"16:00", diasSemana:["Segunda","Terca","Quarta","Quinta","Sexta","Sabado"], tarefas:JOB_TASKS["Secretario/a Domestico/a"].join(", "), alimentacao:"Sim - incluida (almoco)", alojamento:"Nao - externo", formaPag:"mpesa", qtdPortas:"10", qtdJanelas:"14", qtdArmarios:"2", material:"Madeira", quemFornece:"Contratado", valorTotal:"45000", prazo:"25", localObra:"Matola, Machava" });
-    setStep(1); setGerado(false); window.scrollTo({top:0,behavior:"smooth"});
+    setGerado(false); window.scrollTo({top:0,behavior:"smooth"});
   };
 
   const gerarPDF=async()=>{
@@ -90,30 +95,24 @@ export default function App(){
       add(`EMPREGADOR: ${form.empregadorNome}, BI ${form.empregadorBI}, Tel ${form.empregadorTel}, ${form.empregadorBairro}.`,10); y+=1;
       add(`TRABALHADOR: ${form.trabalhadorNome}, BI ${form.trabalhadorBI}, Tel ${form.trabalhadorTel}, funcao ${form.trabalhadorTipo}.`,10); y+=5;
       add("2. CONDICOES",11,true); y+=1;
-      if(sel==="carpinteiro"){ add(`Servicos: ${checkServ.join(", ")} - Portas ${form.qtdPortas}, Janelas ${form.qtdJanelas}, Armarios ${form.qtdArmarios}`,10); add(`Material: ${form.material} - Fornecimento: ${form.quemFornece}`,10); add(`Valor: ${form.valorTotal} MZN - Prazo: ${form.prazo} dias - Local: ${form.localObra}`,10); }
-      else{ add(`Salario: ${form.salario} MT - Horario: ${form.horaEntrada} as ${form.horaSaida} - Dias: ${form.diasSemana.join(", ")}`,10); }
-      y+=5; add("3. TAREFAS",11,true); y+=1; tarefasArr.forEach((t,i)=>{ add(`${i+1}. ${t}`,10,false,4); y+=0.5; }); y+=5;
+      add(`Servicos: ${checkServ.join(", ")} - Portas ${form.qtdPortas}, Janelas ${form.qtdJanelas}, Armarios ${form.qtdArmarios}`,10);
+      add(`Material: ${form.material} - Fornecimento: ${form.quemFornece}`,10);
+      add(`Valor: ${form.valorTotal} MZN - Prazo: ${form.prazo} dias - Local: ${form.localObra}`,10); y+=5;
+      add("3. TAREFAS",11,true); y+=1; tarefasArr.forEach((t,i)=>{ add(`${i+1}. ${t}`,10,false,4); y+=0.5; }); y+=5;
       add("4. CLAUSULAS",11,true); y+=1;
       const taxa=Math.round(Number(form.valorTotal||form.salario)*0.05);
-      const cls=[`CLAUSULA 1 - Objecto: Prestacao de servicos como ${form.trabalhadorTipo}.`,`CLAUSULA 2 - Local: ${form.localObra || form.empregadorBairro}.`,`CLAUSULA 3 - Horario: ${form.horaEntrada} as ${form.horaSaida}.`,`CLAUSULA 4 - Salario/Valor: ${form.valorTotal||form.salario} MZN via ${FORMAS_PAG.find(f=>f.id===form.formaPag)?.nome} ate dia 05.`,`CLAUSULA 5 - Alimentacao/Alojamento: ${form.alimentacao} / ${form.alojamento}.`,`CLAUSULA 6 - Deveres Trabalhador: Cumprir horario, zelo.`,`CLAUSULA 7 - Deveres Empregador: Pagar em dia.`,`CLAUSULA 8 - Ferias: 1 dia/mes.`,`CLAUSULA 9 - Seguranca: Condicoes dignas.`,`CLAUSULA 10 - Confidencialidade.`,`CLAUSULA 11 - Rescisao: Aviso 15/30 dias.`,`CLAUSULA 12 - Foro: Lei 13/2023. Taxa 5% = ${taxa} MZN.`];
+      const cls=[`CLAUSULA 1 - Objecto: Prestacao de servicos como ${form.trabalhadorTipo}.`,`CLAUSULA 2 - Local: ${form.localObra || form.empregadorBairro}.`,`CLAUSULA 3 - Horario: ${form.horaEntrada} as ${form.horaSaida}.`,`CLAUSULA 4 - Valor: ${form.valorTotal||form.salario} MZN via ${FORMAS_PAG.find(f=>f.id===form.formaPag)?.nome}.`,`CLAUSULA 5 - Alimentacao/Alojamento: ${form.alimentacao}/${form.alojamento}.`,`CLAUSULA 6 - Deveres Trabalhador.`,`CLAUSULA 7 - Deveres Empregador.`,`CLAUSULA 8 - Ferias.`,`CLAUSULA 9 - Seguranca.`,`CLAUSULA 10 - Confidencialidade.`,`CLAUSULA 11 - Rescisao.`,`CLAUSULA 12 - Foro: Lei 13/2023. Taxa 5% = ${taxa} MZN.`];
       cls.forEach(c=>{check(18); add(c,9); y+=2;});
       y+=8; check(40); add("Assinaturas:",10,true); y+=10; const c1=M, c2=W/2+10; doc.line(c1,y+10,c1+55,y+10); doc.line(c2,y+10,c2+55,y+10); doc.setFontSize(8); doc.text(semAcento("Empregador"),c1,y+14); doc.text(semAcento(form.empregadorNome),c1,y+18); doc.text(semAcento("Trabalhador"),c2,y+14); doc.text(semAcento(form.trabalhadorNome),c2,y+18);
-
       const fn=`Contrato-${form.trabalhadorNome.replace(/\s+/g,"-").toUpperCase()}.pdf`;
       doc.save(fn); setGerado(true);
-
-      // Salva no Supabase se configurado
-      try{
-        await supabase.from("contracts").insert([{ employer_name: form.empregadorNome, employee_name: form.trabalhadorNome, salary: form.valorTotal||form.salario, tipo: form.trabalhadorTipo, data: form }]);
-      }catch{}
-
       return { blob:doc.output("blob"), fileName:fn };
     } finally{ setGerando(false); }
   };
 
   const compartilhar=async()=>{
     const forma=FORMAS_PAG.find(f=>f.id===form.formaPag);
-    const txt=`CONTRATO ${semAcento(form.trabalhadorTipo).toUpperCase()} - ${form.trabalhadorNome} - Valor ${form.valorTotal||form.salario} MZN - Inicio ${form.dataInicio} - Pag ${forma?.nome} ${forma?.num} - Tarefas: ${form.tarefas}`;
+    const txt=`CONTRATO ${semAcento(form.trabalhadorTipo).toUpperCase()} - ${form.trabalhadorNome} - Valor ${form.valorTotal||form.salario} MZN - Pag ${forma?.nome} ${forma?.num}`;
     try{
       const {blob,fileName}=await gerarPDF() as any;
       const file=new File([blob],fileName,{type:"application/pdf"});
@@ -127,7 +126,7 @@ export default function App(){
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-zinc-800">
-      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-zinc-200">
+      <header className="sticky top-0 z-20 bg-white border-b border-zinc-200">
         <div className="mx-auto max-w-[1280px] px-4 h-[64px] flex items-center justify-between">
           <div className="flex items-center gap-2.5"><div className="w-9 h-9 rounded-[12px] bg-[#00a651] text-white grid place-items-center font-bold">C</div><div><div className="font-bold text-[15px] leading-none">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500 tracking-widest">ENCONTRE. NEGOCIE. FORMALIZE.</div></div></div>
           <div className="hidden md:flex items-center gap-2"><span className="px-3 py-1.5 rounded-full bg-[#00a651]/10 text-[#00a651] border border-[#00a651]/20 text-[11px] font-semibold">MVP 10 contratos Maputo</span><span className="px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[11px]">Taxa 5% M-Pesa e-Mola Banco</span></div>
@@ -136,7 +135,7 @@ export default function App(){
 
       <div className="mx-auto max-w-[1280px] px-4 pt-4">
         <div className="bg-white border border-zinc-200 rounded-[16px] p-4 flex flex-col md:flex-row justify-between gap-3">
-          <div><div className="text-[11px] font-bold tracking-widest text-zinc-500">MODELO DE NEGOCIO TRUST FIRST</div><div className="text-[15px] font-semibold mt-1 max-w-[560px]">Mercado digital onde cada servico termina com contrato formal, seguro e enviado por WhatsApp.</div><div className="text-[12px] text-zinc-500 mt-1">Contratante paga 5% sobre valor. Ex: 20.000 MZN taxa 1.000 MZN.</div></div>
+          <div><div className="text-[11px] font-bold tracking-widest text-zinc-500">MODELO DE NEGOCIO TRUST FIRST</div><div className="text-[15px] font-semibold mt-1 max-w-[560px]">Mercado digital onde cada servico termina com contrato formal, seguro e enviado por WhatsApp.</div><div className="text-[12px] text-zinc-500 mt-1">Contratante paga 5% sobre valor. Ex: 20.000 MZN taxa 1.000 MZN. Plataforma gere notificacoes, pagamento e PDF.</div></div>
           <div className="flex gap-2"><div className="bg-white border border-zinc-200 rounded-[12px] p-3 text-[11px] min-w-[120px]"><div className="font-bold text-[10px]">ESTADOS</div><div className="mt-1 space-y-1"><div className="flex gap-1.5 items-center"><span className="w-2.5 h-2.5 rounded-full bg-amber-300"></span>Rascunho</div><div className="flex gap-1.5 items-center"><span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>Enviado</div><div className="flex gap-1.5 items-center"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>Activo</div></div></div><div className="bg-[#00a651] text-white rounded-[12px] p-3 text-[11px] min-w-[110px]"><div className="font-bold text-[10px] text-white/80">FLUXO</div><div className="mt-1 leading-4">Encontrar<br/>Negociar<br/>Contratar<br/>WhatsApp</div></div></div>
         </div>
 
@@ -148,10 +147,30 @@ export default function App(){
       </div>
 
       <main className="mx-auto max-w-[1280px] px-4 py-6 grid grid-cols-1 lg:grid-cols-[300px_1fr_340px] gap-4">
+        {tab==="encontrar" && (
+          <>
+            <div className="bg-white border border-zinc-200 rounded-[16px] p-4 h-fit">
+              <div className="font-semibold text-[13px]">Filtros Inteligentes</div>
+              <div className="mt-4 text-[11px] font-bold text-zinc-500 uppercase">Categoria</div>
+              <div className="mt-2 flex flex-wrap gap-1.5"><button className="px-3 py-1.5 rounded-full bg-[#00a651] text-white text-[11px]">Todas</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">Domestico</button><button className="px-3 py-1.5 rounded-full bg-white border text-[11px]">Construcao</button></div>
+              <div className="mt-6 text-[11px] text-zinc-500">Resultados: 6 profissionais</div>
+            </div>
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {PROFISSIONAIS.map(p=>(
+                <div key={p.nome} className="bg-white border border-zinc-200 rounded-[16px] p-4">
+                  <div className="flex items-start gap-3"><div className="w-10 h-10 rounded-full bg-[#00a651] text-white grid place-items-center font-bold text-[13px]">{p.ini}</div><div className="flex-1"><div className="flex items-center gap-2"><span className="font-semibold text-[13px]">{p.nome}</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px]">Verificado</span></div><div className="text-[11px] text-zinc-500">{p.func} - {p.local}</div><div className="text-[11px] mt-1">{p.nota} - {p.trab} - {p.anos}</div></div></div>
+                  <div className="mt-3 flex items-center justify-between"><span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px]">{p.disp}</span><span className="text-[11px]">{p.preco}</span></div>
+                  <div className="mt-3 grid grid-cols-2 gap-2"><button className="h-[36px] rounded-[10px] border bg-white text-[12px]">Ver Perfil</button><button className="h-[36px] rounded-[10px] bg-[#00a651] text-white text-[12px]">Contactar</button></div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
         {tab==="contratos" && (
           <>
             <div className="bg-white border border-zinc-200 rounded-[16px] p-3 h-fit">
-              <div className="flex items-center justify-between"><span className="font-semibold text-[13px]">Biblioteca 10 MVP</span><span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px]">ETAPA 2</span></div>
+              <div className="flex items-center justify-between"><span className="font-semibold text-[13px]">Biblioteca 10 MVP</span><span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border text-[10px]">ETAPA 2</span></div>
               <div className="text-[11px] text-zinc-500 mt-1">CONTRATO = MODELO + CAMPOS + REGRAS + CLAUSULAS</div>
               <div className="mt-3 space-y-2">
                 {CONTRATOS.map(c=>{
@@ -163,86 +182,31 @@ export default function App(){
 
             <div className="bg-white border border-zinc-200 rounded-[16px] p-5">
               <h3 className="font-semibold text-[14px]">Contrato de {CONTRATOS.find(c=>c.id===sel)?.nome} - Modelo Inteligente</h3>
-
-              {sel==="carpinteiro" ? (
-                <div className="mt-4 space-y-4">
-                  <div><div className="text-[11px] font-bold text-zinc-500 uppercase">Tipo de servico - Checklist</div><div className="mt-2 flex flex-wrap gap-1.5">{["Portas","Janelas","Armarios","Cozinha","Mobiliario","Outro"].map(s=>{const a=checkServ.includes(s); return <button key={s} onClick={()=>toggleCheck(s)} className={`px-3 py-1.5 rounded-full text-[11px] font-medium border ${a?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-200"}`}>{s}</button>})}</div></div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Portas</label><input value={form.qtdPortas} onChange={e=>upd("qtdPortas",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[13px]" /></div>
-                    <div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Janelas</label><input value={form.qtdJanelas} onChange={e=>upd("qtdJanelas",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[13px]" /></div>
-                    <div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Armarios</label><input value={form.qtdArmarios} onChange={e=>upd("qtdArmarios",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[13px]" /></div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div><label className="text-[10px] font-bold uppercase text-zinc-500">Material</label><select value={form.material} onChange={e=>upd("material",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[12px]"><option>Madeira</option><option>MDF</option><option>Ferragem</option></select></div>
-                    <div><label className="text-[10px] font-bold uppercase text-zinc-500">Quem fornece material?</label><select value={form.quemFornece} onChange={e=>upd("quemFornece",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[12px]"><option>Contratado</option><option>Contratante</option></select></div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div><label className="text-[10px] font-bold uppercase">Valor Total MZN</label><input value={form.valorTotal} onChange={e=>upd("valorTotal",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[13px] font-semibold" /></div>
-                    <div><label className="text-[10px] font-bold uppercase">Prazo dias</label><input value={form.prazo} onChange={e=>upd("prazo",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border border-zinc-200 bg-white text-[13px]" /></div>
-                  </div>
-
-                  <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-3 text-[11px] text-blue-800">Regra inteligente: Portas + Janelas superior a 10 sugere prazo minimo 20 dias. Taxa plataforma 5% = {Math.round(Number(form.valorTotal||0)*0.05).toLocaleString()} MZN.</div>
-
-                  <div className="bg-white border border-zinc-200 rounded-[12px] p-3">
-                    <div className="text-[11px] font-semibold">Forma de pagamento - 4 opcoes</div>
-                    <div className="mt-2 grid grid-cols-2 gap-2">
-                      {FORMAS_PAG.map(f=>{
-                        const a=form.formaPag===f.id;
-                        return <button key={f.id} onClick={()=>upd("formaPag",f.id)} className={`text-left p-2.5 rounded-[10px] border ${a?"border-[#00a651] bg-emerald-50 ring-2 ring-emerald-100":"bg-zinc-50 border-zinc-200"}`}><div className="text-[11px] font-semibold">{f.nome}</div><div className="text-[10px] text-zinc-600">{f.desc}</div><div className="text-[10px] font-mono mt-1">{f.num}</div></button>
-                      })}
-                    </div>
-                  </div>
-
-                  {/* SETA VOLTAR E REINICIAR */}
-                  <div className="flex gap-2">
-                    <button onClick={()=>setTab("encontrar")} className="h-[40px] w-[40px] rounded-[10px] bg-white border border-zinc-200 grid place-items-center font-bold">â†</button>
-                    <button disabled={gerando} onClick={compartilhar} className="flex-1 h-[40px] rounded-[10px] bg-[#00a651] text-white font-semibold text-[13px] disabled:opacity-50">{gerando?"Gerando...":"Gerar PDF + WhatsApp"}</button>
-                  </div>
-
-                  {gerado && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-[12px] p-3">
-                      <div className="text-[12px] font-semibold text-emerald-800">Contrato gerado com sucesso</div>
-                      <div className="mt-2 grid grid-cols-3 gap-2">
-                        <button onClick={()=>gerarPDF()} className="h-[36px] rounded-[8px] bg-white border border-zinc-200 text-[11px] font-medium">Baixar de novo</button>
-                        <button onClick={compartilhar} className="h-[36px] rounded-[8px] bg-[#00a651] text-white text-[11px] font-semibold">WhatsApp com PDF</button>
-                        <button onClick={resetAll} className="h-[36px] rounded-[8px] bg-[#2563eb] text-white text-[11px] font-semibold">Novo contrato</button>
-                      </div>
-                      <div className="mt-2 flex gap-2">
-                        <button onClick={()=>{setStep(1); window.scrollTo({top:0,behavior:"smooth"})}} className="flex-1 h-[32px] rounded-[8px] bg-white border border-zinc-200 text-[10px]">â† Voltar inicio</button>
-                        <button onClick={resetAll} className="flex-1 h-[32px] rounded-[8px] bg-white border border-zinc-200 text-[10px]">Reiniciar sem refresh</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="mt-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-[11px] font-medium">Nome empregador</label><input value={form.empregadorNome} onChange={e=>upd("empregadorNome",e.target.value)} className="mt-1 w-full h-[40px] px-3 rounded-[10px] border border-zinc-200" /></div>
-                    <div><label className="text-[11px] font-medium">Nome trabalhador</label><input value={form.trabalhadorNome} onChange={e=>upd("trabalhadorNome",e.target.value)} className="mt-1 w-full h-[40px] px-3 rounded-[10px] border border-zinc-200" /></div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={()=>setTab("encontrar")} className="h-[40px] w-[40px] rounded-[10px] bg-white border border-zinc-200 grid place-items-center">â†</button>
-                    <button onClick={compartilhar} className="flex-1 h-[40px] rounded-[10px] bg-[#2563eb] text-white font-semibold">Gerar contrato {CONTRATOS.find(c=>c.id===sel)?.nome}</button>
-                  </div>
-                </div>
-              )}
+              <div className="mt-4 space-y-4">
+                <div><div className="text-[11px] font-bold text-zinc-500 uppercase">Tipo de servico - Checklist (Etapa 3)</div><div className="mt-2 flex flex-wrap gap-1.5">{["Portas","Janelas","Armarios","Cozinha","Mobiliario","Outro"].map(s=>{const a=checkServ.includes(s); return <button key={s} onClick={()=>toggleCheck(s)} className={`px-3 py-1.5 rounded-full text-[11px] border ${a?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-200"}`}>{s}</button>})}</div></div>
+                <div className="grid grid-cols-3 gap-2"><div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Portas</label><input value={form.qtdPortas} onChange={e=>upd("qtdPortas",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Janelas</label><input value={form.qtdJanelas} onChange={e=>upd("qtdJanelas",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase text-zinc-500">Qtd Armarios</label><input value={form.qtdArmarios} onChange={e=>upd("qtdArmarios",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div></div>
+                <div className="grid grid-cols-2 gap-2"><div><label className="text-[10px] font-bold uppercase text-zinc-500">Material</label><select value={form.material} onChange={e=>upd("material",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]"><option>Madeira</option><option>MDF</option></select></div><div><label className="text-[10px] font-bold uppercase text-zinc-500">Quem fornece?</label><select value={form.quemFornece} onChange={e=>upd("quemFornece",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]"><option>Contratado</option><option>Contratante</option></select></div></div>
+                <div className="grid grid-cols-2 gap-2"><div><label className="text-[10px] font-bold uppercase">Valor Total MZN</label><input value={form.valorTotal} onChange={e=>upd("valorTotal",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px] font-semibold" /></div><div><label className="text-[10px] font-bold uppercase">Prazo dias</label><input value={form.prazo} onChange={e=>upd("prazo",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[13px]" /></div></div>
+                <div><label className="text-[10px] font-bold uppercase">Local da obra</label><input value={form.localObra} onChange={e=>upd("localObra",e.target.value)} className="mt-1 w-full h-[36px] px-3 rounded-[10px] border text-[12px]" /></div>
+                <div className="bg-blue-50 border border-blue-200 rounded-[10px] p-3 text-[11px] text-blue-800">Taxa plataforma 5% = {Math.round(Number(form.valorTotal||0)*0.05).toLocaleString()} MZN. Regra: Portas+Janelas maior que 10 sugere prazo minimo 20 dias.</div>
+                <div className="bg-white border border-zinc-200 rounded-[12px] p-3"><div className="text-[11px] font-semibold">Forma de pagamento - 4 opcoes (inclui banco)</div><div className="mt-2 grid grid-cols-2 gap-2">{FORMAS_PAG.map(f=>{const a=form.formaPag===f.id; return <button key={f.id} onClick={()=>upd("formaPag",f.id)} className={`text-left p-2.5 rounded-[10px] border ${a?"border-[#00a651] bg-emerald-50":"bg-zinc-50 border-zinc-200"}`}><div className="text-[11px] font-semibold">{f.nome}</div><div className="text-[10px]">{f.desc}</div><div className="text-[10px] font-mono mt-1">{f.num}</div></button>})}</div></div>
+                <div className="flex gap-2"><button onClick={()=>setTab("encontrar")} className="h-[40px] w-[40px] rounded-[10px] bg-white border border-zinc-200 grid place-items-center font-bold">â†</button><button disabled={gerando} onClick={compartilhar} className="flex-1 h-[40px] rounded-[10px] bg-[#00a651] text-white font-semibold text-[13px]">{gerando?"Gerando...":"Gerar PDF + WhatsApp"}</button></div>
+                {gerado && (<div className="bg-emerald-50 border border-emerald-200 rounded-[12px] p-3"><div className="text-[12px] font-semibold text-emerald-800">Contrato gerado</div><div className="mt-2 grid grid-cols-3 gap-2"><button onClick={()=>gerarPDF()} className="h-[36px] rounded-[8px] bg-white border text-[11px]">Baixar de novo</button><button onClick={compartilhar} className="h-[36px] rounded-[8px] bg-[#00a651] text-white text-[11px]">WhatsApp com PDF</button><button onClick={resetAll} className="h-[36px] rounded-[8px] bg-[#2563eb] text-white text-[11px]">Novo contrato</button></div><div className="mt-2 flex gap-2"><button onClick={resetAll} className="flex-1 h-[32px] rounded-[8px] bg-white border text-[10px]">â† Voltar inicio</button><button onClick={resetAll} className="flex-1 h-[32px] rounded-[8px] bg-white border text-[10px]">Reiniciar sem refresh</button></div></div>)}
+              </div>
             </div>
 
             <div className="bg-white border border-zinc-200 rounded-[16px] p-4 h-fit">
-              <div className="flex items-center justify-between"><span className="text-[11px] font-bold uppercase">Preview Dinamico</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">GERADO</span></div>
+              <div className="flex items-center justify-between"><span className="text-[11px] font-bold uppercase">Preview Dinamico - Contrato = Modelo + Campos</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">GERADO</span></div>
               <div className="mt-3 h-[520px] overflow-auto bg-[#f8fafc] border border-zinc-200 rounded-[10px] p-3 text-[10px] font-mono leading-relaxed">
-                CONTRATO DE PRESTACAO DE SERVICOS<br/>N CT-CARP-2026-002<br/><br/>
-                CLAUSULA 1 - OBJECTO: {checkServ.join(", ")} - {form.qtdPortas} portas, {form.qtdJanelas} janelas<br/><br/>
-                CLAUSULA 2 - QUANTIDADES<br/>Portas: {form.qtdPortas}<br/>Janelas: {form.qtdJanelas}<br/>Local: {form.localObra}<br/><br/>
-                CLAUSULA 3 - MATERIAL: {form.material} - {form.quemFornece}<br/><br/>
-                CLAUSULA 4 - VALOR: {form.valorTotal} MZN - Prazo {form.prazo} dias<br/><br/>
-                Taxa 5% = {Math.round(Number(form.valorTotal||0)*0.05)} MZN<br/><br/>
-                Pagamento: {FORMAS_PAG.find(f=>f.id===form.formaPag)?.nome} - {FORMAS_PAG.find(f=>f.id===form.formaPag)?.num}
+                CONTRATO DE PRESTACAO DE SERVICOS DE CARPINTARIA N CT-CARP-2026-002<br/><br/>
+                CLAUSULA 1 - OBJECTO<br/>O Contratado obriga-se a executar: {checkServ.join(", ")} - {form.qtdPortas} portas, {form.qtdJanelas} janelas<br/><br/>
+                CLAUSULA 2 - QUANTIDADES E ESPECIFICACOES<br/>Portas: {form.qtdPortas} unidades<br/>Janelas: {form.qtdJanelas} unidades<br/>Local: {form.localObra}<br/><br/>
+                CLAUSULA 3 - MATERIAL<br/>Material: {form.material}. Fornecimento a cargo do {form.quemFornece}.<br/><br/>
+                CLAUSULA 4 - VALOR E PRAZO<br/>Valor total: {form.valorTotal} MZN. Prazo: {form.prazo} dias uteis.<br/><br/>
+                CLAUSULA 5 - FORMA PAGAMENTO<br/>40% adiantamento, 60% na entrega. {FORMAS_PAG.find(f=>f.id===form.formaPag)?.nome} {FORMAS_PAG.find(f=>f.id===form.formaPag)?.num}<br/><br/>
+                Taxa plataforma 5% = {Math.round(Number(form.valorTotal||0)*0.05)} MZN
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={()=>gerarPDF()} className="h-[38px] rounded-[10px] bg-[#2563eb] text-white text-[12px] font-semibold">Ver PDF</button><button onClick={compartilhar} className="h-[38px] rounded-[10px] bg-[#00a651] text-white text-[12px] font-semibold">Negociar WhatsApp</button></div>
+              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={()=>gerarPDF()} className="h-[38px] rounded-[10px] bg-[#2563eb] text-white text-[12px] font-semibold">Ver PDF</button><button onClick={compartilhar} className="h-[38px] rounded-[10px] bg-[#00a651] text-white text-[12px] font-semibold">Negociar - WhatsApp</button></div>
             </div>
           </>
         )}

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ç/g,"c").replace(/Ç/g,"C");
+const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/Ã§/g,"c").replace(/Ã‡/g,"C");
 
 type Lang = "pt" | "en";
 const T = {

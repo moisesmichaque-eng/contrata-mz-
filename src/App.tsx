@@ -141,17 +141,74 @@ export default function App(){
   const gerarPDFCompleto=async()=>{
     const { jsPDF } = await import("jspdf");
     const doc=new jsPDF({unit:"mm",format:"a4"});
-    const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); let y=20;
+    const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); 
     const M=15;
-    const check=(h=20)=>{ if(y+h>H-25){ doc.addPage(); y=20; } };
     
-    // CABECALHO
-    doc.setFillColor(0,166,81); doc.rect(0,0,W,18,"F");
-    doc.setTextColor(255,255,255); doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.text("CONTRATO - "+semAcento(tipo).toUpperCase()+" - 11 CLAUSULAS",M,8);
-    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.text("Lei n 23/2007 de 1 de Agosto e Decreto n 40/2008 - ESSE NUIT 401 866 876",M,13);
-    y=26; doc.setTextColor(20,20,20);
+    // FUNCOES DE CABECALHO E RODAPE COM LOGO DOURADO - UMA COR SÃ“ AZUL DO LOGO
+    const addCabecalho = (pageNum:number)=>{
+      // Fundo azul do logo #465a72 / #2a3d55 - uma cor sÃ³ bonita
+      doc.setFillColor(42,61,85); // COR AZUL DO LOGO - #2a3d55
+      doc.rect(0,0,W,22,"F");
+      try{
+        // Logo dourado no cabeÃ§alho esquerdo
+        doc.addImage(ESSE_LOGO, "PNG", M, 2, 28, 16);
+      }catch{}
+      doc.setTextColor(212,164,74); // Dourado #d4a44a
+      doc.setFontSize(11); doc.setFont("helvetica","bold");
+      doc.text("CONTRATO - "+semAcento(tipo).toUpperCase()+" - 11 CLAUSULAS", M+32, 8);
+      doc.setTextColor(200,210,225);
+      doc.setFontSize(7); doc.setFont("helvetica","normal");
+      doc.text("Lei n 23/2007 de 1 de Agosto e Decreto n 40/2008 - ESSE NUIT 401 866 876 - 11 CLAUSULAS DESBLOQUEADAS", M+32, 13);
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(6);
+      doc.text("Pag "+pageNum, W-M-12, 19, {align:"right"});
+    };
+    
+    const addRodape = ()=>{
+      const footerY = H-12;
+      // Linha dourada
+      doc.setDrawColor(212,164,74); doc.setLineWidth(0.5); doc.line(M, footerY, W-M, footerY);
+      // Fundo azul claro rodapÃ©
+      doc.setFillColor(245,247,250); doc.rect(0, footerY+0.5, W, 12, "F");
+      try{
+        doc.addImage(ESSE_LOGO, "PNG", M, footerY+2, 12, 7);
+      }catch{}
+      doc.setTextColor(42,61,85); doc.setFontSize(6.5); doc.setFont("helvetica","bold");
+      doc.text("ESSE - ENERGY SOLUTIONS & SERVICES ENTERPRISE LDA", M+14, footerY+4);
+      doc.setFont("helvetica","normal"); doc.setFontSize(5.5);
+      doc.text("NUIT 401 866 876 - Xai-Xai - M-Pesa 840532899 | e-Mola 864341779 | mKesh 823832513 | Banco 000301170814421100321 - Contrata.MZ", M+14, footerY+7.5);
+      doc.setTextColor(100,100,100); doc.setFontSize(5);
+      doc.text("Gerado por Contrata.MZ em "+new Date().toLocaleDateString()+" - Valido Lei 23/2007 Art.29 - ID: "+Math.floor(Math.random()*1000000000), W-M, footerY+10, {align:"right"});
+    };
 
-    const tituloClausula=(n:number,t:string)=>{ check(12); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.setFillColor(230,240,255); doc.rect(M,y-5,W-M*2,8,"F"); doc.text(n+". "+semAcento(t.toUpperCase()),M,y); y+=8; doc.setFont("helvetica","normal"); doc.setFontSize(10); }
+    let y=28;
+    let pageNum=1;
+    addCabecalho(pageNum);
+    addRodape();
+    
+    const check=(h=20)=>{ 
+      if(y+h>H-18){ 
+        doc.addPage(); 
+        pageNum++;
+        y=28; 
+        addCabecalho(pageNum);
+        addRodape();
+      } 
+    };
+    
+    doc.setTextColor(20,20,20);
+
+    const tituloClausula=(n:number,t:string)=>{ 
+      check(14); 
+      doc.setFontSize(11); doc.setFont("helvetica","bold"); 
+      doc.setFillColor(42,61,85); // Azul do logo
+      doc.rect(M,y-5,W-M*2,9,"F"); 
+      doc.setTextColor(212,164,74); // Dourado
+      doc.text(n+". "+semAcento(t.toUpperCase()),M+2,y); 
+      y+=9; 
+      doc.setTextColor(20,20,20);
+      doc.setFont("helvetica","normal"); doc.setFontSize(10); 
+    }
 
     // 1
     tituloClausula(1,"PARTES - QUEM CONTRATA E QUEM FAZ");
@@ -201,30 +258,81 @@ export default function App(){
     tituloClausula(9,"DEVERES DO EMPREGADOR");
     doc.splitTextToSize(semAcento(form.deveresEmp), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
 
-    // 10 - ANTES DA VALIDADE COMO PEDISTE
+    // 10 - ANTES DA VALIDADE - COM FOTOS
     tituloClausula(10,"ANEXOS - FOTOS, PROJETOS, DOCUMENTOS - FAZ PARTE INTEGRANTE - ANTES DA VALIDADE");
     doc.setFontSize(9); doc.text("Os anexos abaixo foram aceites por ambas partes e fazem parte integrante deste contrato.",M,y); y+=5; doc.setFontSize(10);
-    if(anexos.length===0){ doc.text("Nenhum anexo carregado no sistema. Se anexado via WhatsApp passa a fazer parte.",M,y); y+=5; }
-    else { anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho+" - aceite",M,y); y+=5; }); y+=2; doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.text("Total: "+anexos.length+" anexos - Servem como prova do acordado (cor, modelo, medida).",M,y); y+=6; doc.setFont("helvetica","normal"); doc.setFontSize(10); }
+    if(anexos.length===0){ 
+      doc.text("Nenhum anexo carregado no sistema. Se anexado via WhatsApp passa a fazer parte.",M,y); y+=5; 
+    } else { 
+      anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho+" - aceite",M,y); y+=5; }); 
+      y+=2; doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.text("Total: "+anexos.length+" anexos - Servem como prova do acordado (cor, modelo, medida).",M,y); y+=8; 
+      doc.setFont("helvetica","normal"); doc.setFontSize(10);
+      // IMAGENS DOS ANEXOS DENTRO DO PDF
+      for(let i=0;i<anexos.length;i++){
+        const a = anexos[i];
+        if(a.dataUrl && a.dataUrl.startsWith("data:image")){
+          try{
+            check(85);
+            const imgW = 70;
+            const imgH = 50;
+            doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.text("Anexo "+(i+1)+": "+semAcento(a.nome).substring(0,40), M, y); y+=4;
+            doc.addImage(a.dataUrl, "JPEG", M, y, imgW, imgH);
+            y+= imgH+6;
+          }catch(e){
+            check(6); doc.setFontSize(8); doc.text("[Foto "+a.nome+" - ver arquivo original]",M,y); y+=5;
+          }
+        }
+      }
+    }
 
-    // 11
+    // 11 - VALIDADE COM LOGO DOURADO GRANDE
     tituloClausula(11,"VALIDADE, ASSINATURAS E CARIMBO ESSE");
-    doc.text("Validade legal Art. 29 Lei 23/2007. Contrato escrito protege ambos. ID: "+Math.floor(Math.random()*1000000000000)+" - Contrata.MZ",M,y); y+=8;
+    doc.text("Validade legal Art. 29 Lei 23/2007. Contrato escrito protege ambos. ID: "+Math.floor(Math.random()*1000000000000)+" - Contrata.MZ - 11 Clausulas Desbloqueadas",M,y); y+=8;
     
-    check(50); doc.setDrawColor(0,51,160); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,40);
-    doc.setTextColor(0,51,160); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("ESSE",W/2-10,y+9);
-    doc.setFontSize(8); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-28,y+14);
-    doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-30,y+18);
-    doc.text("Xai-Xai - Mocambique",W/2-24,y+22);
-    doc.text("Contrato gerado por Contrata.MZ",W/2-26,y+28);
-    doc.setFontSize(7); doc.text("em "+new Date().toLocaleDateString()+" as "+new Date().toLocaleTimeString(),W/2-22,y+32);
-    doc.setTextColor(20,20,20); y+=50;
+    check(80);
+    try{
+      doc.addImage(ESSE_LOGO_FULL, "PNG", W/2-55, y, 110, 28);
+      y+=32;
+    }catch{
+      try{
+        doc.addImage(ESSE_LOGO, "PNG", W/2-25, y, 50, 22);
+        y+=24;
+      }catch{}
+    }
+    doc.setDrawColor(42,61,85); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,28);
+    doc.setTextColor(42,61,85); doc.setFontSize(7); doc.setFont("helvetica","bold");
+    doc.text("CARIMBO OFICIAL - VALIDADE LEGAL",W/2-22,y+6);
+    doc.setFontSize(6); doc.setFont("helvetica","normal");
+    doc.text("Gerado por Contrata.MZ em "+new Date().toLocaleDateString()+" as "+new Date().toLocaleTimeString(),W/2-30,y+12);
+    doc.text("Projeto ESSE - Xai-Xai - Mocambique",W/2-24,y+16);
+    doc.setTextColor(20,20,20); y+=38;
 
     check(50); doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.text("Assinaturas:",M,y); y+=12;
     const col1=M, col2=W/2+10; doc.line(col1,y,col1+60,y); doc.line(col2,y,col2+60,y); y+=4;
     doc.setFontSize(9); doc.text(semAcento(form.empNome||"Contratante"),col1,y); doc.text(semAcento(form.trabNome||"Contratado"),col2,y); y+=6;
     doc.setFontSize(8); doc.text("Contratante",col1,y); doc.text("Contratado - "+semAcento(tipo),col2,y); y+=10;
-    doc.setFontSize(6); doc.setTextColor(100,100,100); doc.text("Contrata.MZ - Projeto ESSE - NUIT 401 866 876 - Xai-Xai - M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Banco 000301170814421100321 - 11 clausulas",M,y,{maxWidth:W-M*2});
+    
+    // PAGINA EXTRA DE ANEXOS VISUAIS SE TIVER MUITAS FOTOS
+    const fotos = anexos.filter(a=>a.dataUrl && a.dataUrl.startsWith("data:image"));
+    if(fotos.length>2){
+      doc.addPage();
+      pageNum++;
+      addCabecalho(pageNum);
+      addRodape();
+      y=30; 
+      doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.setTextColor(42,61,85);
+      doc.text("ANEXOS VISUAIS - PROVA DO ACORDADO - FAZ PARTE DO CONTRATO",M,y); y+=10;
+      doc.setTextColor(20,20,20);
+      for(let i=0;i<fotos.length;i++){
+        const a = fotos[i];
+        check(85);
+        try{
+          doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.text((i+1)+". "+semAcento(a.nome),M,y); y+=5;
+          doc.addImage(a.dataUrl,"JPEG",M,y,90,60);
+          y+=70;
+        }catch{}
+      }
+    }
     return doc;
   };
 

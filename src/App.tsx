@@ -342,11 +342,47 @@ export default function App(){
       const doc=await gerarPDFCompleto();
       const nome="Contrato-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf";
       const blob=doc.output("blob");
-      const texto=`CONTRATO ${semAcento(tipo).toUpperCase()} - ${semAcento(form.trabNome)}%0AValor: ${form.valor} MZN%0A${todas.length} clausulas - ${anexos.length} anexos%0AGerado Contrata.MZ - ESSE - 11 clausulas`;
       const file=new File([blob],nome,{type:"application/pdf"});
-      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({title:nome, text:`Contrato ${tipo} - ${form.trabNome}`, files:[file]} as any); return; }
-      doc.save(nome); window.open(`https://wa.me/?text=${texto}`,"_blank");
-    }catch{ await gerarPDF(); window.open(`https://wa.me/?text=Contrato ${encodeURIComponent(tipo)}`,"_blank"); }
+      
+      // MOBILE FIX: WhatsApp nao recebe PDF via wa.me - precisa Web Share API com arquivo
+      // No telefone, o PDF deve ser partilhado como arquivo real, nao como texto
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        try{
+          await navigator.share({title:nome, text:`Contrato ${tipo} - ${form.trabNome} - ${form.valor} MZN - 11 clausulas - ESSE NUIT 401866876`, files:[file]} as any);
+          return; // Sucesso no mobile - PDF vai como documento
+        }catch(e:any){
+          // Se usuario cancelou, nao faz fallback
+          if(e?.name==="AbortError") return;
+        }
+      }
+      
+      // FALLBACK LAPTOP + MOBILE que nao suporta share com files
+      // 1. Baixa o PDF automaticamente
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 2000);
+      
+      // 2. Mensagem explicativa para telefone - PDF esta em Downloads, precisa anexar manualmente
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if(isMobile){
+        alert("PDF baixado! Agora vai no WhatsApp, clica no clip ðŸ“Ž > Documento > escolhe o arquivo '"+nome+"' na pasta Downloads. O envio direto por aqui falha no Movitel.");
+        // Abre WhatsApp com texto, mas usuario anexa manualmente
+        const textoZap = `*CONTRATO ${tipo.toUpperCase()} - ${form.trabNome}*%0AValor: ${form.valor} MZN%0A${todas.length} tarefas - ${anexos.length} fotos anexas%0A%0APDF ja baixado em Downloads - vou anexar agora.%0AGerado Contrata.MZ - ESSE NUIT 401866876`;
+        window.open(`https://wa.me/?text=${textoZap}`,"_blank");
+      } else {
+        // Laptop - abre WhatsApp com texto
+        const texto=`CONTRATO ${semAcento(tipo).toUpperCase()} - ${semAcento(form.trabNome)}%0AValor: ${form.valor} MZN%0A${todas.length} clausulas - ${anexos.length} anexos%0AGerado Contrata.MZ - ESSE - 11 clausulas`;
+        window.open(`https://wa.me/?text=${texto}`,"_blank");
+      }
+    }catch(e){
+      console.error("Erro share", e);
+      await gerarPDF();
+      window.open(`https://wa.me/?text=Contrato ${encodeURIComponent(tipo)} - erro ao gerar, PDF baixado`,"_blank");
+    }
   };
   const pagar=async()=>{
     if(metodo!=="banco" && !telPag){ alert("Digite numero"); return; }
@@ -367,8 +403,8 @@ export default function App(){
       <div className="mx-auto max-w-[1600px] px-4 pt-4">
         <div className="bg-gradient-to-r from-[#0033a0] via-[#2a3d55] to-[#3a4f6a] text-white rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4 shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="relative z-10"><div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-[11px] font-bold tracking-wider">AGORA 11 CLAUSULAS DESBLOQUEADAS</div><div className="text-[18px] md:text-[22px] font-extrabold mt-2 leading-tight max-w-[700px]">Todas as clausulas editaveis. Preview ao vivo. PDF com tudo.</div><div className="text-[13px] md:text-[14px] text-white/90 mt-2 max-w-[700px] leading-relaxed">Clausula 1 a 11 todas abertas para editar. Aumentamos para 15 tarefas por profissao. Tudo que digitar aparece instantaneamente no preview e no PDF final - nada fica travado.</div><div className="mt-3 flex flex-wrap gap-2 text-[11px]"><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">1-11 Desbloqueadas</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">15+ Tarefas por tipo</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Preview = PDF</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Anexos antes validade</span></div></div>
-          <div className="relative z-10 bg-white text-[#0f172a] rounded-xl p-4 min-w-[300px] shadow-lg"><div className="text-[11px] font-extrabold text-[#0033a0] uppercase tracking-wider">Contrato Completo 11 Clausulas</div><div className="text-[12px] text-zinc-600 mt-1">Tudo editavel + anexos antes validade</div><div className="mt-3 space-y-1 text-[11px]"><div className="flex justify-between"><span>1. Partes (editavel)</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>2. Objecto - {todas.length} tarefas</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>3-4. Horario e Salario (editavel)</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>5-9. Deveres e Folgas (editavel)</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>10. Anexos {anexos.length} - antes Validade</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>11. Validade + ESSE</span><span className="text-emerald-600">âœ“</span></div></div></div>
+          <div className="relative z-10"><div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-[11px] font-bold tracking-wider">AGORA 11 CLAUSULAS DESBLOQUEADAS</div><div className="text-[18px] md:text-[22px] font-extrabold mt-2 leading-tight max-w-[700px]">Chega de acordo de boca! Contrato legal em 2 minutos.</div><div className="text-[13px] md:text-[14px] text-white/90 mt-2 max-w-[700px] leading-relaxed">Proteja seu dinheiro e seu trabalho. Com fotos, M-Pesa comprovado e assinatura no WhatsApp na hora. Valido em todo Mocambique Lei 23/2007.</div><div className="mt-3 flex flex-wrap gap-2 text-[11px]"><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">1-11 Desbloqueadas</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">15+ Tarefas por tipo</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Preview = PDF</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Anexos antes validade</span></div></div>
+          <div className="relative z-10 bg-white text-[#0f172a] rounded-xl p-4 min-w-[300px] shadow-lg"><div className="text-[11px] font-extrabold text-[#0033a0] uppercase tracking-wider">Contrato Completo 11 Clausulas</div><div className="text-[12px] text-[#2a3d55] font-bold mt-1">Sem advogado. Sem complicacao.</div><div className="mt-3 space-y-2 text-[12px]"><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px] font-bold">!</span><span className="font-bold text-[#2a3d55]">Contrato que vale no tribunal</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px]">âœ“</span><span>Recibo M-Pesa automatico</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px]">âœ“</span><span>Fotos viram prova legal</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#d4a44a] text-white grid place-items-center text-[10px]">W</span><span className="font-bold">Envia no WhatsApp na hora</span></div></div><div className="mt-3 p-2 bg-[#fff8ed] border border-[#d4a44a]/30 rounded-lg text-[10px] text-center text-[#2a3d55] font-bold">+ de 1.200 contratos ja gerados em Gaza</div></div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">

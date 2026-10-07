@@ -1,5 +1,8 @@
 import { useState, useRef } from "react";
-const ESSE_LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+// LOGO CORRIGIDO - usa teu base64 original aqui, se falhar mostra fallback ESSE
+const ESSE_LOGO_ORIGINAL = "data:image/png;base64,[STRIPPED]"; // COLA TEU BASE64 AQUI
+const ESSE_LOGO_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iNDAiIHJ4PSI4IiBmaWxsPSIjMDBhNjUxIi8+PHRleHQgeD0iNjAiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RVNTRTwvdGV4dD48L3N2Zz4=";
+const ESSE_LOGO = ESSE_LOGO_ORIGINAL.includes("[STRIPPED]") ? ESSE_LOGO_FALLBACK : ESSE_LOGO_ORIGINAL;
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 type Pagina = 1|2|3|4|5|6|7|8|9|10|11;
 type Tab = "encontrar"|"contratos"|"meus";
@@ -93,7 +96,22 @@ const PAGAMENTOS = {
   mkesh: { n: "823832513", d: "mKesh", c: "bg-[#00a651]" },
   banco: { n: "000301170814421100321", d: "Standard Bank", c: "bg-[#0033a0]" }
 };
-type Anexo = { id:string, nome:string, tamanho:string, url:string };
+type Anexo = { id:string, nome:string, tamanho:string, url:string, dataUrl:string };
+type LogoImgProps = { className?: string };
+
+function LogoESSE({ className }: LogoImgProps){
+  return (
+    <div className={`flex items-center gap-2 ${className||""}`}>
+      <img 
+        src={ESSE_LOGO} 
+        alt="ESSE" 
+        className="h-8 w-auto object-contain"
+        onError={(e)=>{ (e.currentTarget as HTMLImageElement).style.display='none'; ((e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement).style.display='grid'; }}
+      />
+      <div className="hidden w-12 h-8 rounded-lg bg-[#00a651] text-white place-items-center font-bold text-[10px]">ESSE</div>
+    </div>
+  )
+}
 
 export default function App(){
   const [lang,setLang]=useState<"pt"|"en">("pt");
@@ -130,7 +148,25 @@ export default function App(){
   const formRef = useRef<HTMLDivElement>(null);
   const todas = [...tarefasSel, ...tarefasExtra.split(",").map(t=>t.trim()).filter(Boolean)];
   const profissionaisFiltrados = filtroCat==="Todas" ? PROFISSIONAIS : PROFISSIONAIS.filter(p=>p.cat===filtroCat);
-  const handleFiles=(files:FileList|null)=>{ if(!files) return; const novos:Anexo[]=Array.from(files).slice(0,5).map(f=>{ const url=f.type.startsWith("image/")?URL.createObjectURL(f):""; return {id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url}; }); setAnexos(p=>[...p,...novos].slice(0,10)); };
+  
+  const handleFiles=(files:FileList|null)=>{ 
+    if(!files) return; 
+    Array.from(files).slice(0,5).forEach(f=>{
+      const url=f.type.startsWith("image/")?URL.createObjectURL(f):"";
+      const reader = new FileReader();
+      reader.onload = (ev)=>{
+        const dataUrl = ev.target?.result as string || "";
+        const novo:Anexo={id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url,dataUrl};
+        setAnexos(p=>[...p,novo].slice(0,10));
+      };
+      if(f.type.startsWith("image/")){
+        reader.readAsDataURL(f);
+      } else {
+        const novo:Anexo={id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url:"",dataUrl:""};
+        setAnexos(p=>[...p,novo].slice(0,10));
+      }
+    });
+  };
   const scrollParaForm=()=>{ setTimeout(()=>{ formRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); },120); };
   const escolherTipo=(t:TipoContrato)=>{ setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,6)); setPagina(1); if(typeof window!=="undefined" && window.innerWidth<1024){ setBibAberta(false); } scrollParaForm(); };
   const irPagina=(p:Pagina)=>{ setPagina(p); scrollParaForm(); };
@@ -198,17 +234,48 @@ export default function App(){
     tituloClausula(9,"DEVERES DO EMPREGADOR");
     doc.splitTextToSize(semAcento(form.deveresEmp), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
 
-    // 10 - ANTES DA VALIDADE COMO PEDISTE
+    // 10 - ANTES DA VALIDADE - AGORA COM FOTOS DENTRO DO PDF
     tituloClausula(10,"ANEXOS - FOTOS, PROJETOS, DOCUMENTOS - FAZ PARTE INTEGRANTE - ANTES DA VALIDADE");
     doc.setFontSize(9); doc.text("Os anexos abaixo foram aceites por ambas partes e fazem parte integrante deste contrato.",M,y); y+=5; doc.setFontSize(10);
-    if(anexos.length===0){ doc.text("Nenhum anexo carregado no sistema. Se anexado via WhatsApp passa a fazer parte.",M,y); y+=5; }
-    else { anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho+" - aceite",M,y); y+=5; }); y+=2; doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.text("Total: "+anexos.length+" anexos - Servem como prova do acordado (cor, modelo, medida).",M,y); y+=6; doc.setFont("helvetica","normal"); doc.setFontSize(10); }
+    if(anexos.length===0){ 
+      doc.text("Nenhum anexo carregado no sistema. Se anexado via WhatsApp passa a fazer parte.",M,y); y+=5; 
+    } else { 
+      anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho+" - aceite",M,y); y+=5; }); 
+      y+=2; doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.text("Total: "+anexos.length+" anexos - Servem como prova do acordado (cor, modelo, medida).",M,y); y+=8; 
+      doc.setFont("helvetica","normal"); doc.setFontSize(10);
+      // IMAGENS DOS ANEXOS DENTRO DO PDF
+      for(let i=0;i<anexos.length;i++){
+        const a = anexos[i];
+        if(a.dataUrl && a.dataUrl.startsWith("data:image")){
+          try{
+            check(85);
+            const imgW = 70;
+            const imgH = 50;
+            // titulo da imagem
+            doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.text("Anexo "+(i+1)+": "+semAcento(a.nome).substring(0,40), M, y); y+=4;
+            // tenta adicionar imagem
+            doc.addImage(a.dataUrl, "JPEG", M, y, imgW, imgH);
+            y+= imgH+6;
+          }catch(e){
+            check(6); doc.setFontSize(8); doc.text("[Foto "+a.nome+" - ver arquivo original]",M,y); y+=5;
+          }
+        }
+      }
+    }
 
     // 11
     tituloClausula(11,"VALIDADE, ASSINATURAS E CARIMBO ESSE");
     doc.text("Validade legal Art. 29 Lei 23/2007. Contrato escrito protege ambos. ID: "+Math.floor(Math.random()*1000000000000)+" - Contrata.MZ",M,y); y+=8;
     
-    check(50); doc.setDrawColor(0,51,160); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,40);
+    check(70); 
+    // LOGO NO PDF - tenta usar base64, se falhar desenha fallback
+    try{
+      if(ESSE_LOGO && !ESSE_LOGO.includes("[STRIPPED]")){
+        doc.addImage(ESSE_LOGO, "PNG", W/2-15, y, 30, 12);
+        y+=14;
+      }
+    }catch{}
+    doc.setDrawColor(0,51,160); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,40);
     doc.setTextColor(0,51,160); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("ESSE",W/2-10,y+9);
     doc.setFontSize(8); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-28,y+14);
     doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-30,y+18);
@@ -222,6 +289,21 @@ export default function App(){
     doc.setFontSize(9); doc.text(semAcento(form.empNome||"Contratante"),col1,y); doc.text(semAcento(form.trabNome||"Contratado"),col2,y); y+=6;
     doc.setFontSize(8); doc.text("Contratante",col1,y); doc.text("Contratado - "+semAcento(tipo),col2,y); y+=10;
     doc.setFontSize(6); doc.setTextColor(100,100,100); doc.text("Contrata.MZ - Projeto ESSE - NUIT 401 866 876 - Xai-Xai - M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Banco 000301170814421100321 - 11 clausulas",M,y,{maxWidth:W-M*2});
+    // ANEXOS EXTRAS NO FINAL - PAGINA DEDICADA SE TIVER MUITAS FOTOS
+    const fotos = anexos.filter(a=>a.dataUrl && a.dataUrl.startsWith("data:image"));
+    if(fotos.length>2){
+      doc.addPage();
+      y=20; doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.text("ANEXOS VISUAIS - PROVA DO ACORDADO",M,y); y+=10;
+      for(let i=0;i<fotos.length;i++){
+        const a = fotos[i];
+        check(85);
+        try{
+          doc.setFontSize(9); doc.text((i+1)+". "+semAcento(a.nome),M,y); y+=5;
+          doc.addImage(a.dataUrl,"JPEG",M,y,90,60);
+          y+=70;
+        }catch{}
+      }
+    }
     return doc;
   };
 
@@ -249,7 +331,7 @@ export default function App(){
       <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
         <div className="mx-auto max-w-[1600px] px-4 h-[64px] flex items-center justify-between">
           <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-[#00a651] text-white grid place-items-center font-bold">C</div><div><div className="font-bold text-[14px] leading-none">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div><div className="text-[9px] text-zinc-400 font-bold">Um projeto da ESSE - DESBLOQUEADO</div></div></div>
-          <div className="flex items-center gap-3"><div className="hidden md:flex flex-col items-end mr-2"><span className="text-[10px] font-bold text-zinc-400 uppercase">Projeto de</span><span className="text-[12px] font-bold">ESSE - Energy Solutions</span><span className="text-[10px] text-zinc-500">NUIT 401 866 876 | Xai-Xai</span></div><img src={ESSE_LOGO} alt="ESSE" className="h-8 w-auto" /><div className="flex p-1 bg-zinc-100 rounded-lg ml-1"><button onClick={()=>setLang("pt")} className={`px-3 py-1 rounded-md text-[12px] font-bold ${lang==="pt"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-3 py-1 rounded-md text-[12px] font-bold ${lang==="en"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>EN</button></div></div>
+          <div className="flex items-center gap-3"><div className="hidden md:flex flex-col items-end mr-2"><span className="text-[10px] font-bold text-zinc-400 uppercase">Projeto de</span><span className="text-[12px] font-bold">ESSE - Energy Solutions</span><span className="text-[10px] text-zinc-500">NUIT 401 866 876 | Xai-Xai</span></div><LogoESSE className="h-8" /><div className="flex p-1 bg-zinc-100 rounded-lg ml-1"><button onClick={()=>setLang("pt")} className={`px-3 py-1 rounded-md text-[12px] font-bold ${lang==="pt"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-3 py-1 rounded-md text-[12px] font-bold ${lang==="en"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>EN</button></div></div>
         </div>
       </header>
 
@@ -387,7 +469,7 @@ export default function App(){
                 ESSE NUIT 401 866 876 Xai-Xai<br/>Gerado Contrata.MZ - 11 clausulas
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={compartilharFree} className="h-10 bg-[#00a651] text-white rounded-xl font-bold text-[11px]">FREE PDF + WhatsApp</button><button onClick={()=>setShowPag(true)} className="h-10 bg-[#2563eb] text-white rounded-xl font-bold text-[11px]">PAGO 200MT</button></div>
-              <div className="mt-3 flex items-center gap-2"><img src={ESSE_LOGO} className="h-8 w-auto" /><span className="text-[10px] text-zinc-500">ESSE - NUIT 401 866 876<br/>Xai-Xai - Preview = PDF final</span></div>
+              <div className="mt-3 flex items-center gap-2"><LogoESSE /><span className="text-[10px] text-zinc-500">ESSE - NUIT 401 866 876<br/>Xai-Xai - Preview = PDF final - COM FOTOS</span></div>
             </div>
           </div>
         )}
@@ -395,7 +477,7 @@ export default function App(){
 
       {showPag && (<div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4"><div className="bg-white rounded-xl w-full max-w-[420px] p-5 shadow-2xl"><div className="font-bold">Pagamento 200MT - Contas ESSE</div><div className="text-[12px] text-zinc-600 mt-1">M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Banco 000301170814421100321</div><div className="mt-4 space-y-2">{Object.entries(PAGAMENTOS).map(([k,v]:any)=>{const ativo=metodo===k; return <button key={k} onClick={()=>setMetodo(k as any)} className={`w-full text-left p-3 rounded-xl border-2 flex gap-2 ${ativo?"border-emerald-500 bg-emerald-50":"bg-white"}`}><div className={`w-8 h-8 rounded-lg ${v.c} text-white grid place-items-center font-bold text-[11px]`}>{v.d.slice(0,2).toUpperCase()}</div><div><div className="font-bold text-[12px]">{v.d}</div><div className="text-[11px] text-zinc-500">{v.n}</div></div></button>})}</div>{metodo!=="banco" && <div className="mt-3"><label className="text-[11px] font-bold uppercase">Seu numero {(PAGAMENTOS as any)[metodo].d}</label><input value={telPag} onChange={e=>setTelPag(e.target.value)} placeholder="84xxxxxxx" className="w-full h-10 px-3 border-2 rounded-xl mt-1" /></div>}<div className="mt-4 grid grid-cols-2 gap-2"><button onClick={()=>setShowPag(false)} className="h-10 border rounded-xl font-bold">Usar FREE</button><button disabled={processando} onClick={pagar} className="h-10 bg-[#2563eb] text-white rounded-xl font-bold">{processando?"Processando...":"Pagar 200MT"}</button></div></div></div>)}
       {showPin && (<div className="fixed inset-0 z-[60] bg-black/60 grid place-items-center p-4"><div className="bg-white rounded-xl w-full max-w-[360px] p-5 text-center"><div className="font-bold">Pedido Enviado para {telPag}</div><div className="text-[12px] text-zinc-600 mt-2">Popup PIN no celular {(PAGAMENTOS as any)[metodo].d} - conta {(PAGAMENTOS as any)[metodo].n}</div></div></div>)}
-      <footer className="mt-10 bg-[#0f172a] text-white py-6"><div className="mx-auto max-w-[1600px] px-4 flex justify-between items-center"><div className="flex items-center gap-3"><img src={ESSE_LOGO} className="h-10 bg-white rounded-lg p-1" /><div><div className="font-bold text-[13px]">ESSE - ENERGY SOLUTIONS & SERVICES - 11 CLAUSULAS DESBLOQUEADAS</div><div className="text-[11px] text-white/60">NUIT 401 866 876 - Xai-Xai - Preview ao vivo = PDF final - Chega de acordo de boca.</div></div></div></div></footer>
+      <footer className="mt-10 bg-[#0f172a] text-white py-6"><div className="mx-auto max-w-[1600px] px-4 flex justify-between items-center"><div className="flex items-center gap-3"><div className="h-10 bg-white rounded-lg p-1 grid place-items-center"><LogoESSE /></div><div><div className="font-bold text-[13px]">ESSE - ENERGY SOLUTIONS & SERVICES - 11 CLAUSULAS COM FOTOS</div><div className="text-[11px] text-white/60">NUIT 401 866 876 - Xai-Xai - Preview ao vivo = PDF com anexos visuais.</div></div></div></div></footer>
     </div>
   );
 }

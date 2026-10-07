@@ -1,271 +1,222 @@
-import { useState, useRef } from "react";
-const ESSE_LOGO = "data:image/png;base64,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";
+import { useState, useEffect } from "react";
+const ESSE_LOGO = "/mnt/data/logo_tipo.jpg";
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-type Pagina = 1|2|3|4|5|6;
-type Tab = "encontrar"|"contratos"|"meus";
-type TipoContrato = "Secretario/a Domestico/a" | "Motorista Particular" | "Pedreiro" | "Carpinteiro" | "Serralheiro" | "Eletricista" | "Canalizador" | "Pintor" | "Servicos/Consultoria" | "Outros/Particular";
-const MODELOS: Record<TipoContrato, { titulo: string, checklist: string[], desc: string }> = {
-  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa","Lavar louca e organizar cozinha - zelar pela louca","Arrumar quartos e fazer camas","Lavar, passar e dobrar roupa","Organizar despensa e fazer compras","Cozinhar refeicoes","Zelar por utensilios, louca e eletrodomesticos - avisar quebras","Nao se responsabiliza por quebra de louca antiga salvo negligencia grave - max 25% salario parcelado"], desc: "Domestico - clausula louca" },
-  "Motorista Particular": { titulo: "CONTRATO DE TRABALHO - MOTORISTA PRIVADO", checklist: ["Conduzir empregador","Levar criancas escola","Manutencao basica viatura","Compras e recados","Cumprir horario, guardar sigilo, cuidar bens"], desc: "Motorista Privado - Lei 23/2007" },
-  "Pedreiro": { titulo: "CONTRATO DE EMPREITADA - PEDREIRO", checklist: ["Alvenaria de blocos","Reboco interior e exterior","Assentar tijoleira e ceramica","Fundacoes e vigas","Acabamentos","Seguir projeto/foto anexa"], desc: "Pedreiro - anexar foto/projeto" },
-  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar moveis em madeira","Instalar portas","Instalar janelas","Instalar armarios","Medir e cortar madeira","Aplicar verniz e acabamento"], desc: "Portas, janelas - anexar foto modelo" },
-  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes","Fabricar grades","Soldar estruturas metalicas","Instalar portoes","Reparos em ferro"], desc: "Soldar, portoes" },
-  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico","Instalar tomadas e interruptores","Instalar iluminacao","Passar cabos e fios","Testar instalacao"], desc: "Eletrica" },
-  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua","Instalar esgotos","Instalar sanita e lavatorio","Reparar fugas"], desc: "Canalizacao" },
-  "Pintor": { titulo: "CONTRATO - PINTOR", checklist: ["Preparar parede","Pintura interior","Pintura exterior","Aplicar textura","Pintar teto","Usar cor conforme foto anexa"], desc: "Pintura" },
-  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS - CONSULTORIA", checklist: ["Consultoria empresarial","Servicos administrativos","Servicos tecnicos","Assessoria juridica/contabil","Marketing e comunicacao","Formacao e treinamento"], desc: "Empresas" },
-  "Outros/Particular": { titulo: "CONTRATO PARTICULAR - OUTROS SERVICOS", checklist: ["Servico personalizado - descrever no campo acrescentar tarefas"], desc: "Formulario livre" },
-};
-const PROFISSIONAIS = [
-  { ini:"ML", nome:"Maria Langa", func:"Empregada Domestica", cat:"Domestico", local:"Maputo - Polana", nota:"4.9", trab:"23 trabalhos", disp:"Disponivel" },
-  { ini:"JM", nome:"Joao Manuel", func:"Carpinteiro", cat:"Construcao", local:"Matola - Machava", nota:"4.8", trab:"34 trabalhos", disp:"Disponivel" },
-  { ini:"PM", nome:"Pedro Massingue", func:"Pedreiro", cat:"Construcao", local:"Maputo - Zimpeto", nota:"4.7", trab:"56 trabalhos", disp:"Ocupado" },
-  { ini:"EC", nome:"Esperanca Cossa", func:"Eletricista", cat:"Construcao", local:"Maputo - Sommershield", nota:"4.9", trab:"41 trabalhos", disp:"Disponivel" },
-  { ini:"SC", nome:"Servicos Lda", func:"Consultoria Empresarial", cat:"Servicos", local:"Maputo - Central", nota:"5.0", trab:"12 projetos", disp:"Disponivel" },
-  { ini:"CT", nome:"Carlos Tivane", func:"Motorista", cat:"Domestico", local:"Matola - Liberdade", nota:"4.8", trab:"29 trabalhos", disp:"Disponivel" },
-];
-const PAGAMENTOS = {
-  mpesa: { n: "840532899", d: "M-Pesa", c: "bg-[#e4002b]" },
-  emola: { n: "864341779", d: "e-Mola", c: "bg-[#ff6b00]" },
-  mkesh: { n: "823832513", d: "mKesh", c: "bg-[#00a651]" },
-  banco: { n: "000301170814421100321", d: "Standard Bank", c: "bg-[#0033a0]" }
-};
-type Anexo = { id:string, nome:string, tamanho:string, url:string };
 
-export default function App(){
-  const [lang,setLang]=useState<"pt"|"en">("pt");
-  const [tab,setTab]=useState<Tab>("contratos");
-  const [tipo,setTipo]=useState<TipoContrato>("Motorista Particular");
-  const [tarefasSel,setTarefasSel]=useState<string[]>(MODELOS["Motorista Particular"].checklist.slice(0,4));
-  const [tarefasExtra,setTarefasExtra]=useState("");
-  const [pagina,setPagina]=useState<Pagina>(1);
-  const [anexos,setAnexos]=useState<Anexo[]>([]);
-  const [showPag,setShowPag]=useState(false);
-  const [metodo,setMetodo]=useState<"mpesa"|"emola"|"mkesh"|"banco">("mpesa");
-  const [telPag,setTelPag]=useState("");
-  const [processando,setProcessando]=useState(false);
-  const [showPin,setShowPin]=useState(false);
-  const [bibAberta,setBibAberta]=useState(true);
-  const [filtroCat,setFiltroCat]=useState("Todas");
-  
-  // FORMULÃRIO TOTALMENTE EDITÃVEL - TODAS AS CLÃUSULAS
-  const [form,setForm]=useState({ 
-    empNome:"artur simao zimba", 
-    empBI:"110200011B", 
-    empTel:"823832513", 
-    empBairro:"Bairro Xai-Xai", 
-    trabNome:"anastancio", 
-    trabBI:"1102100mmm", 
-    trabTel:"840532899", 
-    valor:"7500", 
-    prazo:"30", 
-    local:"xai xai", 
-    provincia:"Gaza - Xai-Xai",
-    // NOVOS CAMPOS EDITÃVEIS PARA TODAS CLÃUSULAS
-    horarioInicio:"06:00",
-    horarioFim:"17:00",
-    diasTrabalho:"Segunda, Terca, Quarta, Quinta, Sexta, Sabado",
-    dataInicio: new Date().toISOString().split('T')[0],
-    diaPagamento:"05",
-    metodoPagamento:"M-Pesa",
-    alimentacao:"Sim - 1 refeicao por dia",
-    alojamento:"Nao",
-    folgas:"Descanso semanal Domingo + feriados oficiais",
-    ferias:"Apos 1 ano: 12 dias ferias pagas - Art 50 Lei 23/2007",
-    periodoExp:"90 dias",
-    avisoExp:"15 dias",
-    deveresProf:"Cumprir horario, guardar sigilo profissional, cuidar bens do empregador com zelo, avisar quebras e avarias, nao faltar sem justificar",
-    deveresEmp:"Pagar salario em dia ate dia 05 via M-Pesa com recibo, respeitar dignidade, fornecer material e equipamentos, garantir seguranca no trabalho",
-    rescisaoJusta:"Justa causa: roubo, violencia, falta grave, embriaguez, desobediencia",
-    rescisaoSemJusta:"Sem justa causa: aviso previo 30 dias por escrito - Art 40 Lei 23/2007",
-    clausulaLouca:"Zela pela louca, avisa quebras imediatamente, nao paga quebra acidental salvo negligencia grave - max 25% salario parcelado conforme lei",
-    observacoes:"Qualquer alteracao deste contrato so por escrito e assinada por ambas partes"
-  });
-  
-  const formRef = useRef<HTMLDivElement>(null);
-  const todas = [...tarefasSel, ...tarefasExtra.split(",").map(t=>t.trim()).filter(Boolean)];
-  const profissionaisFiltrados = filtroCat==="Todas" ? PROFISSIONAIS : PROFISSIONAIS.filter(p=>p.cat===filtroCat);
-  const handleFiles=(files:FileList|null)=>{ if(!files) return; const novos:Anexo[]=Array.from(files).slice(0,5).map(f=>{ const url=f.type.startsWith("image/")?URL.createObjectURL(f):""; return {id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url}; }); setAnexos(p=>[...p,...novos].slice(0,10)); };
-  const scrollParaForm=()=>{ setTimeout(()=>{ formRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); },120); };
-  const escolherTipo=(t:TipoContrato)=>{ setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,4)); setPagina(1); if(typeof window!=="undefined" && window.innerWidth<1024){ setBibAberta(false); } scrollParaForm(); };
-  const irPagina=(p:Pagina)=>{ setPagina(p); scrollParaForm(); };
-  
-  const gerarPDFCompleto=async()=>{
-    const { jsPDF } = await import("jspdf");
-    const doc=new jsPDF({unit:"mm",format:"a4"});
-    const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); let y=20;
-    const M=15;
-    const check=(h=20)=>{ if(y+h>H-25){ doc.addPage(); y=20; } };
-    doc.setFillColor(0,166,81); doc.rect(0,0,W,18,"F");
-    doc.setTextColor(255,255,255); doc.setFontSize(12); doc.setFont("helvetica","bold"); doc.text("CONTRATO DE TRABALHO - "+semAcento(tipo).toUpperCase(),M,8);
-    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.text("Lei n 23/2007 de 1 de Agosto e Decreto n 40/2008 - ESSE NUIT 401 866 876",M,13);
-    y=26; doc.setTextColor(20,20,20);
-    
-    doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("1. PARTES",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal");
-    const partes = `EMPREGADOR: ${form.empNome}, BI ${form.empBI}, Tel ${form.empTel}, ${form.empBairro}, ${form.provincia}. PROFISSIONAL: ${form.trabNome}, BI ${form.trabBI}, Tel ${form.trabTel}.`;
-    doc.splitTextToSize(semAcento(partes), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; });
-    y+=4;
-    
-    check(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("2. OBJECTO - "+semAcento(tipo).toUpperCase(),M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); doc.text("Funcao: "+semAcento(tipo),M,y); y+=5; doc.text("Tarefas acordadas:",M,y); y+=5;
-    todas.forEach((t,i)=>{ const txt = (i+1)+". "+semAcento(t); doc.splitTextToSize(txt, W-M*2-5).forEach((l:string)=>{ check(6); doc.text(l, M+2, y); y+=5; }); });
-    y+=2; doc.setFontSize(9); doc.text(semAcento(form.observacoes),M,y); y+=6;
-    
-    check(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("3. HORARIO E PROVA",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal");
-    const horario = `Horario: ${form.horarioInicio} as ${form.horarioFim}, dias: ${form.diasTrabalho}. Inicio: ${form.dataInicio}. Local: ${form.local}. Este horario serve como prova legal.`;
-    doc.splitTextToSize(semAcento(horario), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    check(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("4. SALARIO E RECIBO",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal");
-    const salario = `Salario: ${form.valor} MT ate dia ${form.diaPagamento} via ${form.metodoPagamento} para ${form.trabTel}. Comprovativo obrigatorio. Adiantamentos so com recibo. Prazo contrato: ${form.prazo} dias.`;
-    doc.splitTextToSize(semAcento(salario), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    check(20); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("5. ALIMENTACAO E ALOJAMENTO",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); 
-    doc.splitTextToSize(semAcento(`Alimentacao: ${form.alimentacao}. Alojamento: ${form.alojamento}.`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    check(20); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("6. FOLGAS E FERIAS",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); 
-    doc.splitTextToSize(semAcento(`${form.folgas}. ${form.ferias}.`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    check(20); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("7. PERIODO EXPERIMENTAL",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); 
-    doc.splitTextToSize(semAcento(`${form.periodoExp} a contar de ${form.dataInicio}. Aviso previo ${form.avisoExp} neste periodo.`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    check(40); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("8. DEVERES",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal");
-    doc.splitTextToSize(semAcento(`Profissional: ${form.deveresProf}`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=2;
-    doc.splitTextToSize(semAcento(`Empregador: ${form.deveresEmp}`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    
-    if(tipo==="Secretario/a Domestico/a"){
-      doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.text("CLAUSULA LOUCA:",M,y); y+=5;
-      doc.setFontSize(9); doc.setFont("helvetica","normal");
-      doc.splitTextToSize(semAcento(form.clausulaLouca), W-M*2).forEach((l:string)=>{ check(5); doc.text(l,M,y); y+=4; }); y+=4;
+type Tipo = "Pedreiro" | "Carpinteiro" | "Eletricista" | "Pintor" | "Motorista Particular" | "Secretario/a Domestico/a" | "Serralheiro" | "Canalizador" | "Servicos/Consultoria" | "Outros/Particular";
+
+const MODELOS_ESPECIFICOS: Record<Tipo, any> = {
+  "Pedreiro": {
+    titulo: "CONTRATO DE PRESTAÃ‡ÃƒO DE SERVIÃ‡OS - PEDREIRO",
+    tarefasDefault: ["MarcaÃ§Ã£o e alicerce", "Alvenaria blocos 15cm", "Acabamento fino"],
+    clausulas: {
+      c5_titulo: "5. DOS MATERIAIS (ESPECÃFICA PEDREIRO)",
+      c5_default: "Cimento 42.5N, areia grossa lavada, brita 1, ferragem 8mm/10mm. Contratante fornece ou reembolsa mediante factura. Cimento fornecido por contratante.",
+      c6_titulo: "6. DO ALICERCE E ESTRUTURA (ESPECÃFICA PEDREIRO)",
+      c6_default: "Alicerce mÃ­nimo 60cm profundidade, sapatas 80x80. Garantia contra infiltraÃ§Ã£o ascendente 12 meses.",
+      c7_titulo: "7. DO PRAZO POR MÂ² (ESPECÃFICA PEDREIRO)",
+      c7_default: "Prazo calculado: 1,5 dias/mÂ² alvenaria, 1 dia/mÂ² reboco. Atraso por chuva nÃ£o conta.",
     }
-    
-    check(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("9. RESCISAO",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); 
-    doc.splitTextToSize(semAcento(`${form.rescisaoJusta}. ${form.rescisaoSemJusta}.`), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=6;
-    
-    check(30); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("10. ANEXOS - Fotos, Projetos ("+anexos.length+")",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal");
-    if(anexos.length===0){ doc.text("Nenhum anexo. Faz parte integrante se anexado via WhatsApp.",M,y); y+=5; }
-    else { anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome)+" - "+a.tamanho,M,y); y+=5; }); y+=2; doc.setFontSize(9); doc.text("Anexos fazem parte integrante do contrato.",M,y); y+=6; }
-    
-    check(40); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("11. VALIDADE",M,y); y+=6;
-    doc.setFontSize(10); doc.setFont("helvetica","normal"); doc.text("Validade legal Art. 29 Lei 23/2007. Contrato escrito protege ambos. ID: "+Math.floor(Math.random()*1000000000000),M,y); y+=10;
-    check(60); doc.setDrawColor(0,51,160); doc.setLineWidth(0.8); doc.rect(W/2-55,y,110,36);
-    doc.setTextColor(0,51,160); doc.setFontSize(14); doc.setFont("helvetica","bold"); doc.text("ESSE",W/2-10,y+9);
-    doc.setFontSize(8); doc.text("ENERGY SOLUTIONS & SERVICES",W/2-28,y+14);
-    doc.text("ENTERPRISE LDA - NUIT 401 866 876",W/2-30,y+18);
-    doc.text("Xai-Xai - Mocambique",W/2-24,y+22);
-    doc.text("Gerado por Contrata.MZ em "+new Date().toLocaleDateString(),W/2-30,y+28);
-    doc.setTextColor(20,20,20); y+=48;
-    check(50); doc.setFontSize(10); doc.text("Assinaturas:",M,y); y+=12;
-    const col1=M, col2=W/2+10; doc.line(col1,y,col1+60,y); doc.line(col2,y,col2+60,y); y+=4;
-    doc.setFontSize(9); doc.text(semAcento(form.empNome||"Contratante"),col1,y); doc.text(semAcento(form.trabNome||"Contratado"),col2,y); y+=6;
-    doc.setFontSize(8); doc.text("Contratante",col1,y); doc.text("Contratado - "+semAcento(tipo),col2,y); y+=10;
-    doc.setFontSize(7); doc.setTextColor(100,100,100); doc.text("Contrata.MZ - Projeto ESSE - NUIT 401 866 876 - Xai-Xai - M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Banco 000301170814421100321",M,y,{maxWidth:W-M*2});
-    return doc;
+  },
+  "Carpinteiro": {
+    titulo: "CONTRATO DE PRESTAÃ‡ÃƒO DE SERVIÃ‡OS - CARPINTEIRO",
+    tarefasDefault: ["Medir e cortar madeira", "Fabricar portas", "Instalar com acabamento"],
+    clausulas: {
+      c5_titulo: "5. DA MADEIRA E MATERIAL (ESPECÃFICA CARPINTEIRO)",
+      c5_default: "Madeira: Umbila / Chanfuta seca, cola branca, pregos, verniz. Contratante fornece ou reembolsa.",
+      c6_titulo: "6. DAS MEDIDAS E MODELO (ESPECÃFICA CARPINTEIRO)",
+      c6_default: "Medidas conforme foto anexa. TolerÃ¢ncia 2mm. Garantia contra empeno 6 meses.",
+      c7_titulo: "7. DO PRAZO POR PEÃ‡A",
+      c7_default: "Prazo: 3 dias/porta, 2 dias/janela. Atraso por falta energia nÃ£o conta.",
+    }
+  },
+  "Eletricista": {
+    titulo: "CONTRATO - ELETRICISTA",
+    tarefasDefault: ["Instalar quadro elÃ©trico", "Instalar tomadas", "Testar instalaÃ§Ã£o"],
+    clausulas: {
+      c5_titulo: "5. DO MATERIAL ELÃ‰TRICO (ESPECÃFICA ELETRICISTA)",
+      c5_default: "Cabos 2.5mm / 1.5mm, disjuntores, tomadas. Material certificado INCM. Contratante fornece.",
+      c6_titulo: "6. DA SEGURANÃ‡A E NORMA",
+      c6_default: "InstalaÃ§Ã£o conforme norma NBR. Garantia 12 meses contra curto-circuito por mÃ¡ instalaÃ§Ã£o.",
+      c7_titulo: "7. DO PRAZO POR PONTO",
+      c7_default: "Prazo: 1 dia/5 pontos de luz. Teste final com multÃ­metro.",
+    }
+  },
+  "Motorista Particular": {
+    titulo: "CONTRATO DE TRABALHO - MOTORISTA",
+    tarefasDefault: ["Conduzir empregador", "Levar crianÃ§as escola", "ManutenÃ§Ã£o bÃ¡sica viatura"],
+    clausulas: {
+      c5_titulo: "5. DA VIATURA E COMBUSTÃVEL",
+      c5_default: "Viatura: [marca/matricula]. CombustÃ­vel fornecido por contratante, senhas ou reembolso com talÃ£o.",
+      c6_titulo: "6. DO HORÃRIO E HORAS EXTRAS",
+      c6_default: "HorÃ¡rio 06:00-18:00. Horas extras pagas 50% ou compensadas. Domingo Ã© folga.",
+      c7_titulo: "7. DA CARTA E RESPONSABILIDADE",
+      c7_default: "Carta vÃ¡lida categoria B/C. Multas por negligÃªncia do motorista sÃ£o dele, mecÃ¢nicas sÃ£o do contratante.",
+    }
+  },
+  "Secretario/a Domestico/a": {
+    titulo: "CONTRATO DE TRABALHO DOMÃ‰STICO",
+    tarefasDefault: ["Limpeza geral", "Lavar louÃ§a e zelar", "Arrumar quartos", "Cozinhar"],
+    clausulas: {
+      c5_titulo: "5. DA ALIMENTAÃ‡ÃƒO E ALOJAMENTO",
+      c5_default: "AlimentaÃ§Ã£o: 1 refeiÃ§Ã£o/dia no local. Alojamento: NÃ£o. Produtos limpeza fornecidos por contratante.",
+      c6_titulo: "6. DA LOUÃ‡A E QUEBRAS (CLÃUSULA ESPECÃFICA)",
+      c6_default: "Zela pela louÃ§a, avisa quebras. NÃ£o paga quebra acidental salvo negligÃªncia grave - max 25% salÃ¡rio parcelado.",
+      c7_titulo: "7. DO HORÃRIO DOMÃ‰STICO",
+      c7_default: "06:00-17:00 Seg-Sab. Descanso Domingo. NÃ£o faz trabalho pesado de obra.",
+    }
+  },
+  "Pintor": {
+    titulo: "CONTRATO - PINTOR",
+    tarefasDefault: ["Preparar parede (lixar/massa)", "Pintura interior", "Pintura exterior"],
+    clausulas: {
+      c5_titulo: "5. DA TINTA E MATERIAL (ESPECÃFICA PINTOR)",
+      c5_default: "Tinta: [marca/cor conforme foto anexa]. Contratante fornece tinta, rolos e lixa. Rendimento 1L/8mÂ².",
+      c6_titulo: "6. DO ACABAMENTO",
+      c6_default: "2 demÃ£os mÃ­nimo. Sem manchas ou escorrimentos. Garantia 6 meses contra descasque por mÃ¡ aplicaÃ§Ã£o.",
+      c7_titulo: "7. DO PRAZO POR MÂ²",
+      c7_default: "Prazo: 1 dia/20mÂ² interior. Atraso por chuva (exterior) nÃ£o conta.",
+    }
+  },
+  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", tarefasDefault: ["Fabricar portÃµes", "Soldar estruturas"], clausulas: { c5_titulo: "5. DO FERRO E MATERIAL", c5_default: "Ferro cantoneira 40mm, chapa 1.5mm, tinta anti-ferrugem. Contratante fornece ou reembolsa.", c6_titulo: "6. DA SOLDADURA", c6_default: "Soldadura reforÃ§ada, sem rebarbas. Garantia 12 meses contra quebra de solda.", c7_titulo: "7. DO PRAZO", c7_default: "Prazo por medida. InstalaÃ§Ã£o inclusa." } },
+  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", tarefasDefault: ["Instalar canos", "Instalar sanita"], clausulas: { c5_titulo: "5. DO MATERIAL", c5_default: "Tubos PVC 110mm, cola, joelhos. Contratante fornece.", c6_titulo: "6. DO TESTE", c6_default: "Teste de estanqueidade 24h. Garantia contra fuga 6 meses.", c7_titulo: "7. DO PRAZO", c7_default: "Prazo conforme pontos de Ã¡gua." } },
+  "Servicos/Consultoria": { titulo: "CONTRATO PRESTAÃ‡ÃƒO SERVIÃ‡OS", tarefasDefault: ["Consultoria empresarial"], clausulas: { c5_titulo: "5. DOS ENTREGÃVEIS", c5_default: "RelatÃ³rios, reuniÃµes semanais, plano de aÃ§Ã£o.", c6_titulo: "6. DA PROPRIEDADE INTELECTUAL", c6_default: "Material pertence ao contratante apÃ³s pagamento.", c7_titulo: "7. DO PRAZO", c7_default: "Prazo por milestones." } },
+  "Outros/Particular": { titulo: "CONTRATO PARTICULAR", tarefasDefault: ["ServiÃ§o personalizado"], clausulas: { c5_titulo: "5. DOS MATERIAIS", c5_default: "A definir - quem fornece o quÃª", c6_titulo: "6. DA EXECUÃ‡ÃƒO", c6_default: "Conforme combinado", c7_titulo: "7. DO PRAZO", c7_default: "A combinar" } },
+};
+
+export default function App() {
+  const [tipo, setTipo] = useState<Tipo>("Pedreiro");
+  const modelo = MODELOS_ESPECIFICOS[tipo];
+
+  const [form, setForm] = useState({
+    contratante: "", biContratante: "", local: "Xai-Xai",
+    prestador: "", biPrestador: "",
+    tarefas: modelo.tarefasDefault.join(", "),
+    valor: "A combinar", prazo: "A combinar", formaPag: "Conforme acordado",
+    c5: modelo.clausulas.c5_default,
+    c6: modelo.clausulas.c6_default,
+    c7: modelo.clausulas.c7_default,
+    pagamento: "40% adiantado, restante na entrega. Via PagaFÃ¡cil M-Pesa 840532899, e-Mola 864341779",
+    rescisao: "7 dias aviso prÃ©vio. Multa 10% se rescisÃ£o sem justa causa.",
+    foro: "Foro de Xai-Xai, Gaza",
+  });
+
+  useEffect(() => {
+    const m = MODELOS_ESPECIFICOS[tipo];
+    setForm(f => ({
+      ...f,
+      tarefas: m.tarefasDefault.join(", "),
+      c5: m.clausulas.c5_default,
+      c6: m.clausulas.c6_default,
+      c7: m.clausulas.c7_default,
+    }));
+  }, [tipo]);
+
+  const tarefasArray = form.tarefas.split(",").map(t => t.trim()).filter(Boolean);
+
+  const gerarPDF = async () => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const W = doc.internal.pageSize.getWidth(); let y = 15; const M = 12;
+    const check = (h = 15) => { if (y + h > 285) { doc.addPage(); y = 12; } };
+    doc.setFontSize(10); doc.setFont("helvetica", "bold");
+    doc.text(semAcento(modelo.titulo), M, y); y += 5;
+    doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.text(`PEDREIRO â€¢ NUIT 401 866 876 â€¢ Xai-Xai â€¢ ${new Date().toLocaleDateString()}`, M, y); y += 8;
+    const add = (n: string, t: string, c: string) => {
+      check(20); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(semAcento(n + ". " + t), M, y); y += 4;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.splitTextToSize(semAcento(c), W - M * 2).forEach((l: string) => { check(5); doc.text(l, M, y); y += 4; }); y += 2;
+    };
+    add("1", "PARTES", `${form.contratante || "[Contratante]"} (BI ${form.biContratante || "___"}) e ${form.prestador || "[Prestador]"} (BI ${form.biPrestador || "___"}).`);
+    add("2", "OBJETO", `PrestaÃ§Ã£o de serviÃ§os de ${tipo} em ${form.local}.`);
+    add("3", "TAREFAS", tarefasArray.map((t, i) => `${i + 1}. ${t}`).join(" | ") || "A definir");
+    add("4", "VALOR E PRAZO", `${form.valor} â€¢ Prazo ${form.prazo} â€¢ ${form.formaPag}.`);
+    add("5", modelo.clausulas.c5_titulo, form.c5);
+    add("6", modelo.clausulas.c6_titulo, form.c6);
+    add("7", modelo.clausulas.c7_titulo, form.c7);
+    add("9", "PAGAMENTO", form.pagamento);
+    add("10", "RESCISÃƒO", form.rescisao);
+    add("11", "FORO", form.foro);
+    y += 4; doc.setDrawColor(0); doc.rect(W / 2 - 30, y, 60, 18); doc.setFontSize(7); doc.text("ESSE â€¢ NUIT 401866876", W / 2 - 25, y + 6); doc.text("Contrata.MZ", W / 2 - 12, y + 11);
+    doc.save(`Contrato-${tipo}-${form.prestador || "draft"}.pdf`);
   };
-  const gerarPDF=async()=>{ const doc=await gerarPDFCompleto(); doc.save("Contrato-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf"); };
-  const compartilharFree=async()=>{
-    try{
-      const doc=await gerarPDFCompleto();
-      const nome="Contrato-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf";
-      const blob=doc.output("blob");
-      const texto=`CONTRATO ${semAcento(tipo).toUpperCase()} - ${semAcento(form.trabNome)}%0AValor: ${form.valor} MZN%0A${todas.length} clausulas - ${anexos.length} anexos%0AGerado Contrata.MZ - ESSE`;
-      const file=new File([blob],nome,{type:"application/pdf"});
-      if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({title:nome, text:`Contrato ${tipo} - ${form.trabNome}`, files:[file]} as any); return; }
-      doc.save(nome); window.open(`https://wa.me/?text=${texto}`,"_blank");
-    }catch{ await gerarPDF(); window.open(`https://wa.me/?text=Contrato ${encodeURIComponent(tipo)}`,"_blank"); }
-  };
-  const pagar=async()=>{
-    if(metodo!=="banco" && !telPag){ alert("Digite numero"); return; }
-    setProcessando(true); await new Promise(r=>setTimeout(r,1500));
-    if(metodo!=="banco"){ setShowPin(true); setTimeout(()=>{ setShowPin(false); setProcessando(false); setShowPag(false); gerarPDF(); },3000); }
-    else { setProcessando(false); setShowPag(false); gerarPDF(); }
-  };
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-zinc-800">
-      <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
-        <div className="mx-auto max-w-[1280px] px-4 h-[72px] flex items-center justify-between">
-          <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-[12px] bg-[#00a651] text-white grid place-items-center font-bold">C</div><div><div className="font-bold text-[15px] leading-none">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500">ENCONTRE. NEGOCIE. FORMALIZE.</div><div className="text-[8px] text-zinc-400 font-bold">Um projeto da ESSE - TODAS CLAUSULAS EDITAVEIS</div></div></div>
-          <div className="flex items-center gap-3"><div className="hidden md:flex flex-col items-end mr-2"><span className="text-[9px] font-bold text-zinc-400 uppercase">Projeto de</span><span className="text-[11px] font-bold">ESSE - Energy Solutions</span><span className="text-[8px] text-zinc-500">NUIT 401 866 876 | Xai-Xai</span></div><img src={ESSE_LOGO} alt="ESSE" className="h-[42px] w-auto" /><div className="flex p-1 bg-zinc-100 rounded-[10px] ml-1"><button onClick={()=>setLang("pt")} className={`px-3 py-1 rounded-[8px] text-[11px] font-bold ${lang==="pt"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-3 py-1 rounded-[8px] text-[11px] font-bold ${lang==="en"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>EN</button></div></div>
-        </div>
+    <div className="min-h-screen bg-[#f1f5f9] flex flex-col">
+      <header className="bg-white border-b px-4 h-[56px] flex items-center justify-between sticky top-0 z-20">
+        <div className="flex items-center gap-3"><img src={ESSE_LOGO} className="h-8" alt="ESSE" /><span className="font-extrabold text-[13px]">CONTRATA.MZ â€¢ DRAFT VIVO</span><span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold">TUDO MUDA AO VIVO</span></div>
+        <div className="flex gap-2"><button onClick={gerarPDF} className="px-4 py-2 bg-[#0f2a44] text-white rounded-[8px] text-[11px] font-bold">Ver preview PDF â†’</button></div>
       </header>
-      <div className="mx-auto max-w-[1280px] px-4 pt-4">
-        <div className="bg-gradient-to-r from-[#0033a0] via-[#2563eb] to-[#00a651] text-white rounded-[20px] p-5 flex flex-col md:flex-row justify-between gap-4 shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="relative z-10"><div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold tracking-wider">NOVO: TODAS AS 11 CLAUSULAS AGORA EDITAVEIS</div><div className="text-[18px] md:text-[20px] font-extrabold mt-2 leading-tight max-w-[640px]">Todas as clausulas editaveis. O que escreves aparece no PDF e no Preview.</div><div className="text-[12px] md:text-[13px] text-white/90 mt-2 max-w-[620px] leading-relaxed">Antes so a clausula 1 editava. Agora: horario, salario, alimentacao, folgas, periodo experimental, deveres e rescisao - tudo editavel. Cada campo que mudas reflete instantaneamente no preview da direita e no PDF final.</div><div className="mt-3 flex flex-wrap gap-2 text-[10px]"><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">âœ“ 11 Clausulas Editaveis</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">âœ“ Preview em tempo real</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">âœ“ PDF com tudo</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">âœ“ Lei 23/2007</span></div></div>
-          <div className="relative z-10 bg-white text-[#0f172a] rounded-[14px] p-4 min-w-[170px] shadow-lg"><div className="text-[11px] font-extrabold text-[#0033a0] uppercase tracking-wider">Contrato Completo Editavel</div><div className="text-[10px] text-zinc-600 mt-1">11 clausulas legais + anexos</div><div className="mt-3 space-y-1 text-[11px]"><div className="flex justify-between"><span>1. Partes âœï¸</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>2. Objecto e Tarefas âœï¸</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>3. Horario e Salario âœï¸</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>4-9. Todas editaveis âœï¸</span><span className="text-emerald-600">âœ“</span></div><div className="flex justify-between"><span>10. Anexos + 11. Validade âœï¸</span><span className="text-emerald-600">âœ“</span></div></div><div className="mt-3 text-[9px] text-zinc-500 text-center">Tudo que digitas vai para PDF</div></div>
+
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-0">
+        {/* ESQUERDA - FORMULÃRIO */}
+        <div className="bg-white border-r p-4 overflow-auto h-[calc(100vh-56px)] space-y-4">
+          <div className="text-[11px] font-bold uppercase text-zinc-500">1. Escolhe o tipo (muda as clÃ¡usulas 5,6,7)</div>
+          <div className="flex flex-wrap gap-1.5">{(Object.keys(MODELOS_ESPECIFICOS) as Tipo[]).map(t => <button key={t} onClick={() => setTipo(t)} className={`px-3 py-1.5 rounded-full text-[11px] border font-bold ${tipo === t ? "bg-[#0f2a44] text-white" : "bg-white"}`}>{t}</button>)}</div>
+
+          <div className="space-y-3 pt-2 border-t">
+            <div className="text-[11px] font-bold">PARTES</div>
+            <input value={form.contratante} onChange={e => setForm({ ...form, contratante: e.target.value })} placeholder="Nome Contratante" className="w-full h-[38px] border-2 px-3 rounded-[8px] text-[12px]" />
+            <input value={form.prestador} onChange={e => setForm({ ...form, prestador: e.target.value })} placeholder="Nome Prestador / Pedreiro" className="w-full h-[38px] border-2 px-3 rounded-[8px] text-[12px] bg-yellow-50 font-bold" />
+            <input value={form.local} onChange={e => setForm({ ...form, local: e.target.value })} placeholder="Local obra: Ex Xai-Xai" className="w-full h-[38px] border-2 px-3 rounded-[8px] text-[12px]" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-[11px] font-bold">TAREFAS - separa por vÃ­rgula (aparece na clÃ¡usula 3)</div>
+            <textarea value={form.tarefas} onChange={e => setForm({ ...form, tarefas: e.target.value })} className="w-full min-h-[70px] p-3 border-2 rounded-[8px] text-[12px]" placeholder="MarcaÃ§Ã£o e alicerce, Alvenaria blocos 15cm, Acabamento fino" />
+            <div className="text-[10px] text-zinc-500">{tarefasArray.length} tarefas â€¢ Escreve e vÃª mudar no preview â†’</div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="text-[11px] font-bold">VALOR E PRAZO</div>
+            <div className="grid grid-cols-2 gap-2"><input value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} placeholder="Valor Ex: 45.000MT" className="h-[38px] border-2 px-3 rounded-[8px] text-[12px]" /><input value={form.prazo} onChange={e => setForm({ ...form, prazo: e.target.value })} placeholder="Prazo Ex: 15 dias" className="h-[38px] border-2 px-3 rounded-[8px] text-[12px]" /></div>
+          </div>
+
+          {/* CLÃUSULAS ESPECÃFICAS QUE MUDAM */}
+          <div className="space-y-3 pt-3 border-t-2 border-amber-200 bg-amber-50/50 p-3 rounded-[12px]">
+            <div className="text-[11px] font-extrabold text-amber-800">CLÃUSULAS ESPECÃFICAS DE {tipo.toUpperCase()} - 100% EDITÃVEIS (ex: cimento, atraso chuva)</div>
+
+            <div><label className="text-[10px] font-bold">{MODELOS_ESPECIFICOS[tipo].clausulas.c5_titulo}</label><textarea value={form.c5} onChange={e => setForm({ ...form, c5: e.target.value })} className="w-full min-h-[80px] p-3 border-2 border-amber-300 rounded-[8px] text-[12px] bg-white mt-1" /></div>
+
+            <div><label className="text-[10px] font-bold">{MODELOS_ESPECIFICOS[tipo].clausulas.c6_titulo}</label><textarea value={form.c6} onChange={e => setForm({ ...form, c6: e.target.value })} className="w-full min-h-[80px] p-3 border-2 rounded-[8px] text-[12px] bg-white mt-1" /></div>
+
+            <div><label className="text-[10px] font-bold">{MODELOS_ESPECIFICOS[tipo].clausulas.c7_titulo}</label><textarea value={form.c7} onChange={e => setForm({ ...form, c7: e.target.value })} className="w-full min-h-[80px] p-3 border-2 rounded-[8px] text-[12px] bg-white mt-1" placeholder="Ex: Atraso chuva nÃ£o conta, 1.5 dias/mÂ²" /></div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-[11px] font-bold">PAGAMENTO, RESCISÃƒO, FORO</div>
+            <textarea value={form.pagamento} onChange={e => setForm({ ...form, pagamento: e.target.value })} className="w-full min-h-[50px] p-2 border-2 rounded-[8px] text-[11px]" />
+            <input value={form.rescisao} onChange={e => setForm({ ...form, rescisao: e.target.value })} className="w-full h-[36px] border-2 px-3 rounded-[8px] text-[11px]" />
+            <input value={form.foro} onChange={e => setForm({ ...form, foro: e.target.value })} className="w-full h-[36px] border-2 px-3 rounded-[8px] text-[11px]" />
+          </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <div className="flex gap-2 p-1 bg-white border rounded-[14px] w-fit"><button onClick={()=>setTab("encontrar")} className={`px-4 py-2 rounded-[10px] text-[13px] font-bold ${tab==="encontrar"?"bg-[#00a651] text-white":"text-zinc-600"}`}>ENCONTRAR</button><button onClick={()=>setTab("contratos")} className={`px-4 py-2 rounded-[10px] text-[13px] font-bold ${tab==="contratos"?"bg-[#2563eb] text-white":"text-zinc-600"}`}>CONTRATOS</button><button onClick={()=>setTab("meus")} className={`px-4 py-2 rounded-[10px] text-[13px] font-bold ${tab==="meus"?"bg-[#00a651] text-white":"text-zinc-600"}`}>MEUS</button></div>
-          {tab==="contratos" && (<div className="flex p-1 bg-white border-2 rounded-[14px] w-full lg:w-fit overflow-x-auto gap-1.5"><button onClick={()=>irPagina(1)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===1?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>1. Partes âœï¸</button><button onClick={()=>irPagina(2)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===2?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>2. Objecto âœï¸</button><button onClick={()=>irPagina(3)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===3?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>3. Horario âœï¸</button><button onClick={()=>irPagina(4)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===4?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>4. Salario âœï¸</button><button onClick={()=>irPagina(5)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===5?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>5-9. Deveres âœï¸</button><button onClick={()=>irPagina(6)} className={`px-3 py-2 rounded-[10px] text-[11px] font-bold whitespace-nowrap ${pagina===6?"bg-[#2563eb] text-white":"bg-zinc-100"}`}>10-11. Anexos âœï¸</button></div>)}
-        </div>
-      </div>
-      <main className="mx-auto max-w-[1280px] px-4 py-6">
-        {tab==="encontrar" && (<div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4"><div className="bg-white border rounded-[16px] p-4 h-fit"><div className="font-semibold text-[13px]">Filtros</div><div className="mt-4 flex flex-wrap gap-1.5">{["Todas","Domestico","Construcao","Servicos","Consultoria"].map(cat=>{const active=filtroCat===cat; return <button key={cat} onClick={()=>setFiltroCat(cat)} className={`px-3 py-1.5 rounded-full text-[11px] border ${active?"bg-[#00a651] text-white":"bg-white"}`}>{cat}</button>})}</div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">{profissionaisFiltrados.map(p=>(<div key={p.nome} className="bg-white border rounded-[16px] p-4"><div className="flex items-start gap-3"><div className="w-10 h-10 rounded-full bg-[#00a651] text-white grid place-items-center font-bold">{p.ini}</div><div><div className="font-semibold text-[13px]">{p.nome}</div><div className="text-[11px] text-zinc-500">{p.func} - {p.local}</div></div></div><div className="mt-3 grid grid-cols-2 gap-2"><button className="h-[36px] rounded-[10px] border text-[12px]">Ver Perfil</button><button onClick={()=>{setTab("contratos"); irPagina(1);}} className="h-[36px] rounded-[10px] bg-[#00a651] text-white text-[12px] font-bold">Contactar / Contratar</button></div></div>))}</div></div>)}
-        {tab==="contratos" && (
-          <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_360px] gap-4">
-            <div className="bg-white border rounded-[16px] p-3 h-fit lg:sticky lg:top-[100px]">
-              <div className="flex items-center justify-between"><div><div className="font-bold text-[13px]">Biblioteca 10+ - Por Clausulas</div><div className="text-[10px] text-zinc-500">Todos editaveis agora</div><div className="text-[11px] font-bold mt-1 text-[#2563eb]">Escolhido: {tipo}</div></div><button onClick={()=>setBibAberta(!bibAberta)} className="lg:hidden px-3 py-1.5 rounded-[8px] bg-zinc-100 text-[11px] font-bold">{bibAberta?"Fechar X":"Trocar"}</button></div>
-              <div className={`${bibAberta?"block":"hidden lg:block"} mt-3 space-y-2`}>
-                {(Object.keys(MODELOS) as TipoContrato[]).map(t=>{const ativo=tipo===t; return <button key={t} onClick={()=>escolherTipo(t)} className={`w-full text-left p-3 rounded-[12px] border flex gap-2.5 ${ativo?"bg-emerald-50 border-emerald-300":"bg-white"}`}><div className="w-7 h-7 rounded-full bg-white border grid place-items-center text-[11px] font-bold">{t.slice(0,2).toUpperCase()}</div><div className="flex-1"><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500">{MODELOS[t].desc}</div></div><div className={`w-5 h-5 rounded-full border-2 grid place-items-center ${ativo?"bg-[#00a651] border-[#00a651] text-white":"border-zinc-300"}`}>{ativo?"âœ“":""}</div></button>})}
-              </div>
-            </div>
-            <div ref={formRef} className="bg-white border rounded-[16px] p-5">
-              <div className="flex items-center justify-between"><h3 className="font-bold text-[14px]">{MODELOS[tipo].titulo} - {pagina===1?"Clausula 1: Partes (EDITAVEL)":pagina===2?"Clausula 2: Objecto e Tarefas (EDITAVEL)":pagina===3?"Clausula 3: Horario (EDITAVEL)":pagina===4?"Clausula 4: Salario (EDITAVEL)":pagina===5?"Clausula 5-9: Todas Editaveis":pagina===6?"Clausula 10-11: Anexos e Validade":""}</h3><span className="px-2 py-0.5 rounded-full bg-emerald-50 border text-[10px] font-bold text-emerald-700">EDITAVEL âœ“</span></div>
-              <div className="mt-5">
-                {pagina===1 && (<div className="space-y-4"><div className="font-bold text-[12px] text-blue-800 bg-blue-50 p-2 rounded">CLAUSULA 1 - PARTES - Quem contrata e quem faz (EDITAVEL - aparece no PDF)</div><div><label className="text-[10px] font-bold uppercase">Nome completo Contratante / Empresa *</label><input value={form.empNome} onChange={e=>setForm({...form,empNome:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px] focus:border-blue-500 outline-none" /></div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">BI / NUIT Contratante *</label><input value={form.empBI} onChange={e=>setForm({...form,empBI:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Contacto Contratante</label><input value={form.empTel} onChange={e=>setForm({...form,empTel:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div></div><div><label className="text-[10px] font-bold uppercase">Bairro Contratante</label><input value={form.empBairro} onChange={e=>setForm({...form,empBairro:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Provincia</label><input value={form.provincia} onChange={e=>setForm({...form,provincia:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Nome Profissional *</label><input value={form.trabNome} onChange={e=>setForm({...form,trabNome:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">BI Profissional</label><input value={form.trabBI} onChange={e=>setForm({...form,trabBI:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div><div><label className="text-[10px] font-bold uppercase">Tel Profissional</label><input value={form.trabTel} onChange={e=>setForm({...form,trabTel:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[13px]" /></div></div><button onClick={()=>irPagina(2)} className="w-full h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">PrÃ³ximo â†’ ClÃ¡usula 2</button></div>)}
-                {pagina===2 && (<div className="space-y-4"><div className="font-bold text-[12px] bg-blue-50 p-2 rounded">CLAUSULA 2 - OBJECTO - {tipo.toUpperCase()} - Tarefas e Obrigacoes (EDITAVEL)</div><div className="flex flex-wrap gap-2">{MODELOS[tipo].checklist.map(t=>{const ativo=tarefasSel.includes(t); return <button key={t} onClick={()=>setTarefasSel(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t])} className={`px-3 py-2 rounded-full text-[11px] border text-left ${ativo?"bg-[#00a651] text-white border-[#00a651]":"bg-white border-zinc-300"}`}>{t}</button>})}</div><div><label className="text-[10px] font-bold uppercase">Acrescentar tarefas - editavel (separa por virgula)</label><textarea value={tarefasExtra} onChange={e=>setTarefasExtra(e.target.value)} placeholder="Ex: Seguir projeto anexo, cumprir horario..." className="mt-1 w-full min-h-[80px] p-3 rounded-[10px] border-2 text-[12px]" /></div><div><label className="text-[10px] font-bold uppercase">ObservaÃ§Ãµes gerais desta clÃ¡usula</label><textarea value={form.observacoes} onChange={e=>setForm({...form,observacoes:e.target.value})} className="mt-1 w-full min-h-[60px] p-3 rounded-[10px] border-2 text-[12px]" /></div><div className="flex gap-2"><button onClick={()=>irPagina(1)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">â† Voltar</button><button onClick={()=>irPagina(3)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">PrÃ³ximo â†’ HorÃ¡rio</button></div></div>)}
-                {pagina===3 && (<div className="space-y-4"><div className="font-bold text-[12px] bg-blue-50 p-2 rounded">CLAUSULA 3 - HORARIO E PROVA (TOTALMENTE EDITAVEL AGORA)</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Hora InÃ­cio *</label><input value={form.horarioInicio} onChange={e=>setForm({...form,horarioInicio:e.target.value})} type="time" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div><label className="text-[10px] font-bold uppercase">Hora Fim *</label><input value={form.horarioFim} onChange={e=>setForm({...form,horarioFim:e.target.value})} type="time" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div><div><label className="text-[10px] font-bold uppercase">Dias da semana (editÃ¡vel)</label><input value={form.diasTrabalho} onChange={e=>setForm({...form,diasTrabalho:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Data InÃ­cio</label><input value={form.dataInicio} onChange={e=>setForm({...form,dataInicio:e.target.value})} type="date" className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div><label className="text-[10px] font-bold uppercase">Local Obra / ServiÃ§o</label><input value={form.local} onChange={e=>setForm({...form,local:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div><div className="p-3 bg-emerald-50 border border-emerald-200 rounded-[10px] text-[11px]">âœ“ Tudo que editas aqui aparece no preview e no PDF: {form.horarioInicio} Ã s {form.horarioFim} - {form.diasTrabalho}</div><div className="flex gap-2"><button onClick={()=>irPagina(2)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">â† Voltar</button><button onClick={()=>irPagina(4)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">PrÃ³ximo â†’ SalÃ¡rio</button></div></div>)}
-                {pagina===4 && (<div className="space-y-4"><div className="font-bold text-[12px] bg-blue-50 p-2 rounded">CLAUSULA 4 - SALARIO E RECIBO (TOTALMENTE EDITAVEL)</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">Valor SalÃ¡rio MZN *</label><input value={form.valor} onChange={e=>setForm({...form,valor:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 font-bold" /></div><div><label className="text-[10px] font-bold uppercase">Dia Pagamento</label><input value={form.diaPagamento} onChange={e=>setForm({...form,diaPagamento:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">MÃ©todo Pagamento</label><select value={form.metodoPagamento} onChange={e=>setForm({...form,metodoPagamento:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2"><option>M-Pesa</option><option>e-Mola</option><option>mKesh</option><option>Banco</option><option>NumerÃ¡rio</option></select></div><div><label className="text-[10px] font-bold uppercase">Prazo dias contrato</label><input value={form.prazo} onChange={e=>setForm({...form,prazo:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div><div className="p-3 bg-amber-50 border border-amber-200 rounded-[10px] text-[11px]">Preview: SalÃ¡rio {form.valor} MZN atÃ© dia {form.diaPagamento} via {form.metodoPagamento} para {form.trabTel}</div><div className="flex gap-2"><button onClick={()=>irPagina(3)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">â† Voltar</button><button onClick={()=>irPagina(5)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">PrÃ³ximo â†’ Deveres</button></div></div>)}
-                {pagina===5 && (<div className="space-y-4"><div className="font-bold text-[12px] bg-blue-50 p-2 rounded">CLAUSULAS 5 A 9 - TODAS EDITAVEIS AGORA (era fixo antes)</div>
-                  <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">5. AlimentaÃ§Ã£o (editÃ¡vel)</label><input value={form.alimentacao} onChange={e=>setForm({...form,alimentacao:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div><label className="text-[10px] font-bold uppercase">5. Alojamento (editÃ¡vel)</label><input value={form.alojamento} onChange={e=>setForm({...form,alojamento:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div>
-                  <div><label className="text-[10px] font-bold uppercase">6. Folgas (editÃ¡vel)</label><textarea value={form.folgas} onChange={e=>setForm({...form,folgas:e.target.value})} className="mt-1 w-full min-h-[60px] p-3 rounded-[10px] border-2 text-[12px]" /></div>
-                  <div><label className="text-[10px] font-bold uppercase">6. FÃ©rias (editÃ¡vel)</label><input value={form.ferias} onChange={e=>setForm({...form,ferias:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2 text-[12px]" /></div>
-                  <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold uppercase">7. PerÃ­odo Experimental</label><input value={form.periodoExp} onChange={e=>setForm({...form,periodoExp:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div><div><label className="text-[10px] font-bold uppercase">7. Aviso PrÃ©vio Experimental</label><input value={form.avisoExp} onChange={e=>setForm({...form,avisoExp:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div></div>
-                  <div><label className="text-[10px] font-bold uppercase">8. Deveres do Profissional (editÃ¡vel)</label><textarea value={form.deveresProf} onChange={e=>setForm({...form,deveresProf:e.target.value})} className="mt-1 w-full min-h-[80px] p-3 rounded-[10px] border-2 text-[12px]" /></div>
-                  <div><label className="text-[10px] font-bold uppercase">8. Deveres do Empregador (editÃ¡vel)</label><textarea value={form.deveresEmp} onChange={e=>setForm({...form,deveresEmp:e.target.value})} className="mt-1 w-full min-h-[80px] p-3 rounded-[10px] border-2 text-[12px]" /></div>
-                  {tipo==="Secretario/a Domestico/a" && (<div><label className="text-[10px] font-bold uppercase">ClÃ¡usula LouÃ§a (editÃ¡vel)</label><textarea value={form.clausulaLouca} onChange={e=>setForm({...form,clausulaLouca:e.target.value})} className="mt-1 w-full min-h-[60px] p-3 rounded-[10px] border-2 border-amber-300 text-[12px] bg-amber-50" /></div>)}
-                  <div><label className="text-[10px] font-bold uppercase">9. RescisÃ£o Justa Causa (editÃ¡vel)</label><input value={form.rescisaoJusta} onChange={e=>setForm({...form,rescisaoJusta:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div>
-                  <div><label className="text-[10px] font-bold uppercase">9. RescisÃ£o Sem Justa Causa (editÃ¡vel)</label><input value={form.rescisaoSemJusta} onChange={e=>setForm({...form,rescisaoSemJusta:e.target.value})} className="mt-1 w-full h-[42px] px-3 rounded-[10px] border-2" /></div>
-                  <div className="flex gap-2"><button onClick={()=>irPagina(4)} className="flex-1 h-[44px] border-2 rounded-[10px] font-bold">â† Voltar</button><button onClick={()=>irPagina(6)} className="flex-1 h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">PrÃ³ximo â†’ Anexos</button></div></div>)}
-                {pagina===6 && (<div className="space-y-4"><div className="font-bold text-[13px] bg-blue-50 p-2 rounded">CLAUSULA 10 E 11 - ANEXOS E VALIDADE + Preview Final</div><div className="border-2 border-dashed border-blue-400 rounded-[16px] p-5"><div className="font-bold text-[13px]">CLAUSULA 10 - ANEXOS - Antes da Validade</div><label className="mt-4 w-full min-h-[100px] border-2 border-dashed rounded-[12px] grid place-items-center p-5 cursor-pointer hover:bg-blue-50"><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e=>handleFiles(e.target.files)} /><div className="text-center"><div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 grid place-items-center mx-auto text-[20px]">+</div><div className="font-bold text-[12px] mt-2">Clique para anexar fotos/projetos</div></div></label>{anexos.length>0 && <div className="mt-3 grid grid-cols-1 gap-2">{anexos.map(a=>(<div key={a.id} className="flex gap-2 items-center border-2 p-2 rounded-[10px] bg-white"><div className="w-12 h-12 bg-blue-100 rounded-[8px] overflow-hidden">{a.url ? <img src={a.url} className="w-full h-full object-cover" /> : <span className="text-[9px] font-bold">{a.nome.split(".").pop()?.toUpperCase()}</span>}</div><div className="flex-1"><div className="text-[11px] font-bold truncate">{a.nome}</div><div className="text-[10px] text-zinc-500">{a.tamanho}</div></div><button onClick={()=>setAnexos(p=>p.filter(x=>x.id!==a.id))} className="w-7 h-7 bg-red-50 text-red-600 rounded-full">x</button></div>))}</div>}</div><div className="bg-zinc-50 border-2 rounded-[12px] p-4"><div className="font-bold text-[12px]">Resumo Final EditÃ¡vel: {tipo} - {form.valor} MZN - {todas.length} tarefas - {anexos.length} anexos</div><div className="text-[11px] text-zinc-600 mt-1">Tudo que editaste nas clÃ¡usulas 1-9 vai aparecer no PDF final.</div><div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3"><button onClick={compartilharFree} className="h-[60px] rounded-[12px] bg-[#00a651] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>FREE - WhatsApp + PDF</span><span className="text-[10px] font-normal opacity-90">Com todas clÃ¡usulas editadas</span></button><button onClick={()=>setShowPag(true)} className="h-[60px] rounded-[12px] bg-[#2563eb] text-white font-bold text-[13px] flex flex-col items-center justify-center"><span>PAGO 200MT</span><span className="text-[10px] font-normal opacity-90">Vai para contas ESSE</span></button></div></div></div>)}
-              </div>
-            </div>
-            <div className="bg-white border rounded-[16px] p-4 h-fit lg:sticky lg:top-[100px]">
-              <div className="flex items-center justify-between"><span className="text-[11px] font-bold uppercase">Preview AO VIVO - Tudo EditÃ¡vel</span><span className="px-2 py-0.5 rounded-full bg-emerald-50 border text-[10px] font-bold text-emerald-700">LIVE</span></div>
-              <div className="mt-3 h-[620px] overflow-auto bg-[#f8fafc] border-2 rounded-[10px] p-3 text-[10px] font-mono leading-relaxed">
-                <b>CONTRATO {tipo.toUpperCase()}</b><br/>Lei 23/2007<br/><br/>
-                <b>1.PARTES:</b> {form.empNome} ({form.empBI}) - {form.trabNome} ({form.trabBI}) - {form.empBairro}, {form.provincia}<br/><br/>
-                <b>2.OBJECTO:</b> {tipo} - {todas.slice(0,4).join(", ")}<br/>{form.observacoes}<br/><br/>
-                <b>3.HORARIO:</b> {form.horarioInicio}-{form.horarioFim} {form.diasTrabalho} - InÃ­cio {form.dataInicio} - Local {form.local}<br/><br/>
-                <b>4.SALARIO:</b> {form.valor} MZN atÃ© dia {form.diaPagamento} via {form.metodoPagamento} para {form.trabTel} - Prazo {form.prazo} dias<br/><br/>
-                <b>5.ALIMENTACAO:</b> {form.alimentacao} | <b>ALOJAMENTO:</b> {form.alojamento}<br/><br/>
-                <b>6.FOLGAS:</b> {form.folgas}<br/><b>FERIAS:</b> {form.ferias}<br/><br/>
-                <b>7.EXPERIMENTAL:</b> {form.periodoExp} - Aviso {form.avisoExp}<br/><br/>
-                <b>8.DEVERES PROF:</b> {form.deveresProf}<br/><br/>
-                <b>8.DEVERES EMP:</b> {form.deveresEmp}<br/><br/>
-                {tipo==="Secretario/a Domestico/a" && <><b>CLAUSULA LOUCA:</b> {form.clausulaLouca}<br/><br/></>}
-                <b>9.RESCISAO:</b> {form.rescisaoJusta} | {form.rescisaoSemJusta}<br/><br/>
-                <b>10.ANEXOS ({anexos.length}):</b> {anexos.map(a=>a.nome).join(", ") || "Nenhum"}<br/><br/>
-                <b>11.VALIDADE:</b> Art.29 Lei 23/2007 - ID gerado<br/><br/>
-                ESSE NUIT 401 866 876 Xai-Xai<br/>Gerado Contrata.MZ
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={compartilharFree} className="h-[42px] bg-[#00a651] text-white rounded-[10px] font-bold text-[11px]">FREE - PDF</button><button onClick={()=>setShowPag(true)} className="h-[42px] bg-[#2563eb] text-white rounded-[10px] font-bold text-[11px]">PAGO 200MT</button></div>
+
+        {/* DIREITA - PREVIEW PDF VIVO */}
+        <div className="bg-[#e2e8f0] p-4 lg:p-8 overflow-auto h-[calc(100vh-56px)]">
+          <div className="flex items-center justify-between mb-4"><button className="text-[12px] font-bold">â† Voltar</button><div className="flex items-center gap-2"><span className="text-[11px] font-bold">Preview PDF â€¢ 11 clÃ¡usulas</span><button onClick={gerarPDF} className="text-[11px] bg-white border px-3 py-1 rounded-full font-bold">Ver preview PDF â†’</button></div></div>
+
+          <div className="bg-white max-w-[700px] mx-auto shadow-2xl rounded-[4px] p-8 font-serif text-[13px] leading-[1.6] min-h-[900px]">
+            <div className="flex justify-between items-start border-b-2 border-black pb-3 mb-4"><div><div className="font-extrabold text-[16px] tracking-tight">ESSE</div><div className="text-[11px] font-bold mt-1">{modelo.titulo}</div><div className="text-[10px] mt-1">{tipo.toUpperCase()} â€¢ NUIT 401 866 876 â€¢ Xai-Xai</div></div><div className="w-12 h-12 bg-[#0f2a44] rounded-full grid place-items-center text-white font-bold text-[10px]">ESSE</div></div>
+
+            <div className="space-y-4">
+              <div><span className="font-bold">1. PARTES:</span> {form.contratante || "[Contratante]"} (BI {form.biContratante || "___"}) e {form.prestador || "[Prestador]"} (BI {form.biPrestador || "___"}).</div>
+              <div><span className="font-bold">2. OBJETO:</span> PrestaÃ§Ã£o de serviÃ§os de {tipo} em {form.local || "[Local]"}.</div>
+              <div><span className="font-bold">3. TAREFAS:</span> {tarefasArray.length ? tarefasArray.join(", ") + "." : "A definir."} <span className="text-[10px] bg-yellow-100 px-1 rounded">{tarefasArray.length} tarefas</span></div>
+              <div><span className="font-bold">4. VALOR E PRAZO:</span> {form.valor} â€¢ Prazo {form.prazo} â€¢ {form.formaPag}.</div>
+
+              <div className="bg-amber-50 p-2 rounded border-l-4 border-amber-400"><span className="font-bold">{modelo.clausulas.c5_titulo}:</span> {form.c5}</div>
+              <div className="bg-blue-50 p-2 rounded border-l-4 border-blue-400"><span className="font-bold">{modelo.clausulas.c6_titulo}:</span> {form.c6}</div>
+              <div className="bg-emerald-50 p-2 rounded border-l-4 border-emerald-400"><span className="font-bold">{modelo.clausulas.c7_titulo}:</span> {form.c7}</div>
+
+              <div><span className="font-bold">9. PAGAMENTO:</span> {form.pagamento}</div>
+              <div><span className="font-bold">10. RESCISÃƒO:</span> {form.rescisao}</div>
+              <div><span className="font-bold">11. FORO:</span> {form.foro}</div>
+
+              <div className="pt-8 mt-8 border-t text-center text-[10px] text-zinc-500">ESSE â€¢ NUIT 401 866 876 â€¢ Xai-Xai â€¢ Gerado Contrata.MZ em {new Date().toLocaleDateString()}<br />Assinaturas: __________________ (Contratante) __________________ (Prestador)</div>
             </div>
           </div>
-        )}
-        {tab==="meus" && (<div className="bg-white border rounded-[16px] p-6"><div className="font-bold">MEUS CONTRATOS - EditÃ¡veis Salvos</div><div className="text-[11px] text-zinc-500 mt-2">Agora com todas clÃ¡usulas editÃ¡veis guardadas</div></div>)}
-      </main>
-      {showPag && (<div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4"><div className="bg-white rounded-[16px] w-full max-w-[400px] p-5 shadow-2xl"><div className="font-bold">Pagamento 200MT - Contas ESSE</div><div className="text-[11px] text-zinc-600 mt-1">M-Pesa 840532899, e-Mola 864341779, mKesh 823832513, Banco 000301170814421100321</div><div className="mt-4 space-y-2">{Object.entries(PAGAMENTOS).map(([k,v]:any)=>{const ativo=metodo===k; return <button key={k} onClick={()=>setMetodo(k as any)} className={`w-full text-left p-3 rounded-[12px] border-2 flex gap-2 ${ativo?"border-emerald-500 bg-emerald-50":"bg-white"}`}><div className={`w-8 h-8 rounded-[8px] ${v.c} text-white grid place-items-center font-bold text-[10px]`}>{v.d.slice(0,2).toUpperCase()}</div><div><div className="font-bold text-[12px]">{v.d}</div><div className="text-[10px] text-zinc-500">{v.n}</div></div></button>})}</div>{metodo!=="banco" && <div className="mt-3"><label className="text-[10px] font-bold uppercase">Seu numero {(PAGAMENTOS as any)[metodo].d}</label><input value={telPag} onChange={e=>setTelPag(e.target.value)} placeholder="84xxxxxxx" className="w-full h-[42px] px-3 border-2 rounded-[10px] mt-1" /></div>}<div className="mt-4 grid grid-cols-2 gap-2"><button onClick={()=>setShowPag(false)} className="h-[44px] border rounded-[10px] font-bold">Usar FREE</button><button disabled={processando} onClick={pagar} className="h-[44px] bg-[#2563eb] text-white rounded-[10px] font-bold">{processando?"Processando...":"Pagar 200MT"}</button></div></div></div>)}
-      {showPin && (<div className="fixed inset-0 z-[60] bg-black/60 grid place-items-center p-4"><div className="bg-white rounded-[16px] w-full max-w-[300px] p-5 text-center"><div className="font-bold">Pedido Enviado para {telPag}</div><div className="text-[11px] text-zinc-600 mt-2">Popup PIN no celular {(PAGAMENTOS as any)[metodo].d} - conta {(PAGAMENTOS as any)[metodo].n}</div></div></div>)}
-      <footer className="mt-10 bg-[#0f172a] text-white py-6"><div className="mx-auto max-w-[1280px] px-4 flex justify-between items-center"><div className="flex items-center gap-3"><img src={ESSE_LOGO} className="h-10 bg-white rounded-[8px] p-1" /><div><div className="font-bold text-[12px]">ESSE - ENERGY SOLUTIONS & SERVICES</div><div className="text-[10px] text-white/60">NUIT 401 866 876 - Xai-Xai - Agora 100% editÃ¡vel - Todas clÃ¡usulas aparecem no PDF</div></div></div></div></footer>
+
+          <div className="max-w-[700px] mx-auto mt-4 bg-[#0f2a44] text-white p-3 rounded-[10px] text-[11px]">ðŸ’¡ Dica: Escreve no lado esquerdo "Cimento fornecido por contratante, atraso chuva..." e vÃª aqui na direita mudar instantaneamente na clÃ¡usula 5 e 7. Ã‰ o draft vivo que pediste.</div>
+        </div>
+      </div>
     </div>
   );
 }

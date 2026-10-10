@@ -1,283 +1,788 @@
-import { useState, useRef } from "react";
+import React, { useState, useMemo, useRef } from 'react';
 
-// LOGO ESSE - SVG LIMPO SEM BASE64 - IGUAL AO SEU PRINT DOURADO FUNDO AZUL
-const LogoESSE = ({ size = 40, withText = true }: { size?: number, withText?: boolean }) => (
-  <div className="flex items-center gap-2">
-    <svg width={size} height={size} viewBox="0 0 100 100" className="rounded-full">
-      <defs>
-        <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e8c36a" />
-          <stop offset="50%" stopColor="#d4a44a" />
-          <stop offset="100%" stopColor="#b88a35" />
-        </linearGradient>
-      </defs>
-      <circle cx="50" cy="50" r="50" fill="url(#gold)" />
-      {/* C + gota estilizado como no seu logo */}
-      <path d="M 30 20 Q 15 35 20 55 Q 25 75 45 85 Q 70 90 80 70 Q 85 55 75 40 Q 85 55 80 70 Q 75 80 60 82 Q 50 83 48 70 Q 48 62 58 60 Q 68 50 65 35 Q 60 25 50 18 Z" fill="#2a3d55" />
-      <path d="M 50 18 Q 30 25 20 50 Q 20 70 35 82 Q 50 90 65 82 Q 75 78 78 70 Q 70 85 50 88 Q 30 88 15 75 Q 5 60 8 40 Q 12 22 30 12 Z" fill="none" stroke="#2a3d55" strokeWidth="0.5" opacity="0.6" />
+// LOGO ESSE - SVG inline <2KB, fundo #2a3f5a, circulo #d4a44a com gota azul, ESSE dourado #eabf6a
+function LogoESSE({ compact = false, size = 'normal' }: { compact?: boolean; size?: 'normal' | 'large' }) {
+  const width = compact ? 170 : size === 'large' ? 380 : 340;
+  const height = size === 'large' ? 48 : 44;
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={compact ? "0 0 190 44" : "0 0 380 44"}
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="ESSE Energy solutions and services enterprise"
+      style={{ display: 'block', maxWidth: '100%' }}
+    >
+      <rect width={compact ? 190 : 380} height="44" rx="6" fill="#2a3f5a" />
+      <g transform="translate(6,4)">
+        <circle cx="18" cy="18" r="18" fill="#d4a44a" />
+        <path
+          d="M18 5 C9 12 6.5 18.5 11 24.5 C13.5 27.5 16.5 28.5 18 28.5 C19.5 28.5 22.5 27.5 25 24.5 C29.5 18.5 27 12 18 5 Z M18 11.5 C21 15 22.2 18.3 20.6 20.8 C19.6 22.2 17.3 22.4 16 20.8 C14.2 18.3 15 15 18 11.5 Z"
+          fill="#2a3f5a"
+        />
+      </g>
+      <g transform="translate(50,6)">
+        {/* E */}
+        <rect x="0" y="0" width="4" height="28" fill="#eabf6a" />
+        <rect x="0" y="0" width="16" height="4" fill="#eabf6a" />
+        <rect x="0" y="12" width="14" height="4" fill="#eabf6a" />
+        <rect x="0" y="24" width="16" height="4" fill="#eabf6a" />
+        {/* S stylized 2 curvas */}
+        <path d="M26 0 H38 C41 0 44 1.8 44 5.2 C44 9 41 11 37.5 12 L30 14 C25.5 15.2 22 17 22 20.5 C22 24.5 25 28 31 28 H44" fill="none" stroke="#eabf6a" strokeWidth="4" strokeLinecap="square" />
+        <rect x="24" y="24" width="20" height="4" fill="#eabf6a" />
+        {/* S2 */}
+        <path d="M52 0 H64 C67 0 70 1.8 70 5.2 C70 9 67 11 63.5 12 L56 14 C51.5 15.2 48 17 48 20.5 C48 24.5 51 28 57 28 H70" fill="none" stroke="#eabf6a" strokeWidth="4" strokeLinecap="square" />
+        <rect x="50" y="24" width="20" height="4" fill="#eabf6a" />
+        {/* E */}
+        <rect x="78" y="0" width="4" height="28" fill="#eabf6a" />
+        <rect x="78" y="0" width="16" height="4" fill="#eabf6a" />
+        <rect x="78" y="12" width="14" height="4" fill="#eabf6a" />
+        <rect x="78" y="24" width="16" height="4" fill="#eabf6a" />
+      </g>
+      {!compact && (
+        <>
+          <text x="156" y="18" fill="#ffffff" fontFamily="Arial, Helvetica, sans-serif" fontSize="9" fontWeight="300" letterSpacing="0.4">Energy solutions and</text>
+          <text x="156" y="28" fill="#ffffff" fontFamily="Arial, Helvetica, sans-serif" fontSize="9" fontWeight="300" letterSpacing="0.4">services enterprise</text>
+        </>
+      )}
     </svg>
-    {withText && (
-      <div className="flex flex-col leading-none">
-        <div className="flex gap-1">
-          {/* ESSE com 3 barras */}
-          <div className="flex flex-col justify-between h-8 w-8">
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-          </div>
-          <div className="flex flex-col justify-between h-8 w-7">
-            <div className="h-2 bg-[#d4a44a] rounded-r-full rounded-l-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-full -ml-1"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-l-sm rounded-r-full"></div>
-          </div>
-          <div className="flex flex-col justify-between h-8 w-7">
-            <div className="h-2 bg-[#d4a44a] rounded-r-full rounded-l-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-full -ml-1"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-l-sm rounded-r-full"></div>
-          </div>
-          <div className="flex flex-col justify-between h-8 w-8">
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-            <div className="h-2 bg-[#d4a44a] rounded-sm"></div>
-          </div>
-        </div>
-        <div className="text-[8px] text-[#d4a44a] tracking-wider mt-1 font-medium">Energy solutions and services enterprise</div>
-      </div>
-    )}
-  </div>
-);
+  );
+}
 
-const COR_AZUL = "#3a4f6a";
-const COR_DOURADO = "#d4a44a";
-const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-type Pagina = 1|2|3|4|5|6|7|8|9|10|11;
-type Tab = "encontrar"|"contratos"|"meus";
-type Lang = "pt"|"en"|"fr";
-type TipoCadastro = "empresa"|"singular"|"cooperativa";
-type TipoContrato = "Secretario/a Domestico/a" | "Motorista Particular" | "Pedreiro" | "Carpinteiro" | "Serralheiro" | "Eletricista" | "Canalizador" | "Pintor" | "Servicos/Consultoria" | "Outros/Particular";
-
-const TRAD: any = {
-  pt: { encontrar:"ENCONTRAR", contratos:"CONTRATOS 11", meus:"MEUS", slogan:"ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS", projeto:"Um projeto da ESSE - DESBLOQUEADO", heroBadge:"AGORA 11 CLAUSULAS DESBLOQUEADAS", heroTitle:"Chega de acordo de boca! Contrato legal em 2 minutos.", heroSub:"Proteja seu dinheiro e seu trabalho. Com fotos, M-Pesa comprovado e assinatura no WhatsApp na hora. Valido em todo Mocambique Lei 23/2007.", buscar:"Pesquisar", oque:"O que precisa? Ex: Serralheiro, Mecanico, Domestica", onde:"Onde? Matola, Maputo, Boane..." },
-  en: { encontrar:"FIND", contratos:"CONTRACTS 11", meus:"MY CONTRACTS", slogan:"FIND. NEGOTIATE. FORMALIZE. 11 CLAUSES", projeto:"A project by ESSE - UNLOCKED", heroBadge:"NOW 11 CLAUSES UNLOCKED", heroTitle:"No more handshake deals! Legal contract in 2 minutes.", heroSub:"Protect your money and work. With photos, M-Pesa proof and WhatsApp signature. Valid in Mozambique Law 23/2007.", buscar:"Search", oque:"What do you need? Ex: Welder, Mechanic", onde:"Where? Matola, Maputo..." },
-  fr: { encontrar:"TROUVER", contratos:"CONTRATS 11", meus:"MES CONTRATS", slogan:"TROUVEZ. NEGOCIEZ. FORMALISEZ. 11 CLAUSES", projeto:"Un projet de ESSE - DEBLOQUE", heroBadge:"MAINTENANT 11 CLAUSES DEBLOQUEES", heroTitle:"Fini les accords verbaux! Contrat legal en 2 minutes.", heroSub:"Protegez votre argent et votre travail. Avec photos, preuve M-Pesa et signature WhatsApp.", buscar:"Rechercher", oque:"De quoi avez-vous besoin?", onde:"Ou? Matola, Maputo..." }
+// TRADUCOES - apenas ASCII sem acentos
+const TRAD = {
+  pt: {
+    encontrar: "ENCONTRAR",
+    contratos: "CONTRATOS 11",
+    meus: "MEUS",
+    slogan: "ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS",
+    heroTitle: "Chega de acordo de boca! Contrato legal em 2 minutos.",
+    heroSub: "Proteja seu dinheiro e seu trabalho. Com fotos, M-Pesa comprovado e assinatura no WhatsApp na hora. Valido em todo Mocambique Lei 23/2007.",
+    oQue: "O que precisa?",
+    pais: "Pais",
+    provincia: "Provincia / Estado",
+    pesquisar: "PESQUISAR",
+    tags: "Tags Populares:",
+    cadastroTitulo: "Cadastre seu servico - Rapido e gratuito",
+    tipoEmpresa: "EMPRESA",
+    tipoIndividual: "PROFISSIONAL INDIVIDUAL SINGULAR",
+    tipoCooperativa: "COOPERATIVA",
+    nome: "Nome completo / Empresa",
+    nuit: "NUIT / BI",
+    telefone: "Telefone WhatsApp",
+    email: "Email",
+    servico: "Servico / Categoria",
+    descricao: "Descricao curta do que faz",
+    anexar: "Anexar documentos - Arraste aqui ou clique",
+    enviar: "ENVIAR CADASTRO",
+    verificados: "Profissionais verificados perto de si",
+    verificado: "VERIFICADO",
+    contratar: "CONTRATAR",
+    verContrato: "GERAR CONTRATO",
+    filtrar: "Filtrar",
+    todosPaises: "Todos paises",
+    todasProvincias: "Todas provincias",
+    biblioteca: "Biblioteca de contratos - 10 modelos prontos",
+    clausulas11: "11 Clausulas legais obrigatorias",
+    pag: "Pagina",
+    anexos: "Anexos com fotos antes da validade",
+    preview: "Preview ao vivo",
+    gerarPdf: "GERAR PDF COM CARIMBO ESSE",
+    salvar: "SALVAR EM MEUS CONTRATOS",
+    tipoContrato: "Tipo de contrato",
+    empregador: "Dados do empregador",
+    trabalhador: "Dados do trabalhador",
+    funcao: "Funcao e local",
+    prazo: "Prazo e horario",
+    remuneracao: "Remuneracao e M-Pesa",
+    obrigacoes: "Obrigacoes",
+    validade: "Validade e Lei",
+    assinaturas: "Assinaturas WhatsApp",
+    final: "Finalizar e PDF",
+    nenhum: "Nenhum contrato salvo ainda. Gere um em CONTRATOS 11.",
+    meusTitulo: "Meus contratos salvos",
+    buscarPlaceholder: "Ex: Pedreiro, Eletricista, Domestica...",
+    documentos: "Documentos anexados",
+    arraste: "Arraste ficheiros ou clique para selecionar",
+    pdfPronto: "PDF pronto para download",
+    lei: "Lei 23/2007 - Valido em Mocambique",
+  },
+  en: {
+    encontrar: "FIND",
+    contratos: "CONTRACTS 11",
+    meus: "MY CONTRACTS",
+    slogan: "FIND. NEGOTIATE. FORMALIZE. 11 CLAUSES",
+    heroTitle: "No more handshake deals! Legal contract in 2 minutes.",
+    heroSub: "Protect your money and work. With photos, M-Pesa proof and WhatsApp signature instantly. Valid in all Mozambique Law 23/2007.",
+    oQue: "What do you need?",
+    pais: "Country",
+    provincia: "Province / State",
+    pesquisar: "SEARCH",
+    tags: "Popular Tags:",
+    cadastroTitulo: "Register your service - Fast and free",
+    tipoEmpresa: "COMPANY",
+    tipoIndividual: "INDIVIDUAL PROFESSIONAL",
+    tipoCooperativa: "COOPERATIVE",
+    nome: "Full name / Company",
+    nuit: "ID / Tax number",
+    telefone: "WhatsApp Phone",
+    email: "Email",
+    servico: "Service / Category",
+    descricao: "Short description",
+    anexar: "Attach documents - Drag here or click",
+    enviar: "SUBMIT REGISTRATION",
+    verificados: "Verified professionals near you",
+    verificado: "VERIFIED",
+    contratar: "HIRE",
+    verContrato: "GENERATE CONTRACT",
+    filtrar: "Filter",
+    todosPaises: "All countries",
+    todasProvincias: "All provinces",
+    biblioteca: "Contract library - 10 ready templates",
+    clausulas11: "11 mandatory legal clauses",
+    pag: "Page",
+    anexos: "Attachments with photos before validity",
+    preview: "Live preview",
+    gerarPdf: "GENERATE PDF WITH ESSE STAMP",
+    salvar: "SAVE TO MY CONTRACTS",
+    tipoContrato: "Contract type",
+    empregador: "Employer data",
+    trabalhador: "Worker data",
+    funcao: "Role and location",
+    prazo: "Term and schedule",
+    remuneracao: "Payment and M-Pesa",
+    obrigacoes: "Obligations",
+    validade: "Validity and Law",
+    assinaturas: "WhatsApp signatures",
+    final: "Finish and PDF",
+    nenhum: "No contracts saved yet. Create one in CONTRACTS 11.",
+    meusTitulo: "My saved contracts",
+    buscarPlaceholder: "Ex: Mason, Electrician, Housemaid...",
+    documentos: "Attached documents",
+    arraste: "Drag files or click to select",
+    pdfPronto: "PDF ready to download",
+    lei: "Law 23/2007 - Valid in Mozambique",
+  },
+  fr: {
+    encontrar: "TROUVER",
+    contratos: "CONTRATS 11",
+    meus: "MES CONTRATS",
+    slogan: "TROUVEZ. NEGOCIEZ. FORMALISEZ. 11 CLAUSES",
+    heroTitle: "Fini les accords verbaux! Contrat legal en 2 minutes.",
+    heroSub: "Protegez votre argent et votre travail. Avec photos, preuve M-Pesa et signature WhatsApp immediat. Valable au Mozambique Loi 23/2007.",
+    oQue: "Que cherchez vous?",
+    pais: "Pays",
+    provincia: "Province / Etat",
+    pesquisar: "RECHERCHER",
+    tags: "Tags populaires:",
+    cadastroTitulo: "Enregistrez votre service - Rapide et gratuit",
+    tipoEmpresa: "ENTREPRISE",
+    tipoIndividual: "PROFESSIONNEL INDIVIDUEL",
+    tipoCooperativa: "COOPERATIVE",
+    nome: "Nom complet / Entreprise",
+    nuit: "ID / NUIT",
+    telefone: "Telephone WhatsApp",
+    email: "Email",
+    servico: "Service / Categorie",
+    descricao: "Description courte",
+    anexar: "Joindre documents - Glissez ici ou cliquez",
+    enviar: "ENVOYER INSCRIPTION",
+    verificados: "Professionnels verifies pres de vous",
+    verificado: "VERIFIE",
+    contratar: "EMBAUCHER",
+    verContrato: "GENERER CONTRAT",
+    filtrar: "Filtrer",
+    todosPaises: "Tous pays",
+    todasProvincias: "Toutes provinces",
+    biblioteca: "Bibliotheque de contrats - 10 modeles prets",
+    clausulas11: "11 clauses legales obligatoires",
+    pag: "Page",
+    anexos: "Pieces jointes avec photos avant validite",
+    preview: "Apercu en direct",
+    gerarPdf: "GENERER PDF AVEC CACHET ESSE",
+    salvar: "ENREGISTRER DANS MES CONTRATS",
+    tipoContrato: "Type de contrat",
+    empregador: "Donnees employeur",
+    trabalhador: "Donnees travailleur",
+    funcao: "Fonction et lieu",
+    prazo: "Duree et horaire",
+    remuneracao: "Remuneration et M-Pesa",
+    obrigacoes: "Obligations",
+    validade: "Validite et Loi",
+    assinaturas: "Signatures WhatsApp",
+    final: "Finaliser et PDF",
+    nenhum: "Aucun contrat enregistre. Creez en un dans CONTRATS 11.",
+    meusTitulo: "Mes contrats enregistres",
+    buscarPlaceholder: "Ex: Macon, Electricien, Menage...",
+    documentos: "Documents joints",
+    arraste: "Glissez fichiers ou cliquez pour choisir",
+    pdfPronto: "PDF pret a telecharger",
+    lei: "Loi 23/2007 - Valable au Mozambique",
+  },
 };
 
 const PAISES: Record<string, string[]> = {
-  "Mocambique": ["Maputo Cidade","Maputo Provincia - Matola","Maputo - Boane","Maputo - Marracuene","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Manica - Chimoio","Tete","Zambezia - Quelimane","Nampula","Cabo Delgado - Pemba","Niassa - Lichinga"],
-  "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KwaZulu-Natal - Durban","Eastern Cape","Limpopo","Mpumalanga","Free State","North West","Northern Cape"],
-  "Portugal": ["Lisboa","Porto","Braga","Coimbra","Faro","Aveiro","Setubal","Madeira","Acores"],
-  "Brasil": ["Sao Paulo - SP","Rio de Janeiro - RJ","Minas Gerais - MG","Bahia - BA","Parana - PR","Rio Grande do Sul - RS","Pernambuco - PE","Ceara - CE","Distrito Federal - DF"],
-  "Angola": ["Luanda","Benguela","Huila - Lubango","Cabinda","Namibe","Huambo","Lobito","Malanje"],
-  "France": ["Ile-de-France - Paris","Provence-Alpes-Cote dAzur","Auvergne-Rhone-Alpes","Occitanie","Nouvelle-Aquitaine","Hauts-de-France","Grand Est","Bretagne"],
-  "USA": ["California","Texas","Florida","New York","Illinois","Georgia","Washington","Nevada","Arizona"],
-  "India": ["Maharashtra - Mumbai","Delhi","Karnataka - Bangalore","Tamil Nadu - Chennai","Gujarat","West Bengal - Kolkata"]
+  "Mocambique": ["Maputo Cidade", "Matola", "Boane", "Marracuene", "Gaza - Xai-Xai", "Inhambane", "Sofala - Beira", "Manica", "Tete", "Zambezia", "Nampula", "Cabo Delgado", "Niassa"],
+  "South Africa": ["Gauteng - Johannesburg", "Western Cape - Cape Town", "KwaZulu-Natal - Durban", "Eastern Cape", "Limpopo"],
+  "Portugal": ["Lisboa", "Porto", "Braga", "Coimbra", "Faro"],
+  "Brasil": ["Sao Paulo - SP", "Rio de Janeiro - RJ", "Minas Gerais - MG", "Bahia - BA", "Parana - PR"],
+  "Angola": ["Luanda", "Benguela", "Huila - Lubango", "Cabinda"],
+  "France": ["Ile-de-France - Paris", "Provence-Alpes-Cote dAzur"],
+  "USA": ["California", "Texas", "Florida", "New York"],
+  "India": ["Maharashtra - Mumbai", "Delhi", "Karnataka - Bangalore"],
 };
 
-const MODELOS: Record<TipoContrato, { titulo: string, checklist: string[], desc: string }> = {
-  "Secretario/a Domestico/a": { titulo: "CONTRATO DE TRABALHO DOMESTICO", checklist: ["Limpeza geral da casa todos os comodos","Lavar louca e organizar cozinha","Zelar pela louca e eletrodomesticos - avisar quebras","Arrumar quartos e fazer camas diariamente","Lavar, passar, dobrar e guardar roupa","Organizar despensa e geladeira","Fazer lista de compras e ir ao mercado","Cozinhar cafe, almoco e jantar","Servir refeicoes e organizar mesa","Cuidar das plantas e quintal","Cuidar das criancas quando solicitado","Receber encomendas e recados","Manter banheiros limpos e desinfetados","Passar e guardar roupas de cama e banho"], desc: "Domestico - clausula louca protegida" },
-  "Motorista Particular": { titulo: "CONTRATO DE TRABALHO - MOTORISTA PRIVADO", checklist: ["Conduzir empregador e familia com seguranca","Levar e buscar criancas na escola","Levar para consultas, igreja, mercado","Manutencao basica: oleo, pneu, limpeza diaria","Abastecer viatura e controlar consumo","Fazer compras e recados com comprovativo","Lavar viatura 2x por semana","Verificar documentacao e livrete","Cumprir horario rigorosamente","Guardar sigilo absoluto da familia"], desc: "Motorista Privado" },
-  "Pedreiro": { titulo: "CONTRATO DE EMPREITADA - PEDREIRO", checklist: ["Alvenaria de blocos e tijolos","Reboco interior e exterior liso","Assentar tijoleira e ceramica com nivel","Fundacoes, pilares e vigas conforme projeto","Fazer cinta e laje","Construir muro e passeio","Aplicar chapisco e emboco","Fazer contrapiso nivelado","Assentar portas e janelas","Fazer drenagem e fossa"], desc: "Pedreiro - anexar foto/projeto" },
-  "Carpinteiro": { titulo: "CONTRATO - CARPINTEIRO", checklist: ["Fabricar moveis em madeira macica/MDF","Instalar portas com fechadura e dobradicas","Instalar janelas e batentes","Fabricar e instalar armarios e roupeiros","Medir, cortar e plainar madeira","Aplicar verniz, tinta e acabamento"], desc: "Portas, janelas" },
-  "Serralheiro": { titulo: "CONTRATO - SERRALHEIRO", checklist: ["Fabricar portoes de correr e basculante","Fabricar grades e janelas de ferro","Soldar estruturas metalicas com reforco","Instalar portoes com nivel e chumbamento","Fabricar tanque e suporte de agua"], desc: "Soldar, portoes" },
-  "Eletricista": { titulo: "CONTRATO - ELETRICISTA", checklist: ["Instalar quadro eletrico com disjuntores","Instalar tomadas e interruptores","Instalar iluminacao e lustres","Passar cabos e fios em tubo","Testar instalacao com multimetro"], desc: "Eletrica com garantia" },
-  "Canalizador": { titulo: "CONTRATO - CANALIZADOR", checklist: ["Instalar canos de agua fria e quente","Instalar esgotos com caida correta","Instalar sanita, lavatorio e chuveiro","Reparar fugas e trocar vedantes","Instalar autoclismo e torneiras"], desc: "Canalizacao sem vazamento" },
-  "Pintor": { titulo: "CONTRATO - PINTOR", checklist: ["Preparar parede: lixar, massa corrida, selador","Pintura interior 2 demaos","Pintura exterior com tinta impermeavel","Aplicar textura conforme foto anexa","Pintar teto branco neve"], desc: "Pintura com cor foto anexa" },
-  "Servicos/Consultoria": { titulo: "CONTRATO DE PRESTACAO DE SERVICOS - CONSULTORIA", checklist: ["Consultoria empresarial e plano de negocios","Servicos administrativos e secretariado","Servicos tecnicos especializados","Assessoria juridica/contabil","Marketing digital e comunicacao"], desc: "Empresas - metas e relatorios" },
-  "Outros/Particular": { titulo: "CONTRATO PARTICULAR - OUTROS SERVICOS", checklist: ["Descrever servico detalhadamente no campo abaixo","Definir material fornecido por quem","Definir prazo e penalidade por atraso","Definir garantia do servico","Definir horario e local exato"], desc: "Formulario livre" },
-};
+const CATEGORIAS = ["Pedreiro", "Carpinteiro", "Eletricista", "Canalizador", "Pintor", "Serralheiro", "Motorista", "Domestica", "Secretaria", "Consultoria"];
 
-const CATEGORIAS_25 = ["Carpintaria","Mecanica Auto","Empreiteiro / Construcao Civil","Eletricista","Serralheiro / Soldador","Canalizacao / Picheleiro","Pintor","Pedreiro","Motorista / Condutor","Domestica / Empregada","Baba / Cuidadora","Jardineiro","Tecnico de Frio / AC","Tecnico Informatica","Alfaiate","Cabeleireiro / Barbeiro","Vidraceiro","Seguranca","Limpeza Profissional","Montador de Moveis","Soldador Industrial","Carpinteiro","Mecanica Industrial","Estofador","Gesseiro"];
-const PROFISSIONAIS = [
-  { ini:"ML", nome:"Maria Langa", func:"Empregada Domestica", cat:"Domestico", local:"Maputo - Polana", provincia:"Maputo Cidade", pais:"Mocambique", tipo:"singular" as TipoCadastro, nota:"4.9", trab:"23 trabalhos", preco:7500, disp:"Disponivel", tags:["Verificado"], foto:"ML" },
-  { ini:"JM", nome:"Joao Manuel Carpintaria", func:"Carpinteiro", cat:"Construcao", local:"Matola - Machava", provincia:"Maputo Provincia - Matola", pais:"Mocambique", tipo:"empresa" as TipoCadastro, nota:"4.8", trab:"34 trabalhos", preco:800, disp:"Disponivel", tags:["Empresa"], foto:"JM" },
-  { ini:"PM", nome:"Pedro Massingue Pedreiro", func:"Pedreiro", cat:"Construcao", local:"Maputo - Zimpeto", provincia:"Maputo Cidade", pais:"Mocambique", tipo:"singular" as TipoCadastro, nota:"4.7", trab:"56 trabalhos", preco:700, disp:"Ocupado", tags:["Verificado"], foto:"PM" },
-  { ini:"EC", nome:"Esperanca Cossa Eletricista", func:"Eletricista", cat:"Construcao", local:"Maputo - Sommershield", provincia:"Maputo Cidade", pais:"Mocambique", tipo:"singular" as TipoCadastro, nota:"4.9", trab:"41 trabalhos", preco:650, disp:"Disponivel", tags:["Certificado"], foto:"EC" },
-  { ini:"CT", nome:"Carlos Tivane Motorista", func:"Motorista", cat:"Domestico", local:"Matola - Liberdade", provincia:"Maputo Provincia - Matola", pais:"Mocambique", tipo:"singular" as TipoCadastro, nota:"4.8", trab:"29 trabalhos", preco:1200, disp:"Disponivel", tags:["Carta C1"], foto:"CT" },
-  { ini:"MB", nome:"Mecanica Boane Auto Lda", func:"Mecanica Auto", cat:"Mecanica", local:"Boane - Centro", provincia:"Maputo - Boane", pais:"Mocambique", tipo:"empresa" as TipoCadastro, nota:"4.9", trab:"96 trabalhos", preco:900, disp:"Disponivel", tags:["Empresa"], foto:"MB" },
+const PROFISSIONAIS_MOCK = [
+  { id: 1, nome: "Carlos Matsinhe", cat: "Pedreiro", pais: "Mocambique", prov: "Maputo Cidade", rating: 4.9, jobs: 127, verif: true, desc: "Construcao, reboco, ladrilho, 10 anos exp." },
+  { id: 2, nome: "Amina S.", cat: "Domestica", pais: "Mocambique", prov: "Matola", rating: 5.0, jobs: 89, verif: true, desc: "Limpeza, cozinha, criancas, referencias." },
+  { id: 3, nome: "Joao Paulo", cat: "Eletricista", pais: "South Africa", prov: "Gauteng - Johannesburg", rating: 4.8, jobs: 203, verif: true, desc: "Instalacao, manutencao predial e domestica." },
+  { id: 4, nome: "Fernanda Costa", cat: "Secretaria", pais: "Brasil", prov: "Sao Paulo - SP", rating: 4.9, jobs: 54, verif: true, desc: "Secretaria executiva, gestao de agenda." },
+  { id: 5, nome: "Mamadou L.", cat: "Motorista", pais: "Angola", prov: "Luanda", rating: 4.7, jobs: 112, verif: true, desc: "Motorista particular, carta profissional." },
+  { id: 6, nome: "Rui Mendes", cat: "Canalizador", pais: "Portugal", prov: "Lisboa", rating: 4.9, jobs: 76, verif: true, desc: "Canalizacao, aquecimento, reparos urgentes." },
 ];
 
-const PAGAMENTOS = { mpesa: { n: "840532899", d: "M-Pesa", c: "bg-[#e4002b]" }, emola: { n: "864341779", d: "e-Mola", c: "bg-[#ff6b00]" }, mkesh: { n: "823832513", d: "mKesh", c: "bg-[#3a4f6a]" }, banco: { n: "000301170814421100321", d: "Standard Bank", c: "bg-[#0033a0]" } };
-type Anexo = { id:string, nome:string, tamanho:string, url:string };
+const TIPOS_CONTRATO = [
+  "Secretaria Domestica",
+  "Motorista Particular",
+  "Pedreiro",
+  "Carpinteiro",
+  "Serralheiro",
+  "Eletricista",
+  "Canalizador",
+  "Pintor",
+  "Servicos/Consultoria",
+  "Outros",
+];
 
-export default function App(){
-  const [lang,setLang]=useState<Lang>("pt");
-  const [tab,setTab]=useState<Tab>("encontrar");
-  const [tipo,setTipo]=useState<TipoContrato>("Motorista Particular");
-  const [tarefasSel,setTarefasSel]=useState<string[]>(MODELOS["Motorista Particular"].checklist.slice(0,6));
-  const [tarefasExtra,setTarefasExtra]=useState("");
-  const [pagina,setPagina]=useState<Pagina>(1);
-  const [anexos,setAnexos]=useState<Anexo[]>([]);
-  const [showPag,setShowPag]=useState(false);
-  const [metodo,setMetodo]=useState<"mpesa"|"emola"|"mkesh"|"banco">("mpesa");
-  const [telPag,setTelPag]=useState("");
-  const [processando,setProcessando]=useState(false);
-  const [showPin,setShowPin]=useState(false);
-  const [bibAberta,setBibAberta]=useState(true);
-  const [busca,setBusca]=useState("");
-  const [paisSel,setPaisSel]=useState("Mocambique");
-  const [provSel,setProvSel]=useState("");
-  const [tipoCadastro,setTipoCadastro]=useState<TipoCadastro>("singular");
-  const [docAnexosPrestador,setDocAnexosPrestador]=useState<Anexo[]>([]);
-  const [formCadastro,setFormCadastro]=useState({ nome:"", nuit:"", bi:"", tel:"", pais:"Mocambique", provincia:"Maputo Provincia - Matola", bairro:"", categoria:"Carpintaria", anos:"", desc:"", preco:"", disp:"" });
-  const [form,setForm]=useState({ empNome:"artur simao zimba", empBI:"110200011B", empNuit:"401866876", empTel:"823832513", empBairro:"xai xai", empEndereco:"Av. Principal", trabNome:"anastancio", trabBI:"1102100mmm", trabNuit:"", trabTel:"840532899", trabEndereco:"xai xai - bairro 2", trabProfissao:"Motorista", valor:"7500", diaPagamento:"05", prazo:"30", dataInicio:new Date().toISOString().split('T')[0], local:"xai xai - casa", provincia:"Gaza - Xai-Xai", horarioInicio:"06:00", horarioFim:"17:00", diasSemana:"Segunda a Sabado", alimentacao:"Sim - almoco fornecido", alojamento:"Nao", transporte:"Sim - 500MT mes", folgasDesc:"Domingo e feriados. 12 dias ferias apos 1 ano Lei 23/2007", periodoExp:"90 dias", deveresTrab:"Cumprir horario, guardar sigilo, zelar pelos bens", deveresEmp:"Pagar em dia via M-Pesa com recibo, respeitar dignidade", rescisaoJusta:"Roubo, violencia, falta grave", rescisaoAviso:"30 dias" });
-  const formRef = useRef<HTMLDivElement>(null);
+type ContractForm = {
+  tipo: string;
+  empNome: string;
+  empDoc: string;
+  empTel: string;
+  empEnd: string;
+  trabNome: string;
+  trabDoc: string;
+  trabTel: string;
+  trabEnd: string;
+  funcao: string;
+  local: string;
+  dataInicio: string;
+  dataFim: string;
+  horario: string;
+  salario: string;
+  formaPag: string;
+  mpesa: string;
+  obrigacoesEmp: string;
+  obrigacoesTrab: string;
+  anexos: string[];
+  validade: string;
+};
+
+export default function App() {
+  const [lang, setLang] = useState<keyof typeof TRAD>('pt');
+  const [actionTick, setActionTick] = useState<number>(0);
   const t = TRAD[lang];
-  const todas = [...tarefasSel, ...tarefasExtra.split(",").map(x=>x.trim()).filter(Boolean)];
-  const handleFiles=(files:FileList|null)=>{ if(!files) return; const novos:Anexo[]=Array.from(files).slice(0,5).map(f=>({id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url:URL.createObjectURL(f)})); setAnexos(p=>[...p,...novos].slice(0,10)); };
-  const handleFilesPrestador=(files:FileList|null)=>{ if(!files) return; const novos:Anexo[]=Array.from(files).map(f=>({id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024/1024).toFixed(2)+" MB",url:URL.createObjectURL(f)})); setDocAnexosPrestador(p=>[...p,...novos].slice(0,10)); };
-  const scrollParaForm=()=>{ setTimeout(()=>{ formRef.current?.scrollIntoView({behavior:"smooth",block:"start"}); },120); };
-  const escolherTipo=(t:TipoContrato)=>{ setTipo(t); setTarefasSel(MODELOS[t].checklist.slice(0,6)); setPagina(1); if(window.innerWidth<1024) setBibAberta(false); scrollParaForm(); };
-  const irPagina=(p:Pagina)=>{ setPagina(p); scrollParaForm(); };
-  const profissionaisFiltrados = PROFISSIONAIS.filter(p=>{ const mb = !busca || p.func.toLowerCase().includes(busca.toLowerCase()) || p.nome.toLowerCase().includes(busca.toLowerCase()); const mp = !provSel || p.provincia.includes(provSel) || p.local.includes(provSel); const mpais = !paisSel || p.pais===paisSel; return mb && mp && mpais; });
-  const provinciasDoPais = PAISES[paisSel] || PAISES["Mocambique"];
 
-  const gerarPDFCompleto=async()=>{
-    const { jsPDF } = await import("jspdf");
-    const doc=new jsPDF({unit:"mm",format:"a4"}); const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); const M=15;
-    const addCabecalho = (pageNum:number)=>{ doc.setFillColor(58,79,106); doc.rect(0,0,W,22,"F"); doc.setTextColor(212,164,74); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.text("CONTRATO - "+semAcento(tipo).toUpperCase()+" - 11 CLAUSULAS", M+8, 8); doc.setTextColor(200,210,225); doc.setFontSize(7); doc.text("Lei n 23/2007 - ESSE NUIT 401 866 876", M+8, 13); doc.setTextColor(255,255,255); doc.setFontSize(6); doc.text("Pag "+pageNum, W-M-12, 19, {align:"right"}); };
-    const addRodape = ()=>{ const footerY = H-12; doc.setDrawColor(212,164,74); doc.setLineWidth(0.5); doc.line(M, footerY, W-M, footerY); doc.setFillColor(245,247,250); doc.rect(0, footerY+0.5, W, 12, "F"); doc.setTextColor(42,61,85); doc.setFontSize(6.5); doc.setFont("helvetica","bold"); doc.text("ESSE - ENERGY SOLUTIONS & SERVICES", M+14, footerY+4); doc.setFont("helvetica","normal"); doc.setFontSize(5.5); doc.text("NUIT 401 866 876 - M-Pesa 840532899 | e-Mola 864341779 | mKesh 823832513 - Contrata.MZ", M+14, footerY+7.5); };
-    let y=28; let pageNum=1; addCabecalho(pageNum); addRodape();
-    const check=(h=20)=>{ if(y+h>H-18){ doc.addPage(); pageNum++; y=28; addCabecalho(pageNum); addRodape(); } };
-    doc.setTextColor(20,20,20);
-    const tituloClausula=(n:number,t:string)=>{ check(14); doc.setFontSize(11); doc.setFont("helvetica","bold"); doc.setFillColor(42,61,85); doc.rect(M,y-5,W-M*2,9,"F"); doc.setTextColor(212,164,74); doc.text(n+". "+semAcento(t.toUpperCase()),M+2,y); y+=9; doc.setTextColor(20,20,20); doc.setFont("helvetica","normal"); doc.setFontSize(10); };
-    tituloClausula(1,"PARTES"); const partes = `EMPREGADOR: ${form.empNome}, BI ${form.empBI} NUIT ${form.empNuit} Tel ${form.empTel} End ${form.empEndereco}. PROFISSIONAL: ${form.trabNome} BI ${form.trabBI} Tel ${form.trabTel} End ${form.trabEndereco}.`; doc.splitTextToSize(semAcento(partes), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(2,"OBJECTO"); doc.text("Funcao: "+semAcento(tipo),M,y); y+=5; todas.forEach((t,i)=>{ const txt = (i+1)+". "+semAcento(t); doc.splitTextToSize(txt, W-M*2-5).forEach((l:string)=>{ check(6); doc.text(l, M+2, y); y+=5; }); }); y+=4;
-    tituloClausula(3,"HORARIO"); const horario = `Horario: ${form.horarioInicio} as ${form.horarioFim} Dias ${form.diasSemana} Inicio ${form.dataInicio} Local ${form.local}`; doc.splitTextToSize(semAcento(horario), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(4,"SALARIO"); const sal = `Salario ${form.valor} MT dia ${form.diaPagamento} via M-Pesa ${form.trabTel} Prazo ${form.prazo}`; doc.splitTextToSize(semAcento(sal), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(5,"ALIMENTACAO"); doc.splitTextToSize(semAcento(form.alimentacao+" - "+form.alojamento+" - "+form.transporte), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(6,"FOLGAS"); doc.splitTextToSize(semAcento(form.folgasDesc), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(7,"EXPERIMENTAL"); doc.splitTextToSize(semAcento(form.periodoExp), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(8,"DEVERES TRAB"); doc.splitTextToSize(semAcento(form.deveresTrab), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(9,"DEVERES EMP"); doc.splitTextToSize(semAcento(form.deveresEmp), W-M*2).forEach((l:string)=>{ check(6); doc.text(l,M,y); y+=5; }); y+=4;
-    tituloClausula(10,"ANEXOS ANTES VALIDADE"); if(anexos.length===0){ doc.text("Nenhum anexo",M,y); y+=5; } else { anexos.forEach((a,i)=>{ check(6); doc.text((i+1)+". "+semAcento(a.nome),M,y); y+=5; }); } y+=4;
-    tituloClausula(11,"VALIDADE"); doc.text("Validade Lei 23/2007 - Contrata.MZ - ESSE",M,y); y+=20; doc.setDrawColor(42,61,85); doc.rect(W/2-55,y,110,28); doc.setTextColor(42,61,85); doc.setFontSize(7); doc.text("CARIMBO OFICIAL",W/2-22,y+6); doc.setTextColor(20,20,20); y+=38;
-    return doc;
+  const [tab, setTab] = useState<'encontrar' | 'contratos' | 'meus'>('encontrar');
+
+  const handleTab = (newTab: 'encontrar' | 'contratos' | 'meus') => {
+    setTab(newTab);
+    setActionTick(Date.now());
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
   };
-  const gerarPDF=async()=>{ const doc=await gerarPDFCompleto(); doc.save("Contrato-11-Clausulas-"+(form.trabNome||"SemNome").replace(/\s+/g,"-")+".pdf"); };
-  const compartilharFree=async()=>{ try{ const doc=await gerarPDFCompleto(); const blob=doc.output("blob"); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download="Contrato-"+form.trabNome+".pdf"; document.body.appendChild(a); a.click(); setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); },2000); window.open("https://wa.me/?text=Contrato "+tipo+" - "+form.trabNome,"_blank"); }catch(e){ await gerarPDF(); } };
-  const pagar=async()=>{ setProcessando(true); await new Promise(r=>setTimeout(r,1500)); setShowPin(true); setTimeout(()=>{ setShowPin(false); setProcessando(false); setShowPag(false); gerarPDF(); },2000); };
+  const handleLang = (l: keyof typeof TRAD) => {
+    setLang(l);
+    setActionTick(Date.now());
+  };
+
+  // ENCONTRAR STATE
+  const [search, setSearch] = useState('');
+  const [paisFiltro, setPaisFiltro] = useState('Mocambique');
+  const [provFiltro, setProvFiltro] = useState('Maputo Cidade');
+  const [cadTipo, setCadTipo] = useState<'EMPRESA' | 'INDIVIDUAL' | 'COOPERATIVA'>('INDIVIDUAL');
+  const [cadPais, setCadPais] = useState('Mocambique');
+  const [cadProv, setCadProv] = useState('Maputo Cidade');
+  const [cadNome, setCadNome] = useState('');
+  const [cadServ, setCadServ] = useState('Pedreiro');
+  const [dragOver, setDragOver] = useState(false);
+  const [files, setFiles] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const provinciasFiltro = useMemo(() => PAISES[paisFiltro] || [], [paisFiltro]);
+  const provinciasCad = useMemo(() => PAISES[cadPais] || [], [cadPais]);
+
+  // auto update provincia when pais changes - filtro
+  const handlePaisFiltroChange = (novoPais: string) => {
+    setPaisFiltro(novoPais);
+    const provs = PAISES[novoPais];
+    if (provs && provs.length) setProvFiltro(provs[0]);
+  };
+  const handleCadPaisChange = (novoPais: string) => {
+    setCadPais(novoPais);
+    const provs = PAISES[novoPais];
+    if (provs && provs.length) setCadProv(provs[0]);
+  };
+
+  const profissionaisFiltrados = useMemo(() => {
+    return PROFISSIONAIS_MOCK.filter(p => {
+      const matchSearch = !search || p.cat.toLowerCase().includes(search.toLowerCase()) || p.nome.toLowerCase().includes(search.toLowerCase()) || p.desc.toLowerCase().includes(search.toLowerCase());
+      const matchPais = !paisFiltro || p.pais === paisFiltro;
+      const matchProv = !provFiltro || p.prov === provFiltro || provFiltro === 'Todas' || provFiltro === t.todasProvincias;
+      return matchSearch && matchPais && matchProv;
+    });
+  }, [search, paisFiltro, provFiltro, t.todasProvincias]);
+
+  // CONTRATOS STATE
+  const [contractPage, setContractPage] = useState(1);
+  const [contractData, setContractData] = useState<ContractForm>({
+    tipo: "Secretaria Domestica",
+    empNome: "",
+    empDoc: "",
+    empTel: "",
+    empEnd: "",
+    trabNome: "",
+    trabDoc: "",
+    trabTel: "",
+    trabEnd: "",
+    funcao: "",
+    local: "",
+    dataInicio: "2025-06-01",
+    dataFim: "2026-06-01",
+    horario: "07:30 - 16:30 Segunda a Sabado",
+    salario: "15000 MZN",
+    formaPag: "M-Pesa",
+    mpesa: "84xxxxxxx",
+    obrigacoesEmp: "Pagar salario ate dia 5, fornecer material, respeitar folgas.",
+    obrigacoesTrab: "Cumprir horario, cuidar dos bens, avisar faltas com antecedencia.",
+    anexos: ["Foto BI frente", "Foto local trabalho", "Comprovativo M-Pesa"],
+    validade: "12 meses",
+  });
+  const [meusContratos, setMeusContratos] = useState<ContractForm[]>([]);
+
+  const updateContract = (k: keyof ContractForm, v: any) => setContractData(prev => ({ ...prev, [k]: v }));
+
+  const gerarPDF = () => {
+    const html = `
+      <html><head><title>Contrato ESSE</title>
+      <style>
+        body{font-family:Arial,sans-serif;padding:32px;color:#222;line-height:1.5}
+        .header{background:#2a3f5a;color:#eabf6a;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:8px}
+        .logo{font-weight:900;letter-spacing:2px}
+        .carimbo{border:3px solid #d4a44a;color:#d4a44a;padding:12px 18px;transform:rotate(-12deg);font-weight:900;display:inline-block;margin-top:20px}
+        .clausula{margin:18px 0;border-left:4px solid #3a4f6a;padding-left:12px}
+        .label{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px}
+      </style></head><body>
+      <div class="header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:#d4a44a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#2a3f5a;font-weight:900">E</div>
+          <div class="logo">ESSE</div>
+          <div style="font-size:9px;color:#fff;margin-left:8px">Energy solutions and services enterprise</div>
+        </div>
+        <div style="font-size:10px;color:#fff">${t.lei}</div>
+      </div>
+      <h2 style="margin-top:24px">CONTRATO DE PRESTACAO DE SERVICOS - ${contractData.tipo.toUpperCase()}</h2>
+      <div class="label">Clausula 1 - Partes</div>
+      <div class="clausula"><b>Empregador:</b> ${contractData.empNome} - Doc: ${contractData.empDoc} - Tel: ${contractData.empTel} - End: ${contractData.empEnd}</div>
+      <div class="label">Clausula 2 - Trabalhador</div>
+      <div class="clausula"><b>Trabalhador:</b> ${contractData.trabNome} - Doc: ${contractData.trabDoc} - Tel: ${contractData.trabTel}</div>
+      <div class="label">Clausula 3 - Objecto</div>
+      <div class="clausula">${contractData.funcao} em ${contractData.local}</div>
+      <div class="label">Clausula 4 - Prazo</div>
+      <div class="clausula">De ${contractData.dataInicio} a ${contractData.dataFim} - Horario: ${contractData.horario}</div>
+      <div class="label">Clausula 5 - Remuneracao</div>
+      <div class="clausula">${contractData.salario} via ${contractData.formaPag} - M-Pesa: ${contractData.mpesa}</div>
+      <div class="label">Clausula 6 - Obrigacoes empregador</div>
+      <div class="clausula">${contractData.obrigacoesEmp}</div>
+      <div class="label">Clausula 7 - Obrigacoes trabalhador</div>
+      <div class="clausula">${contractData.obrigacoesTrab}</div>
+      <div class="label">Clausula 8 - Anexos</div>
+      <div class="clausula">${contractData.anexos.join(', ')}</div>
+      <div class="label">Clausula 9 - Validade</div>
+      <div class="clausula">${contractData.validade} - ${t.lei}</div>
+      <div class="label">Clausula 10 - Assinaturas WhatsApp</div>
+      <div class="clausula">Assinado via WhatsApp em ${new Date().toLocaleDateString()} - Fotos e M-Pesa comprovado.</div>
+      <div class="label">Clausula 11 - Foro</div>
+      <div class="clausula">Foro de ${contractData.local} - Lei aplicavel Mocambique.</div>
+      <div class="carimbo">ESSE - CARIMBO OFICIAL - VALIDO</div>
+      <p style="margin-top:30px;font-size:10px;color:#666">Documento gerado automaticamente por ESSE Energy solutions and services enterprise - ${new Date().toISOString()}</p>
+      </body></html>
+    `;
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+      setTimeout(() => w.print(), 400);
+    }
+  };
+
+  const salvarContrato = () => {
+    setMeusContratos(prev => [...prev, { ...contractData }]);
+    setTab('meus');
+  };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-zinc-800">
-      <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
-        <div className="mx-auto max-w-[1600px] px-4 h-[64px] flex items-center justify-between">
+    <div className="min-h-screen bg-[#f6f1e8] text-[#1a1a1a]" style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' } as any}>
+      <style>{`
+        :root{--azul:#3a4f6a;--azul-escuro:#2a3f5a;--dourado:#d4a44a;--dourado-claro:#eabf6a;}
+        body{font-family:Arial, Helvetica, sans-serif}
+      `}</style>
+
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-[#2a3f5a] border-b-4 border-[#d4a44a]">
+        <div className="max-w-[1280px] mx-auto px-3 md:px-6 h-[72px] flex items-center justify-between gap-2" data-action-tick={actionTick}>
           <div className="flex items-center gap-3">
-            <div className="bg-[#3a4f6a] p-1.5 rounded-lg"><LogoESSE size={36} withText={false} /></div>
-            <div><div className="font-bold text-[14px] leading-none">CONTRATA.MZ</div><div className="text-[10px] text-zinc-500">{t.slogan}</div><div className="text-[9px] text-zinc-400 font-bold">{t.projeto}</div></div>
+            <LogoESSE compact />
+            <div className="hidden lg:block ml-2">
+              <div className="text-[10px] text-white/80 tracking-[0.2em] font-semibold">{t.slogan}</div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2 bg-[#3a4f6a] px-3 py-1.5 rounded-lg"><LogoESSE size={28} withText={true} /></div>
-            <div className="flex p-1 bg-zinc-100 rounded-lg ml-1"><button onClick={()=>setLang("pt")} className={`px-2 py-1 rounded-md text-[11px] font-bold ${lang==="pt"?"bg-[#2a3d55] text-white":"text-zinc-600"}`}>PT</button><button onClick={()=>setLang("en")} className={`px-2 py-1 rounded-md text-[11px] font-bold ${lang==="en"?"bg-[#2a3d55] text-white":"text-zinc-600"}`}>EN</button><button onClick={()=>setLang("fr")} className={`px-2 py-1 rounded-md text-[11px] font-bold ${lang==="fr"?"bg-[#2a3d55] text-white":"text-zinc-600"}`}>FR</button></div>
+
+          <nav className="flex items-center gap-1 md:gap-3">
+            <button onClick={() => handleTab('encontrar')} className={`px-2 md:px-4 py-2 text-[11px] md:text-[13px] font-black tracking-widest rounded ${tab==='encontrar' ? 'bg-[#d4a44a] text-[#2a3f5a]' : 'text-white hover:bg-white/10'}`}>{t.encontrar}</button>
+            <button onClick={() => handleTab('contratos')} className={`px-2 md:px-4 py-2 text-[11px] md:text-[13px] font-black tracking-widest rounded ${tab==='contratos' ? 'bg-[#d4a44a] text-[#2a3f5a]' : 'text-white hover:bg-white/10'}`}>{t.contratos}</button>
+            <button onClick={() => handleTab('meus')} className={`px-2 md:px-4 py-2 text-[11px] md:text-[13px] font-black tracking-widest rounded ${tab==='meus' ? 'bg-[#d4a44a] text-[#2a3f5a]' : 'text-white hover:bg-white/10'}`}>{t.meus} {meusContratos.length>0 && `(${meusContratos.length})`}</button>
+          </nav>
+
+          <div className="flex items-center gap-1">
+            {(['pt','en','fr'] as const).map(l => (
+              <button key={l} onClick={()=>handleLang(l)} className={`w-8 h-8 rounded font-bold text-[12px] border ${lang===l ? 'bg-[#eabf6a] text-[#2a3f5a] border-[#eabf6a]' : 'text-white border-white/30 hover:bg-white/10'}`}>{l.toUpperCase()}</button>
+            ))}
           </div>
+        </div>
+        <div className="h-[2px] bg-[#d4a44a]/20">
+          <div className="h-full bg-[#d4a44a] transition-all duration-300" style={{ width: `${(actionTick % 100)}%`, opacity: actionTick ? 0.6 : 0 }} />
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1600px] px-4 pt-4">
-        <div className="bg-gradient-to-r from-[#0033a0] via-[#2a3d55] to-[#3a4f6a] text-white rounded-xl p-5 flex flex-col md:flex-row justify-between gap-4 shadow-xl relative overflow-hidden">
-          <div className="relative z-10"><div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-[11px] font-bold tracking-wider">{t.heroBadge}</div><div className="text-[18px] md:text-[22px] font-extrabold mt-2 leading-tight max-w-[700px]">{t.heroTitle}</div><div className="text-[13px] md:text-[14px] text-white/90 mt-2 max-w-[700px] leading-relaxed">{t.heroSub}</div><div className="mt-3 flex flex-wrap gap-2 text-[11px]"><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">1-11 Desbloqueadas</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">15+ Tarefas por tipo</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Preview = PDF</span><span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/20">Anexos antes validade</span></div></div>
-          <div className="relative z-10 bg-white text-[#0f172a] rounded-xl p-4 min-w-[300px] shadow-lg"><div className="text-[11px] font-extrabold text-[#0033a0] uppercase tracking-wider">Contrato Completo 11 Clausulas</div><div className="text-[12px] text-[#2a3d55] font-bold mt-1">Sem advogado. Sem complicacao.</div><div className="mt-3 space-y-2 text-[12px]"><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px] font-bold">!</span><span className="font-bold text-[#2a3d55]">Contrato que vale no tribunal</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px]">âœ“</span><span>Recibo M-Pesa automatico</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#2a3d55] text-[#d4a44a] grid place-items-center text-[10px]">âœ“</span><span>Fotos viram prova legal</span></div><div className="flex gap-2 items-center"><span className="w-6 h-6 rounded-full bg-[#d4a44a] text-white grid place-items-center text-[10px]">W</span><span className="font-bold">Envia no WhatsApp na hora</span></div></div><div className="mt-3 p-2 bg-[#fff8ed] border border-[#d4a44a]/30 rounded-lg text-[10px] text-center text-[#2a3d55] font-bold">+ de 1.200 contratos ja gerados em Gaza</div></div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <div className="flex gap-2 p-1 bg-white border rounded-xl w-fit"><button onClick={()=>setTab("encontrar")} className={`px-4 py-2 rounded-lg text-[13px] font-bold ${tab==="encontrar"?"bg-[#3a4f6a] text-white":"text-zinc-600"}`}>{t.encontrar}</button><button onClick={()=>setTab("contratos")} className={`px-4 py-2 rounded-lg text-[13px] font-bold ${tab==="contratos"?"bg-[#2a3d55] text-white":"text-zinc-600"}`}>{t.contratos}</button><button onClick={()=>setTab("meus")} className={`px-4 py-2 rounded-lg text-[13px] font-bold ${tab==="meus"?"bg-[#3a4f6a] text-white":"text-zinc-600"}`}>{t.meus}</button></div>
-          {tab==="contratos" && (
-            <div className="flex p-1 bg-white border-2 rounded-xl w-full lg:w-fit overflow-x-auto gap-1.5">
-              <button onClick={()=>irPagina(1)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===1?"bg-[#2a3d55] text-white":"bg-zinc-100"}`}>1. Partes</button>
-              <button onClick={()=>irPagina(2)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===2?"bg-[#2a3d55] text-white":"bg-zinc-100"}`}>2. Objecto ({todas.length})</button>
-              <button onClick={()=>irPagina(3)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===3?"bg-[#2a3d55] text-white":"bg-zinc-100"}`}>3. Horario</button>
-              <button onClick={()=>irPagina(4)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===4?"bg-[#2a3d55] text-white":"bg-zinc-100"}`}>4. Salario</button>
-              <button onClick={()=>irPagina(10)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===10?"bg-orange-500 text-white":"bg-zinc-100"}`}>10. Anexos ({anexos.length})</button>
-              <button onClick={()=>irPagina(11)} className={`px-3 py-2 rounded-lg text-[11px] font-bold whitespace-nowrap ${pagina===11?"bg-[#3a4f6a] text-white":"bg-zinc-100"}`}>11. Validade</button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <main className="mx-auto max-w-[1600px] px-4 py-6">
-        {tab==="encontrar" && (
-          <div className="space-y-6">
-            <div className="bg-white border rounded-xl p-5 shadow-sm">
-              <div className="font-bold text-[16px]">Encontra o mestre certo na tua zona.</div>
-              <div className="text-[13px] text-zinc-600 mt-1">Mecanicos, eletricistas, domesticas, motoristas, pedreiros e mais de 25 categorias.</div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_200px_220px_120px] gap-3">
-                <input value={busca} onChange={e=>setBusca(e.target.value)} placeholder={t.oque} className="w-full h-11 px-3 border-2 rounded-xl text-[13px]" />
-                <select value={paisSel} onChange={e=>{setPaisSel(e.target.value); setProvSel(""); setFormCadastro({...formCadastro, pais:e.target.value});}} className="w-full h-11 px-3 border-2 rounded-xl text-[13px]"><option value="">Pais - Todos</option>{Object.keys(PAISES).map(p=><option key={p} value={p}>{p}</option>)}</select>
-                <select value={provSel} onChange={e=>setProvSel(e.target.value)} className="w-full h-11 px-3 border-2 rounded-xl text-[13px]"><option value="">Provincia / Estado - {provinciasDoPais.length}</option>{provinciasDoPais.map(p=><option key={p} value={p}>{p}</option>)}</select>
-                <button className="h-11 bg-[#3a4f6a] text-white rounded-xl font-bold text-[13px]">{t.buscar}</button>
-              </div>
-              <div className="mt-2 text-[10px] text-zinc-500">Pais -> Provincias aparecem automaticamente. Funciona em todo mundo.</div>
-            </div>
-
-            <div className="bg-[#0f172a] text-white rounded-xl p-6">
-              <div className="font-bold text-[18px]">Cadastra-te como prestador e seja encontrado hoje</div>
-              <div className="text-[12px] text-white/70 mt-1">Carpintaria, mecanica, empreiteiro, mecanico viaturas, eletricista, serralheiro, domestica, motorista...</div>
-              <div className="mt-5 bg-white text-zinc-800 rounded-xl p-5">
-                <div className="text-[11px] font-bold uppercase">Tipo de cadastro *</div>
-                <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <button onClick={()=>setTipoCadastro("empresa")} className={`p-4 rounded-xl border-2 text-left ${tipoCadastro==="empresa"?"border-[#d4a44a] bg-[#fff8ed]":"bg-white"}`}><div className="font-bold text-[13px]">EMPRESA</div><div className="text-[11px] text-zinc-600">Carpintaria, Mecanica, Empreiteiro</div></button>
-                  <button onClick={()=>setTipoCadastro("singular")} className={`p-4 rounded-xl border-2 text-left ${tipoCadastro==="singular"?"border-[#d4a44a] bg-[#fff8ed]":"bg-white"}`}><div className="font-bold text-[13px]">PROFISSIONAL INDIVIDUAL / SINGULAR</div><div className="text-[11px] text-zinc-600">Mecanico, Eletricista, Domestica, Motorista</div></button>
-                  <button onClick={()=>setTipoCadastro("cooperativa")} className={`p-4 rounded-xl border-2 text-left ${tipoCadastro==="cooperativa"?"border-[#d4a44a] bg-[#fff8ed]":"bg-white"}`}><div className="font-bold text-[13px]">COOPERATIVA / ASSOCIACAO</div><div className="text-[11px] text-zinc-600">Equipa organizada</div></button>
-                </div>
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div><label className="text-[11px] font-bold uppercase">Nome *</label><input value={formCadastro.nome} onChange={e=>setFormCadastro({...formCadastro,nome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]" /></div>
-                  <div><label className="text-[11px] font-bold uppercase">BI *</label><input value={formCadastro.bi} onChange={e=>setFormCadastro({...formCadastro,bi:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]" /></div>
-                  <div><label className="text-[11px] font-bold uppercase">Pais *</label><select value={formCadastro.pais} onChange={e=>{setFormCadastro({...formCadastro,pais:e.target.value}); setPaisSel(e.target.value);}} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
-                  <div><label className="text-[11px] font-bold uppercase">Provincia / Estado * - automatico</label><select value={formCadastro.provincia} onChange={e=>setFormCadastro({...formCadastro,provincia:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]">{(PAISES[formCadastro.pais]||[]).map(p=><option key={p}>{p}</option>)}</select></div>
-                  <div><label className="text-[11px] font-bold uppercase">Telefone / WhatsApp *</label><input value={formCadastro.tel} onChange={e=>setFormCadastro({...formCadastro,tel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]" /></div>
-                  <div><label className="text-[11px] font-bold uppercase">Categoria *</label><select value={formCadastro.categoria} onChange={e=>setFormCadastro({...formCadastro,categoria:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[13px]">{CATEGORIAS_25.map(c=><option key={c}>{c}</option>)}</select></div>
-                </div>
-                <div className="mt-4">
-                  <label className="text-[11px] font-bold uppercase">Anexar documentos - BI, certificado, carta conducao, fotos trabalhos, alvara</label>
-                  <label className="mt-2 w-full min-h-[90px] border-2 border-dashed border-[#d4a44a] rounded-xl grid place-items-center p-4 cursor-pointer bg-[#fff8ed]"><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e=>handleFilesPrestador(e.target.files)} /><div className="text-center"><div className="font-bold text-[13px]">Clique para anexar documentos</div><div className="text-[11px] text-zinc-500">JPG, PNG, PDF - max 5MB</div></div></label>
-                  {docAnexosPrestador.length>0 && <div className="mt-3 space-y-2">{docAnexosPrestador.map(a=><div key={a.id} className="flex gap-2 items-center border p-2 rounded-xl bg-white"><div className="flex-1 text-[11px] font-bold">{a.nome} - {a.tamanho}</div><button onClick={()=>setDocAnexosPrestador(p=>p.filter(x=>x.id!==a.id))} className="w-7 h-7 bg-red-50 text-red-600 rounded-full">x</button></div>)}</div>}
-                </div>
-                <button onClick={()=>alert("Cadastrado como "+tipoCadastro.toUpperCase()+" - Pais: "+formCadastro.pais+" Provincia: "+formCadastro.provincia+" Docs: "+docAnexosPrestador.length)} className="mt-5 w-full h-12 bg-[#3a4f6a] text-white rounded-xl font-bold">Cadastrar e aparecer no ENCONTRAR</button>
+      {/* HERO - only on encontrar */}
+      {tab === 'encontrar' && (
+        <div className="bg-[#2a3f5a] text-white">
+          <div className="max-w-[1280px] mx-auto px-4 md:px-8 py-8 md:py-12 grid md:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
+            <div>
+              <div className="mb-6"><LogoESSE size="large" /></div>
+              <h1 className="text-[28px] md:text-[44px] font-black leading-[0.95] tracking-tight">{t.heroTitle}</h1>
+              <p className="mt-4 text-[14px] md:text-[16px] text-white/80 max-w-[560px] leading-relaxed">{t.heroSub}</p>
+              <div className="mt-6 flex flex-wrap gap-3 text-[11px]">
+                <span className="px-3 py-1.5 bg-white/10 rounded-full border border-white/20">âœ“ {t.clausulas11}</span>
+                <span className="px-3 py-1.5 bg-white/10 rounded-full border border-white/20">âœ“ {t.anexos}</span>
+                <span className="px-3 py-1.5 bg-[#d4a44a] text-[#2a3f5a] font-bold rounded-full">âœ“ {t.lei}</span>
               </div>
             </div>
+            <div className="bg-white rounded-[16px] p-5 md:p-6 text-[#1a1a1a] shadow-xl">
+              <div className="text-[12px] font-black tracking-widest text-[#3a4f6a] mb-4">{t.cadastroTitulo}</div>
+              <div className="flex gap-2 mb-4">
+                {[
+                  { id:'EMPRESA', label:t.tipoEmpresa },
+                  { id:'INDIVIDUAL', label:t.tipoIndividual },
+                  { id:'COOPERATIVA', label:t.tipoCooperativa },
+                ].map(opt => (
+                  <button key={opt.id} onClick={()=>setCadTipo(opt.id as any)} className={`flex-1 py-2 px-2 text-[9px] font-bold rounded border leading-tight ${cadTipo===opt.id ? 'bg-[#3a4f6a] text-white border-[#3a4f6a]' : 'bg-white text-[#3a4f6a] border-[#3a4f6a]/20'}`}>{opt.label}</button>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input value={cadNome} onChange={e=>setCadNome(e.target.value)} placeholder={t.nome} className="col-span-2 border border-black/10 rounded px-3 py-2.5 text-[13px] outline-none focus:border-[#d4a44a]" />
+                <select value={cadPais} onChange={e=>handleCadPaisChange(e.target.value)} className="border border-black/10 rounded px-3 py-2.5 text-[13px] bg-white">
+                  {Object.keys(PAISES).map(p=> <option key={p} value={p}>{p}</option>)}
+                </select>
+                <select value={cadProv} onChange={e=>setCadProv(e.target.value)} className="border border-black/10 rounded px-3 py-2.5 text-[13px] bg-white">
+                  {provinciasCad.map(pr=> <option key={pr} value={pr}>{pr}</option>)}
+                </select>
+                <select value={cadServ} onChange={e=>setCadServ(e.target.value)} className="border border-black/10 rounded px-3 py-2.5 text-[13px] bg-white">
+                  {CATEGORIAS.map(c=> <option key={c} value={c}>{c}</option>)}
+                </select>
+                <input placeholder={t.telefone} className="border border-black/10 rounded px-3 py-2.5 text-[13px]" />
+              </div>
+              <div
+                onDragOver={e=>{e.preventDefault(); setDragOver(true);}}
+                onDragLeave={()=>setDragOver(false)}
+                onDrop={e=>{e.preventDefault(); setDragOver(false); const names = Array.from(e.dataTransfer.files).map(f=>f.name); setFiles(prev=>[...prev, ...names]);}}
+                onClick={()=>fileInputRef.current?.click()}
+                className={`mt-4 border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition ${dragOver ? 'border-[#d4a44a] bg-[#d4a44a]/10' : 'border-black/15 bg-[#f9f6f0]'}`}
+              >
+                <div className="text-[11px] font-bold text-[#3a4f6a]">{t.anexar}</div>
+                <div className="text-[10px] text-black/50 mt-1">{t.arraste} - BI, NUIT, Fotos trabalho</div>
+                {files.length>0 && <div className="mt-2 text-[10px] text-left bg-white rounded p-2 border">{files.map((f,i)=><div key={i}>â€¢ {f}</div>)}</div>}
+                <input ref={fileInputRef} type="file" multiple className="hidden" onChange={e=>{ if(e.target.files){ setFiles(prev=>[...prev, ...Array.from(e.target.files!).map(f=>f.name)]); } }} />
+              </div>
+              <button onClick={()=>{ if(!cadNome){ alert('Preencha nome'); return; } alert('Cadastro enviado! Em analise.'); setCadNome(''); setFiles([]); }} className="mt-4 w-full bg-[#d4a44a] text-[#2a3f5a] font-black py-3 rounded-lg text-[13px] tracking-widest hover:bg-[#eabf6a] transition">{t.enviar}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-            <div className="bg-white border rounded-xl p-5">
-              <div className="font-bold">Profissionais verificados - {profissionaisFiltrados.length} encontrados</div>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {profissionaisFiltrados.map(p=>(
-                  <div key={p.ini+p.nome} className="border-2 rounded-xl p-4">
-                    <div className="flex gap-3"><div className="w-12 h-12 rounded-full bg-[#3a4f6a] text-white grid place-items-center font-bold">{p.foto}</div><div className="flex-1"><div className="font-bold text-[13px]">{p.nome}</div><div className="text-[11px] text-zinc-600">{p.func} - {p.pais}</div><div className="text-[11px]">â­ {p.nota} ({p.trab}) - {p.local}</div></div></div>
-                    <div className="mt-3 grid grid-cols-2 gap-2"><button className="h-8 rounded-lg bg-white border font-bold text-[11px]">Ver Perfil</button><button className="h-8 rounded-lg bg-[#25D366] text-white font-bold text-[11px]">WhatsApp</button></div>
+      <main className="max-w-[1280px] mx-auto px-3 md:px-6 py-6">
+        {/* ENCONTRAR TAB */}
+        {tab === 'encontrar' && (
+          <>
+            {/* BUSCA */}
+            <div className="bg-white rounded-[16px] border border-black/10 p-4 md:p-5 shadow-sm">
+              <div className="grid md:grid-cols-[1.5fr_0.6fr_0.7fr_auto] gap-3 items-end">
+                <div>
+                  <label className="text-[10px] font-black tracking-widest text-[#3a4f6a]">{t.oQue}</label>
+                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={t.buscarPlaceholder} className="mt-1 w-full border border-black/10 rounded-lg px-4 py-3 text-[14px] outline-none focus:border-[#d4a44a]" />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black tracking-widest text-[#3a4f6a]">{t.pais}</label>
+                  <select value={paisFiltro} onChange={e=>handlePaisFiltroChange(e.target.value)} className="mt-1 w-full border border-black/10 rounded-lg px-3 py-3 text-[14px] bg-white outline-none">
+                    {Object.keys(PAISES).map(p=> <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-black tracking-widest text-[#3a4f6a]">{t.provincia}</label>
+                  <select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} className="mt-1 w-full border border-black/10 rounded-lg px-3 py-3 text-[14px] bg-white outline-none">
+                    {provinciasFiltro.map(pr=> <option key={pr} value={pr}>{pr}</option>)}
+                  </select>
+                </div>
+                <button onClick={()=>{}} className="h-[46px] bg-[#3a4f6a] text-white font-black px-6 rounded-lg text-[13px] tracking-widest hover:bg-[#2a3f5a]">{t.pesquisar}</button>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold text-black/50">{t.tags}</span>
+                {CATEGORIAS.slice(0,6).map(cat=> (
+                  <button key={cat} onClick={()=>setSearch(cat)} className={`px-3 py-1 rounded-full text-[11px] border font-semibold ${search===cat ? 'bg-[#d4a44a] border-[#d4a44a] text-[#2a3f5a]' : 'bg-[#f6f1e8] border-black/10 hover:border-[#d4a44a]'}`}>{cat}</button>
+                ))}
+              </div>
+              <div className="mt-3 text-[10px] text-black/40">Pais -> Provincia automatico: ao mudar Pais, Provincia muda automaticamente. Funciona no filtro e no cadastro.</div>
+            </div>
+
+            {/* LISTA */}
+            <div className="mt-8">
+              <h2 className="text-[14px] font-black tracking-widest text-[#3a4f6a]">{t.verificados} ({profissionaisFiltrados.length})</h2>
+              <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {profissionaisFiltrados.map(p=> (
+                  <div key={p.id} className="bg-white rounded-[14px] border border-black/10 p-4 hover:shadow-lg transition">
+                    <div className="flex justify-between items-start">
+                      <div className="flex gap-3">
+                        <div className="w-11 h-11 rounded-full bg-[#2a3f5a] text-[#eabf6a] flex items-center justify-center font-black text-[13px]">{p.nome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+                        <div>
+                          <div className="font-bold text-[14px] leading-tight">{p.nome}</div>
+                          <div className="text-[11px] text-black/60">{p.cat} â€¢ {p.pais} / {p.prov}</div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-black bg-[#d4a44a]/20 text-[#8a5a1a] px-2 py-1 rounded-full border border-[#d4a44a]/30">{t.verificado} â˜… {p.rating}</span>
+                    </div>
+                    <div className="mt-3 text-[12px] text-black/70 leading-snug">{p.desc}</div>
+                    <div className="mt-3 flex gap-2">
+                      <button onClick={()=>{ setTab('contratos'); setContractData(d=>({...d, trabNome:p.nome, funcao:p.cat, local:p.prov})); }} className="flex-1 bg-[#3a4f6a] text-white text-[11px] font-black py-2.5 rounded-lg tracking-widest hover:bg-[#2a3f5a]">{t.verContrato}</button>
+                      <button onClick={()=>alert('WhatsApp: +258 84xxxxxxx - Contactar '+p.nome)} className="px-4 border border-[#d4a44a] text-[#3a4f6a] text-[11px] font-black rounded-lg">{t.contratar}</button>
+                    </div>
+                    <div className="mt-2 text-[10px] text-black/40">{p.jobs} trabalhos â€¢ M-Pesa OK â€¢ Fotos OK</div>
                   </div>
                 ))}
               </div>
+              {profissionaisFiltrados.length===0 && (
+                <div className="mt-6 bg-white border border-dashed border-black/20 rounded-xl p-8 text-center text-[13px] text-black/50">Nenhum profissional encontrado para este filtro. Tente mudar Pais/Provincia ou busca.</div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* CONTRATOS 11 TAB - NAO MEXER estrutura */}
+        {tab === 'contratos' && (
+          <div className="grid lg:grid-cols-[320px_1fr] gap-6">
+            {/* BIBLIOTECA */}
+            <div className="bg-white rounded-[16px] border border-black/10 p-4 h-fit">
+              <div className="flex items-center gap-2">
+                <LogoESSE compact />
+              </div>
+              <div className="mt-4 text-[11px] font-black tracking-widest text-[#3a4f6a]">{t.biblioteca}</div>
+              <div className="mt-3 grid gap-2">
+                {TIPOS_CONTRATO.map(tipo=> (
+                  <button key={tipo} onClick={()=>{ setContractData(d=>({...d, tipo})); setContractPage(1); }} className={`text-left px-3 py-2.5 rounded-lg border text-[12px] font-semibold ${contractData.tipo===tipo ? 'bg-[#2a3f5a] text-[#eabf6a] border-[#2a3f5a]' : 'bg-[#f9f6f0] border-black/10 hover:border-[#d4a44a]'}`}>{tipo}</button>
+                ))}
+              </div>
+              <div className="mt-4 p-3 bg-[#f6f1e8] rounded-lg border border-[#d4a44a]/30">
+                <div className="text-[10px] font-bold text-[#3a4f6a]">11 paginas / clausulas</div>
+                <div className="mt-2 grid grid-cols-11 gap-1">
+                  {Array.from({length:11}).map((_,i)=>(
+                    <div key={i} onClick={()=>setContractPage(i+1)} className={`h-7 rounded flex items-center justify-center text-[10px] font-black cursor-pointer ${contractPage===i+1 ? 'bg-[#d4a44a] text-[#2a3f5a]' : 'bg-white border border-black/10 hover:border-[#d4a44a]'}`}>{i+1}</div>
+                  ))}
+                </div>
+                <div className="mt-2 text-[10px] text-black/50">{t.pag} {contractPage} de 11 - {[
+                  t.tipoContrato, t.empregador, t.trabalhador, t.funcao, t.prazo, t.remuneracao, t.obrigacoes, t.anexos, t.validade, t.assinaturas, t.final
+                ][contractPage-1]}</div>
+              </div>
+            </div>
+
+            {/* FORMULARIO */}
+            <div className="bg-white rounded-[16px] border border-black/10 p-5 md:p-7">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[16px] font-black text-[#2a3f5a] tracking-tight">CONTRATO - {contractData.tipo.toUpperCase()} - PAGINA {contractPage}/11</h2>
+                <span className="text-[10px] px-2 py-1 bg-[#d4a44a] text-[#2a3f5a] font-black rounded">{t.lei}</span>
+              </div>
+
+              {/* PAGINAS */}
+              <div className="mt-6">
+                {contractPage===1 && (
+                  <div>
+                    <label className="text-[11px] font-black tracking-widest">{t.tipoContrato}</label>
+                    <select value={contractData.tipo} onChange={e=>updateContract('tipo', e.target.value)} className="mt-2 w-full border rounded-lg px-4 py-3 text-[14px] bg-white">
+                      {TIPOS_CONTRATO.map(tp=> <option key={tp} value={tp}>{tp}</option>)}
+                    </select>
+                    <p className="mt-3 text-[12px] text-black/60">Modelo com 11 clausulas legais conforme Lei 23/2007. Inclui fotos, M-Pesa comprovado e assinatura WhatsApp.</p>
+                  </div>
+                )}
+                {contractPage===2 && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2 text-[12px] font-black text-[#3a4f6a]">CLAUSULA 1 - IDENTIFICACAO EMPREGADOR</div>
+                    <input placeholder="Nome empregador" value={contractData.empNome} onChange={e=>updateContract('empNome', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="BI / NUIT" value={contractData.empDoc} onChange={e=>updateContract('empDoc', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Telefone" value={contractData.empTel} onChange={e=>updateContract('empTel', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Endereco" value={contractData.empEnd} onChange={e=>updateContract('empEnd', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                  </div>
+                )}
+                {contractPage===3 && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2 text-[12px] font-black text-[#3a4f6a]">CLAUSULA 2 - IDENTIFICACAO TRABALHADOR</div>
+                    <input placeholder="Nome trabalhador" value={contractData.trabNome} onChange={e=>updateContract('trabNome', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="BI / NUIT" value={contractData.trabDoc} onChange={e=>updateContract('trabDoc', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Telefone WhatsApp" value={contractData.trabTel} onChange={e=>updateContract('trabTel', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Endereco" value={contractData.trabEnd} onChange={e=>updateContract('trabEnd', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                  </div>
+                )}
+                {contractPage===4 && (
+                  <div className="grid gap-4">
+                    <div className="text-[12px] font-black text-[#3a4f6a]">CLAUSULA 3 e 4 - OBJECTO, FUNCAO E LOCAL</div>
+                    <input placeholder="Funcao detalhada" value={contractData.funcao} onChange={e=>updateContract('funcao', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Local de trabalho - ex: Maputo Cidade" value={contractData.local} onChange={e=>updateContract('local', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                  </div>
+                )}
+                {contractPage===5 && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2 text-[12px] font-black text-[#3a4f6a]">CLAUSULA 5 - PRAZO E HORARIO</div>
+                    <input type="date" value={contractData.dataInicio} onChange={e=>updateContract('dataInicio', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input type="date" value={contractData.dataFim} onChange={e=>updateContract('dataFim', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <input placeholder="Horario ex: 07:30-16:30 Seg-Sab" value={contractData.horario} onChange={e=>updateContract('horario', e.target.value)} className="md:col-span-2 border rounded-lg px-3 py-2.5 text-[13px]" />
+                  </div>
+                )}
+                {contractPage===6 && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2 text-[12px] font-black text-[#3a4f6a]">CLAUSULA 6 - REMUNERACAO E M-PESA</div>
+                    <input placeholder="Salario - ex: 15000 MZN" value={contractData.salario} onChange={e=>updateContract('salario', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <select value={contractData.formaPag} onChange={e=>updateContract('formaPag', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px] bg-white"><option>M-Pesa</option><option>e-Mola</option><option>Transferencia</option><option>Numerario</option></select>
+                    <input placeholder="Numero M-Pesa comprovativo" value={contractData.mpesa} onChange={e=>updateContract('mpesa', e.target.value)} className="md:col-span-2 border rounded-lg px-3 py-2.5 text-[13px]" />
+                  </div>
+                )}
+                {contractPage===7 && (
+                  <div className="grid gap-4">
+                    <div className="text-[12px] font-black text-[#3a4f6a]">CLAUSULA 7 e 8 - OBRIGACOES</div>
+                    <textarea placeholder="Obrigacoes empregador" value={contractData.obrigacoesEmp} onChange={e=>updateContract('obrigacoesEmp', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px] h-24" />
+                    <textarea placeholder="Obrigacoes trabalhador" value={contractData.obrigacoesTrab} onChange={e=>updateContract('obrigacoesTrab', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px] h-24" />
+                  </div>
+                )}
+                {contractPage===8 && (
+                  <div>
+                    <div className="text-[12px] font-black text-[#3a4f6a]">CLAUSULA 8 - ANEXOS ANTES VALIDADE (fotos)</div>
+                    <p className="text-[11px] text-black/60 mt-1">Adicione fotos do local, BI, comprovativo M-Pesa. Obrigatorio antes da validade.</p>
+                    <div className="mt-3 space-y-2">
+                      {contractData.anexos.map((an, i)=>(
+                        <div key={i} className="flex gap-2">
+                          <input value={an} onChange={e=>{ const copy=[...contractData.anexos]; copy[i]=e.target.value; updateContract('anexos', copy); }} className="flex-1 border rounded-lg px-3 py-2 text-[12px]" />
+                          <button onClick={()=>{ const copy=contractData.anexos.filter((_,idx)=>idx!==i); updateContract('anexos', copy); }} className="px-2 border rounded text-[11px]">X</button>
+                        </div>
+                      ))}
+                      <button onClick={()=>updateContract('anexos', [...contractData.anexos, 'Novo anexo'])} className="text-[11px] font-bold text-[#3a4f6a] border border-dashed border-[#3a4f6a]/30 rounded-lg px-3 py-2 w-full">+ Adicionar anexo</button>
+                    </div>
+                  </div>
+                )}
+                {contractPage===9 && (
+                  <div className="grid gap-4">
+                    <div className="text-[12px] font-black text-[#3a4f6a]">CLAUSULA 9 e 10 - VALIDADE E LEI</div>
+                    <input placeholder="Validade ex: 12 meses" value={contractData.validade} onChange={e=>updateContract('validade', e.target.value)} className="border rounded-lg px-3 py-2.5 text-[13px]" />
+                    <div className="p-3 bg-[#f6f1e8] rounded border text-[11px]">Valido em todo Mocambique conforme Lei 23/2007. Foro: {contractData.local || 'Maputo'}. Protege ambas partes.</div>
+                  </div>
+                )}
+                {contractPage===10 && (
+                  <div className="grid gap-4">
+                    <div className="text-[12px] font-black text-[#3a4f6a]">CLAUSULA 10 e 11 - ASSINATURAS WHATSAPP</div>
+                    <div className="p-4 bg-[#e7f3e7] rounded-lg border border-green-200 text-[12px]">
+                      <div>Assinatura sera feita via WhatsApp com foto do BI e selfie.</div>
+                      <div className="mt-2 font-bold">Empregador: {contractData.empNome || '---'} - {contractData.empTel || 'sem telefone'}</div>
+                      <div className="font-bold">Trabalhador: {contractData.trabNome || '---'} - {contractData.trabTel || 'sem telefone'}</div>
+                    </div>
+                  </div>
+                )}
+                {contractPage===11 && (
+                  <div>
+                    <div className="text-[12px] font-black text-[#3a4f6a] mb-3">{t.preview} - {t.clausulas11}</div>
+                    <div className="border rounded-xl p-4 bg-[#fdfaf3] text-[12px] leading-relaxed">
+                      <div className="flex justify-between items-center border-b pb-3 mb-3">
+                        <LogoESSE compact />
+                        <span className="text-[10px] font-bold">{t.lei}</span>
+                      </div>
+                      <div className="font-black">CONTRATO {contractData.tipo.toUpperCase()}</div>
+                      <div className="mt-2"><b>1.</b> Empregador: {contractData.empNome} ({contractData.empDoc})</div>
+                      <div><b>2.</b> Trabalhador: {contractData.trabNome} ({contractData.trabDoc})</div>
+                      <div><b>3.</b> Funcao: {contractData.funcao} - Local: {contractData.local}</div>
+                      <div><b>4-5.</b> Prazo: {contractData.dataInicio} a {contractData.dataFim} - {contractData.horario}</div>
+                      <div><b>6.</b> Salario: {contractData.salario} via {contractData.formaPag} - {contractData.mpesa}</div>
+                      <div><b>7.</b> Obrig Emp: {contractData.obrigacoesEmp}</div>
+                      <div><b>8.</b> Obrig Trab: {contractData.obrigacoesTrab}</div>
+                      <div><b>9.</b> Anexos: {contractData.anexos.join(', ')}</div>
+                      <div><b>10.</b> Validade: {contractData.validade}</div>
+                      <div><b>11.</b> Foro {contractData.local} - WhatsApp assinatura</div>
+                      <div className="mt-4 inline-block border-2 border-[#d4a44a] text-[#d4a44a] px-4 py-1 font-black rotate-[-8deg]">ESSE CARIMBO OFICIAL</div>
+                    </div>
+                    <div className="mt-5 flex gap-3">
+                      <button onClick={gerarPDF} className="flex-1 bg-[#2a3f5a] text-[#eabf6a] font-black py-3 rounded-lg text-[12px] tracking-widest">{t.gerarPdf}</button>
+                      <button onClick={salvarContrato} className="flex-1 bg-[#d4a44a] text-[#2a3f5a] font-black py-3 rounded-lg text-[12px] tracking-widest">{t.salvar}</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 flex justify-between">
+                <button disabled={contractPage===1} onClick={()=>setContractPage(p=>Math.max(1,p-1))} className="px-5 py-2.5 border rounded-lg text-[12px] font-bold disabled:opacity-30">VOLTAR</button>
+                <button disabled={contractPage===11} onClick={()=>setContractPage(p=>Math.min(11,p+1))} className="px-5 py-2.5 bg-[#3a4f6a] text-white rounded-lg text-[12px] font-bold disabled:opacity-30">AVANCAR</button>
+              </div>
             </div>
           </div>
         )}
-        {tab==="contratos" && (
-          <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_380px] gap-4">
-            <div className="bg-white border rounded-xl p-3 h-fit lg:sticky lg:top-[76px]">
-              <div className="font-bold text-[13px]">Biblioteca 10+ - 15 tarefas cada</div><div className="text-[11px] text-zinc-500">Escolhido: {tipo} ({MODELOS[tipo].checklist.length})</div>
-              <div className="mt-3 space-y-2">{(Object.keys(MODELOS) as TipoContrato[]).map(t=>{const ativo=tipo===t; return <button key={t} onClick={()=>escolherTipo(t)} className={`w-full text-left p-3 rounded-xl border flex gap-2.5 ${ativo?"bg-[#fff8ed] border-[#d4a44a]":"bg-white"}`}><div className="flex-1"><div className="font-medium text-[12px]">{t}</div><div className="text-[10px] text-zinc-500">{MODELOS[t].desc}</div></div><div className={`w-5 h-5 rounded-full border-2 grid place-items-center ${ativo?"bg-[#3a4f6a] border-[#3a4f6a] text-white":"border-zinc-300"}`}>{ativo?"âœ“":""}</div></button>})}
+
+        {/* MEUS CONTRATOS */}
+        {tab === 'meus' && (
+          <div className="bg-white rounded-[16px] border border-black/10 p-6">
+            <div className="flex items-center gap-3">
+              <LogoESSE compact />
+              <h2 className="text-[16px] font-black text-[#2a3f5a]">{t.meusTitulo} ({meusContratos.length})</h2>
+            </div>
+            {meusContratos.length===0 ? (
+              <div className="mt-8 text-center py-12 border border-dashed rounded-xl bg-[#f9f6f0]">
+                <div className="text-[13px] text-black/60">{t.nenhum}</div>
+                <button onClick={()=>setTab('contratos')} className="mt-4 px-5 py-2 bg-[#3a4f6a] text-white rounded-lg text-[12px] font-bold">IR PARA CONTRATOS 11</button>
               </div>
-            </div>
-            <div ref={formRef} className="bg-white border rounded-xl p-5">
-              <div className="flex items-center justify-between"><h3 className="font-bold text-[13px]">CLAUSULA {pagina} - {tipo}</h3><span className="px-2 py-0.5 rounded-full bg-blue-50 border text-[11px] font-bold">{pagina}/11</span></div>
-              <div className="mt-5">
-                {pagina===1 && (<div className="space-y-4"><div className="grid grid-cols-2 gap-3"><div><label className="text-[11px] font-bold">Nome Contratante</label><input value={form.empNome} onChange={e=>setForm({...form,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div><div><label className="text-[11px] font-bold">Nome Profissional</label><input value={form.trabNome} onChange={e=>setForm({...form,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div></div><button onClick={()=>irPagina(2)} className="w-full h-11 bg-[#2a3d55] text-white rounded-xl font-bold">Proximo 2</button></div>)}
-                {pagina===2 && (<div className="space-y-4"><div className="font-bold">Tarefas - {MODELOS[tipo].checklist.length}</div><div className="flex flex-wrap gap-2">{MODELOS[tipo].checklist.map(t=>{const ativo=tarefasSel.includes(t); return <button key={t} onClick={()=>setTarefasSel(p=>p.includes(t)?p.filter(x=>x!==t):[...p,t])} className={`px-3 py-2 rounded-full text-[12px] border ${ativo?"bg-[#3a4f6a] text-white":"bg-white"}`}>{t}</button>})}</div><div className="flex gap-2"><button onClick={()=>irPagina(1)} className="flex-1 h-11 border-2 rounded-xl">Voltar</button><button onClick={()=>irPagina(3)} className="flex-1 h-11 bg-[#2a3d55] text-white rounded-xl">Proximo</button></div></div>)}
-                {[3,4,5,6,7,8,9].includes(pagina) && (<div><div className="font-bold">Clausula {pagina} editavel</div><div className="mt-3"><label className="text-[11px]">Valor / Descricao</label><input value={form.valor} onChange={e=>setForm({...form,valor:e.target.value})} className="mt-1 w-full h-10 border-2 rounded-lg px-3" /></div><div className="mt-3 flex gap-2"><button onClick={()=>irPagina((pagina-1) as Pagina)} className="flex-1 h-11 border-2 rounded-xl">Voltar</button><button onClick={()=>irPagina((pagina+1) as Pagina)} className="flex-1 h-11 bg-[#2a3d55] text-white rounded-xl">Proximo</button></div></div>)}
-                {pagina===10 && (<div><div className="font-bold">Clausula 10 - Anexos antes validade</div><label className="mt-4 w-full min-h-[100px] border-2 border-dashed rounded-xl grid place-items-center p-4 cursor-pointer"><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e=>handleFiles(e.target.files)} /><div>Adicionar fotos/projetos</div></label>{anexos.length>0 && <div className="mt-3">{anexos.map(a=><div key={a.id} className="border p-2 rounded-lg text-[11px]">{a.nome}</div>)}</div>}<div className="mt-3 flex gap-2"><button onClick={()=>irPagina(9)} className="flex-1 h-11 border-2 rounded-xl">Voltar</button><button onClick={()=>irPagina(11)} className="flex-1 h-11 bg-[#3a4f6a] text-white rounded-xl">Proximo 11</button></div></div>)}
-                {pagina===11 && (<div><div className="font-bold">Clausula 11 - Validade</div><div className="mt-4 grid grid-cols-2 gap-3"><button onClick={compartilharFree} className="h-12 bg-[#3a4f6a] text-white rounded-xl font-bold">FREE PDF + WhatsApp</button><button onClick={()=>setShowPag(true)} className="h-12 bg-[#2a3d55] text-white rounded-xl font-bold">PAGO 200MT</button></div><button onClick={()=>irPagina(10)} className="mt-3 w-full h-11 border-2 rounded-xl">Voltar 10</button></div>)}
+            ) : (
+              <div className="mt-6 grid md:grid-cols-2 gap-4">
+                {meusContratos.map((c,i)=>(
+                  <div key={i} className="border rounded-xl p-4 bg-[#fdfaf3]">
+                    <div className="flex justify-between">
+                      <div className="font-bold text-[13px]">{c.tipo}</div>
+                      <span className="text-[10px] bg-[#d4a44a] text-[#2a3f5a] px-2 py-1 rounded-full font-black">ESSE</span>
+                    </div>
+                    <div className="mt-2 text-[11px] text-black/70">{c.empNome} â†’ {c.trabNome}</div>
+                    <div className="text-[11px] text-black/50">{c.local} â€¢ {c.salario} â€¢ {c.validade}</div>
+                    <div className="mt-3 flex gap-2">
+                      <button onClick={gerarPDF} className="flex-1 bg-[#2a3f5a] text-[#eabf6a] text-[11px] font-bold py-2 rounded">PDF COM CARIMBO</button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="bg-white border rounded-xl p-4 h-fit lg:sticky lg:top-[76px]">
-              <div className="text-[11px] font-bold">Preview AO VIVO - 11 Clausulas = PDF</div>
-              <div className="mt-3 h-[400px] overflow-auto bg-[#f8fafc] border rounded-xl p-3 text-[11px] font-mono">CONTRATO {tipo.toUpperCase()}<br/>1.PARTES: {form.empNome} / {form.trabNome}<br/>2.OBJECTO: {todas.join(", ")}<br/>4.SALARIO: {form.valor} MT<br/>10.ANEXOS: {anexos.length}<br/>11.VALIDADE: Lei 23/2007</div>
-              <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={compartilharFree} className="h-10 bg-[#3a4f6a] text-white rounded-xl font-bold text-[11px]">FREE</button><button onClick={()=>setShowPag(true)} className="h-10 bg-[#2a3d55] text-white rounded-xl font-bold text-[11px]">PAGO 200MT</button></div>
-            </div>
+            )}
           </div>
         )}
-        {tab==="meus" && <div className="bg-white border rounded-xl p-6 text-center py-20"><div className="font-bold">MEUS CONTRATOS</div><div className="text-[12px] text-zinc-500 mt-2">Historico 1.200+ contratos em Gaza</div></div>}
       </main>
 
-      {showPag && (<div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4"><div className="bg-white rounded-xl w-full max-w-[420px] p-5"><div className="font-bold">Pagamento 200MT</div><div className="mt-4 grid grid-cols-2 gap-2"><button onClick={()=>setShowPag(false)} className="h-10 border rounded-xl">FREE</button><button onClick={pagar} className="h-10 bg-[#2a3d55] text-white rounded-xl">Pagar</button></div></div></div>)}
-      {showPin && <div className="fixed inset-0 z-[60] bg-black/60 grid place-items-center p-4"><div className="bg-white rounded-xl p-5 text-center"><div className="font-bold">Pedido enviado para {telPag}</div></div></div>}
-      <footer className="mt-10 bg-[#0f172a] text-white py-6"><div className="mx-auto max-w-[1600px] px-4 flex items-center gap-3"><div className="bg-white p-1 rounded-lg"><LogoESSE size={36} withText={false} /></div><div><div className="font-bold text-[13px]">ESSE - ENERGY SOLUTIONS & SERVICES - 11 CLAUSULAS DESBLOQUEADAS</div><div className="text-[11px] text-white/60">NUIT 401 866 876 - Xai-Xai - Preview ao vivo = PDF final - Chega de acordo de boca.</div><div className="text-[9px] text-[#d4a44a]">Energy solutions and services enterprise</div></div></div></footer>
+      <footer className="mt-10 bg-[#2a3f5a] text-white/60 py-6">
+        <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row justify-between gap-4 items-center">
+          <div className="flex items-center gap-3">
+            <LogoESSE compact />
+            <span className="text-[10px] tracking-widest">Â© 2025 ESSE - Energy solutions and services enterprise - Lei 23/2007</span>
+          </div>
+          <div className="text-[10px]">COR_AZUL #3a4f6a | COR_DOURADO #d4a44a | Logo SVG inline &lt;2KB | PT EN FR | Paisâ†’Provincia auto</div>
+        </div>
+      </footer>
     </div>
   );
 }

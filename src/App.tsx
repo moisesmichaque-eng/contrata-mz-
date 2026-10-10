@@ -10,7 +10,7 @@ const PAISES: Record<string,string[]> = {
   "France":["Paris"],
   "USA":["California","Texas"]
 };
-const CATS=["Pedreiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter"];
+const CATS=["Pedreiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Servicos/Consultorias","Outros/Particular"];
 
 const T={
  PT:{
@@ -92,17 +92,17 @@ const PROS=[
 ];
 
 const CLAUSULAS = [
- { id:1, titulo:"Dados das partes", short:"Quem contrata e quem faz", icon:"ðŸ‘¥" },
- { id:2, titulo:"Objeto e tarefas", short:"O que sera feito", icon:"ðŸŽ¯" },
- { id:3, titulo:"Horario e local", short:"Quando e onde", icon:"ðŸ“" },
- { id:4, titulo:"Salario e pagamento", short:"Quanto e como paga", icon:"ðŸ’°" },
- { id:5, titulo:"Alimentacao e alojamento", short:"Beneficios", icon:"ðŸ½ï¸" },
- { id:6, titulo:"Folgas e ferias", short:"Descanso legal", icon:"ðŸ–ï¸" },
- { id:7, titulo:"Periodo experimental", short:"Teste inicial", icon:"â±ï¸" },
- { id:8, titulo:"Deveres do trabalhador", short:"Obrigacoes", icon:"âœ…" },
- { id:9, titulo:"Deveres do empregador", short:"Obrigacoes", icon:"ðŸ¤" },
- { id:10, titulo:"Anexos (antes validade)", short:"Fotos e provas", icon:"ðŸ“Ž" },
- { id:11, titulo:"Validade e assinaturas", short:"Assina no WhatsApp", icon:"âœï¸" },
+ { id:1, titulo:"Dados das partes", short:"Quem contrata e quem faz", icon:"1" },
+ { id:2, titulo:"Objeto e tarefas", short:"O que sera feito", icon:"2" },
+ { id:3, titulo:"Horario e local", short:"Quando e onde", icon:"3" },
+ { id:4, titulo:"Salario e pagamento", short:"Quanto e como paga", icon:"4" },
+ { id:5, titulo:"Alimentacao e alojamento", short:"Beneficios", icon:"5" },
+ { id:6, titulo:"Folgas e ferias", short:"Descanso legal", icon:"6" },
+ { id:7, titulo:"Periodo experimental", short:"Teste inicial", icon:"7" },
+ { id:8, titulo:"Deveres do trabalhador", short:"Obrigacoes", icon:"8" },
+ { id:9, titulo:"Deveres do empregador", short:"Obrigacoes", icon:"9" },
+ { id:10, titulo:"Anexos (antes validade)", short:"Fotos e provas", icon:"10" },
+ { id:11, titulo:"Validade e assinaturas", short:"Assina no WhatsApp", icon:"11" },
 ];
 
 export default function App(){
@@ -264,7 +264,7 @@ export default function App(){
    {/* PROF LIST */}
    <section className="mx-auto max-w-[1280px] px-4 md:px-10 py-8">
     <div className="flex items-center justify-between mb-5">
-     <h2 className="text-[14px] font-extrabold text-[#1e293b]">{tr.verif} {prov} <span className="text-[#94a3b8] font-semibold">â€¢ {PROS.length} disponiveis</span></h2>
+     <h2 className="text-[14px] font-extrabold text-[#1e293b]">{tr.verif} {prov} <span className="text-[#94a3b8] font-semibold">- {PROS.length} disponiveis</span></h2>
      <div className="flex gap-2">
       <span className="text-[10px] px-2.5 py-1 rounded-full bg-[#2a3f5a] text-white font-bold">{cat}</span>
       <span className="text-[10px] px-2.5 py-1 rounded-full bg-white border text-[#64748b]">{prov}</span>
@@ -279,7 +279,7 @@ export default function App(){
          <div className="w-10 h-10 rounded-full bg-[#2a3f5a] grid place-items-center text-[#d4a44a] font-black text-[12px]">{p.n.split(" ").map(s=>s[0]).join("").slice(0,2)}</div>
          <div>
           <div className="font-bold text-[13px] leading-tight">{p.n}</div>
-          <div className="text-[11px] text-[#64748b]">{p.cat} â€¢ {p.loc}</div>
+          <div className="text-[11px] text-[#64748b]">{p.cat} - {p.loc}</div>
           <div className="flex items-center gap-1 mt-1">
            <span className="text-[#d4a44a] text-[11px]">â˜… {p.rate}</span><span className="text-[10px] text-[#94a3b8]">({p.jobs} jobs)</span>
            <span className="ml-2 text-[9px] px-1.5 py-0.5 rounded bg-[#f0f7e9] text-[#4a7c2e] font-bold">VERIFICADO</span>
@@ -303,7 +303,7 @@ export default function App(){
    <section className="mx-auto max-w-[1280px] px-4 md:px-10 py-6">
     <div className="bg-[#2a3f5a] rounded-[16px] p-5 md:p-6 text-white flex flex-wrap justify-between gap-4">
      <div>
-      <div className="text-[#d4a44a] text-[10px] tracking-[0.2em] font-bold">11 CLAUSULAS OBRIGATORIAS â€¢ LEI 23/2007</div>
+      <div className="text-[#d4a44a] text-[10px] tracking-[0.2em] font-bold">11 CLAUSULAS OBRIGATORIAS - LEI 23/2007</div>
       <h2 className="text-[22px] md:text-[26px] font-black leading-none mt-1">Contratos 11 Clausulas - Valido em todo Mocambique</h2>
       <p className="text-[#cbd5e1] text-[11px] mt-2 max-w-[560px]">Agora com clausulas nomeadas - nao sao paginas. Contrato completo em 1 PDF.</p>
      </div>
@@ -413,8 +413,8 @@ export default function App(){
       </div>
 
       <div className="mt-6 flex gap-2">
-        <button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1) as any)} className="flex-1 h-11 border-2 rounded-xl font-bold disabled:opacity-40">â† Voltar: {clausulaAtiva>1?CLAUSULAS[clausulaAtiva-2].titulo:""}</button>
-        <button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1) as any)} className="flex-1 h-11 bg-[#2a3d55] text-white rounded-xl font-bold disabled:opacity-40">Proximo: {clausulaAtiva<11?CLAUSULAS[clausulaAtiva].titulo:""} â†’</button>
+        <button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1) as any)} className="flex-1 h-11 border-2 rounded-xl font-bold disabled:opacity-40">< Voltar: {clausulaAtiva>1?CLAUSULAS[clausulaAtiva-2].titulo:""}</button>
+        <button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1) as any)} className="flex-1 h-11 bg-[#2a3d55] text-white rounded-xl font-bold disabled:opacity-40">Proximo: {clausulaAtiva<11?CLAUSULAS[clausulaAtiva].titulo:""}  ></button>
       </div>
     </div>
 
@@ -458,7 +458,7 @@ export default function App(){
   )}
 
   <footer className="mt-10 border-t border-[#e8e2d5] py-6 text-center text-[10px] text-[#94a3b8] tracking-wide">
-   <span className="inline-block">ESSE â€¢ Energy solutions â€¢ Lei 23/2007 â€¢ {prov} â€¢ M-Pesa â€¢ WhatsApp â€¢ 11 Clausulas em 1 PDF unico</span>
+   <span className="inline-block">ESSE - Energy solutions - Lei 23/2007 - {prov} - M-Pesa - WhatsApp - 11 Clausulas em 1 PDF unico</span>
   </footer>
  </div>
  )

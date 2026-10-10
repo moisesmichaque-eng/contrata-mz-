@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 
 const PAISES: any = {
-  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","ZambÃƒÂ©zia - Quelimane","Cabo Delgado - Pemba"],
+  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","ZambÃ©zia - Quelimane","Cabo Delgado - Pemba"],
   "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
   "Portugal": ["Lisboa","Porto","Braga","Faro"],
   "Brasil": ["Sao Paulo - SP","Rio RJ","Minas MG","Bahia"],

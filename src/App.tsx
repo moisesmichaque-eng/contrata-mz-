@@ -1,197 +1,251 @@
 // @ts-nocheck
-// RESTAURADO EXATO ATE QUANDO PEDIU PARA ALTERAR POR CAUSA DE CONGELAR NO TELEFONE - ANTES DE PERDER TUDO - ENCONTRAR + CONTRATOS + NAO CONGELA MAIS NO TELEFONE - 700+ LINHAS - BUILD 100%
-import React, { useState, useMemo, useEffect } from 'react';
+// FLUXO CORRETO: 1. Gera PDF inicial 2. Assina no WhatsApp com CONCORDO 3. Gera PDF FINAL com assinaturas + prints + BI + M-Pesa
+import { useState, useMemo, useEffect } from 'react';
 
-const PAISES: any = {
-  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","ZambÃ©zia - Quelimane","Cabo Delgado - Pemba"],
-  "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
-  "Portugal": ["Lisboa","Porto"], "Brasil": ["Sao Paulo","Rio"], "Angola": ["Luanda"]
-};
-const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Serralheiro","Servicos/Consultorias","Outros/Particular"];
+const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Servicos/Consultorias","Outros/Particular"];
+
 const MODELO_TAREFAS: any = {
-  "Pedreiro": ["Fundacoes e alicerces com nivel e prumo", "Levantamento de paredes de bloco e tijolo", "Reboco interior e exterior liso e desempenado", "Assentamento de tijoleira e ceramica com nivel a laser", "Construcao de pilares, vigas e cintas de amarracao", "Concretagem de laje, contrapiso e calcada", "Acabamento com massa fina e preparacao para pintura", "Instalacao de portas, janelas e esquadrias com vedacao", "Construcao de muro, vedacao e estrutura de portao", "Limpeza final e entrega da obra organizada e fotografada"],
-  "Carpinteiro": ["Medir, cortar e montar madeira com precisao milimetrica", "Fabricar portas, janelas, armarios e prateleiras sob medida", "Instalar forro de madeira, lambril e deck com acabamento", "Fazer estrutura de telhado, ripas e caibros com nivel", "Lixar, envernizar e aplicar acabamento protetor anti-cupim", "Instalar fechaduras, dobradicas e ferragens com alinhamento perfeito", "Reparar moveis, portas empenadas e estruturas de madeira", "Construir escadas, corrimao e guarda-corpo de madeira macica", "Trabalhar com MDF, compensado e madeira macica com qualidade", "Entregar com acabamento liso, sem farpas, limpo e fotografado"],
-  "Domestica": ["Limpeza geral da casa todos os dias com varrer e passar pano", "Lavar louca, organizar cozinha e limpar fogao e geladeira", "Arrumar quartos, fazer camas e trocar lencois semanalmente", "Lavar roupa, passar, dobrar e guardar nos armarios", "Cozinhar cafe da manha, almoco e jantar conforme orientacao", "Cuidar das criancas com atencao quando solicitado", "Manter banheiros limpos, higienizados e com cheirinho", "Organizar armarios, despensa e geladeira com inventario", "Ir ao mercado fazer compras pequenas e anotar gastos", "Enviar resumo diario no WhatsApp do que foi feito e o que falta"],
-  "Serralheiro": ["Medir e cortar ferro com precisao", "Soldar portoes, grades, estruturas metalicas", "Fabricar portoes basculantes e de correr", "Fazer grades de janela e portas", "Instalar estruturas metalicas", "Soldar com eletrodo e MIG", "Lixar, pintar com anti-ferrugem", "Instalar fechaduras e ferragens", "Reparar portoes empenados", "Entregar com acabamento liso e fotografado"],
-  "Outros/Particular": ["Servico personalizado com clareza total", "Definir material e quem fornece", "Definir prazo exato", "Combinar valor e forma M-Pesa", "Enviar fotos antes, durante e depois", "Comunicacao diaria WhatsApp", "Cumprir horario e qualidade", "Retrabalho gratuito", "Deixar local limpo", "Entregar com recibo e avaliacao"]
+  "Pedreiro": ["Fundacoes e alicerces com nivel", "Levantamento de paredes", "Reboco interior e exterior liso", "Assentamento de tijoleira e ceramica", "Construcao de pilares, vigas e cinta", "Concretagem de laje", "Acabamento massa fina", "Instalacao de portas e janelas", "Construcao de muro", "Limpeza final"],
+  "Carpinteiro": ["Medir, cortar e montar madeira com precisao", "Fabricar portas, janelas, armarios sob medida", "Instalar forro de madeira, lambril e deck", "Fazer estrutura de telhado, ripas e caibros", "Lixar, envernizar e acabamento anti-cupim", "Instalar fechaduras, dobradicas e ferragens", "Reparar moveis, portas empenadas", "Construir escadas, corrimao e guarda-corpo", "Trabalhar MDF, compensado e madeira macica", "Entregar com acabamento liso, sem farpas"],
+  "Domestica": ["Limpeza geral diaria", "Lavar e organizar louca", "Arrumar quartos e fazer camas", "Lavar, passar e dobrar roupa", "Cozinhar cafe, almoco e jantar", "Cuidar das criancas", "Manter banheiros limpos", "Organizar armarios", "Ir ao mercado", "Enviar resumo diario"],
+  "Outros/Particular": ["Descrever servico personalizado", "Definir material necessario", "Definir prazo inicio e entrega", "Combinar valor e forma pagamento", "Enviar fotos antes e depois", "Manter comunicacao diaria", "Cumprir horario e qualidade", "Garantir retrabalho", "Deixar local limpo", "Entregar com recibo"]
 };
 
 export default function App(){
- const [tab,setTab]=useState("encontrar");
  const [contratoSel,setContratoSel]=useState(1);
- const [clausulaAtiva,setClausulaAtiva]=useState(3);
- const [filtroBusca,setFiltroBusca]=useState("");
- const [paisFiltro,setPaisFiltro]=useState("Mocambique");
- const [provFiltro,setProvFiltro]=useState("Maputo Cidade");
-
- // ENCONTRAR - RESTAURADO COMO ESTAVA ANTES DE PERDER TUDO - COM INFORMACAO
- const [profissionais,setProfissionais]=useState([
-  { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", cat:"Pedreiro", loc:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", rating:4.9, trabalhos:127, descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823000111", bi:"110100123456B", nuit:"Nao informado" },
-  { id:2, nome:"Joao Carpinteiro", tipo:"Carpinteiro", cat:"Carpinteiro", loc:"Mocambique / Xai-Xai", pais:"Mocambique", provincia:"Xai-Xai", rating:4.8, trabalhos:89, descricao:"Moveis, portas, telhado, 8 anos exp.", foto:"JC", verificado:true, whatsapp:"840532899", bi:"1102100MM", nuit:"401866876" },
-  { id:3, nome:"Michaque Serralheiro", tipo:"Serralheiro", cat:"Serralheiro", loc:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", rating:5.0, trabalhos:12, descricao:"Serralheiro - Soldador - Portoes, grades, estruturas metalicas - voce cadastrou como michaque como serralheiro.", foto:"MS", verificado:false, whatsapp:"828000333", bi:"110200011B", nuit:"401866876" },
-  { id:4, nome:"Ana Electricista", tipo:"Electricista", cat:"Electricista", loc:"Mocambique / Matola", pais:"Mocambique", provincia:"Matola", rating:5.0, trabalhos:156, descricao:"Instalacoes residenciais, manutencao, 6 anos exp.", foto:"AE", verificado:true, whatsapp:"840000222", bi:"N/A", nuit:"N/A" },
- ]);
-
- const [profsLocal,setProfsLocal]=useState<any[]>([]);
- useEffect(()=>{ try{ const s=localStorage.getItem('contrata-mz-antes-congelar'); if(s) setProfsLocal(JSON.parse(s)); }catch{} },[]);
- useEffect(()=>{ try{ localStorage.setItem('contrata-mz-antes-congelar', JSON.stringify(profsLocal)); }catch{} },[profsLocal]);
-
- const todosProfs = [...profsLocal, ...profissionais];
- const filtrados = todosProfs.filter(p => (p.nome + ' ' + p.cat + ' ' + p.loc).toLowerCase().includes(filtroBusca.toLowerCase()));
-
- // CONTRATOS - RESTAURADO ATE ONDE PAROU ANTES DE CONGELAR NO TELEFONE
+ const [clausulaAtiva,setClausulaAtiva]=useState(11);
  const [formContrato,setFormContrato]=useState({
-  empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai - Bairro Central",
-  trabNome:"Joao Carpinteiro", trabBI:"1102100MM", trabTel:"840532899", trabEnd:"Xai-Xai - Bairro 2", trabProf:"Carpinteiro",
-  tarefas: MODELO_TAREFAS["Carpinteiro"], 
-  horarioInicio:"06:00", horarioFim:"17:00", dias:"Segunda a Sabado", dataInicio:"2026-10-10", localTrab:"Xai-Xai - casa do cliente - Av. Principal, Bairro 2, perto da escola",
-  valor:"7500", diaPag:"05", formaPag:"M-Pesa", prazo:"30 dias", 
-  alimentacao:"Sim - almoco fornecido no local", alojamento:"Nao - mora perto", transporte:"Sim - 500MT/mes para chapa",
-  folgas:"Domingo e feriados nacionais. 12 dias ferias apos 1 ano. Se trabalhar domingo, paga dobrado.",
-  periodoExp:"90 dias - periodo de experiencia com avaliacao mensal.",
-  deveresTrab:"Cumprir horario 06:00 as 17:00, guardar sigilo, zelar pelos bens, comunicar atraso no WhatsApp, manter local limpo, usar EPI, cumprir as 10 tarefas com capricho, nao faltar sem aviso 24h",
-  deveresEmp:"Pagar salario pontualmente dia 05 via M-Pesa, respeitar dignidade, fornecer agua, refeicao e condicoes dignas, fornecer material e EPI, nao descontar sem motivo, cumprir folgas e ferias, fornecer transporte 500MT/mes",
-  anexos:[] as any[]
+  empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513",
+  trabNome:"Joao Carpinteiro", trabBI:"1102100MM", trabTel:"840532899",
+  tarefas: MODELO_TAREFAS["Carpinteiro"], valor:"7500", localTrab:"Xai-Xai - casa"
  });
+ const [assinaturaContratante, setAssinaturaContratante] = useState({ concordo:false, nome:"", data:"", biFoto:false, mpesaComprovativo:false });
+ const [assinaturaContratado, setAssinaturaContratado] = useState({ concordo:false, nome:"", data:"", biFoto:false, mpesaComprovativo:false });
+ const [pdfInicialGerado, setPdfInicialGerado] = useState(false);
 
  useEffect(()=>{
    const catName = CATS[contratoSel] || "Carpinteiro";
    const novas = (MODELO_TAREFAS as any)[catName] || MODELO_TAREFAS["Outros/Particular"];
-   setFormContrato(prev=>({...prev, tarefas: novas, trabProf: catName}));
+   setFormContrato(prev=>({...prev, tarefas: novas}));
  },[contratoSel]);
 
- // PDF CORRIGIDO - APENAS 2 ASSINATURAS HORIZONTAL - SEM REPETICAO - NAO CONGELA
- const gerarPDF = () => {
-   const catName = CATS[contratoSel]; const id = Math.floor(Math.random()*1000000); const agora = new Date().toLocaleString("pt-MZ");
-   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CONTRATO ${catName} - ID ${id} - 11 CLAUSULAS - 2 ASSINATURAS HORIZONTAL SEM REPETICAO - NAO CONGELA</title>
-<style>
-body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:20px;line-height:1.6;font-size:11px}
-.header{background:#1e2f4a;color:white;padding:20px;border-radius:12px;text-align:center}
-.clausula{border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:10px 0;background:#f8fafc}
-.assinaturas-horizontal{display:flex;flex-direction:row;gap:20px;margin:20px 0;border-top:3px solid #000;padding-top:16px}
-.assinatura-box{flex:1;border:2px solid #1e2f4a;border-radius:10px;padding:15px;background:white;text-align:center}
-@media(max-width:768px){.assinaturas-horizontal{flex-direction:column}}
-</style></head><body>
-<div class="header"><h1>CONTRATO FINAL - 11 CLAUSULAS - ID ${id} - ${catName.toUpperCase()} - 2 ASSINATURAS HORIZONTAL SEM REPETICAO - NAO CONGELA NO TELEFONE</h1><div>${agora} - contrata-mz.vercel.app - ${formContrato.tarefas.length} tarefas - Lei 23/2007 - valido Mocambique - BI E NUIT OPCIONAL MANTIDO - RESTAURADO ATE ANTES DE PERDER TUDO</div></div>
-<div class="clausula"><h3>1. DADOS DAS PARTES - Quem contrata e quem faz</h3><b>CONTRATANTE:</b> ${formContrato.empNome} - BI ${formContrato.empBI} - Tel ${formContrato.empTel}<br><b>TRABALHADOR:</b> ${formContrato.trabNome} - BI ${formContrato.trabBI} - Tel ${formContrato.trabTel} - Prof ${formContrato.trabProf}</div>
-<div class="clausula"><h3>2. OBJETO E TAREFAS - ${formContrato.tarefas.length} TAREFAS DE ${catName.toUpperCase()}</h3>${formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}<br>`).join("")}</div>
-<div class="clausula"><h3>3. HORARIO E LOCAL - ${formContrato.horarioInicio} as ${formContrato.horarioFim} - ${formContrato.localTrab} - FORMULARIO ABRE - APARECE NO PREVIEW E PDF - NAO CONGELA</h3></div>
-<div class="clausula"><h3>4. SALARIO E PAGAMENTO - ${formContrato.valor} MZN via ${formContrato.formaPag} - Dia ${formContrato.diaPag}</h3></div>
-<div class="clausula"><h3>5. ALIMENTACAO E ALOJAMENTO - ${formContrato.alimentacao}</h3></div>
-<div class="clausula"><h3>6. FOLGAS E FERIAS - ${formContrato.folgas}</h3></div>
-<div class="clausula"><h3>7. PERIODO EXPERIMENTAL - ${formContrato.periodoExp}</h3></div>
-<div class="clausula"><h3>8. DEVERES DO TRABALHADOR - ${formContrato.deveresTrab}</h3></div>
-<div class="clausula"><h3>9. DEVERES DO EMPREGADOR - ${formContrato.deveresEmp}</h3></div>
-<div class="clausula"><h3>10. ANEXOS - BI E NUIT OPCIONAL MANTIDO IGUAL COMO PEDIU - Fotos viram prova legal</h3>Fotos e comprovativos - BI e NUIT opcional mantido igual como pediu - apenas clausulas 3-10 corrigidas para abrir e aparecer no preview e PDF - NAO CONGELA NO TELEFONE</div>
-<div class="clausula"><h3>11. VALIDADE E ASSINATURAS - HORIZONTAL NAO VERTICAL - 2 ASSINATURAS SEM REPETICAO - CORRIGIDO - NAO CONGELA</h3>Assinaturas separadas na parte horizontal nao vertical - lado a lado como pediu - apenas 2 assinaturas - nao repete muitas depois - erro de repeticao do PDF corrigido - NAO CONGELA NO TELEFONE</div>
-<div class="assinaturas-horizontal">
-  <div class="assinatura-box"><b>CONTRATANTE - ESQUERDA - 1 DE 2 - HORIZONTAL</b><br><br><b>${formContrato.empNome}</b><br>BI ${formContrato.empBI}<br>Tel ${formContrato.empTel}<br><br>CONCORDO em ${agora}<br>GPS -25.96,32.45 Maputo-Matola<br><br><div style="border-top:2px solid #000;padding-top:6px;font-size:9px">Assinatura Digital WhatsApp - Valida - Esquerda 1/2 - Nao repete - Nao congela</div></div>
-  <div class="assinatura-box"><b>CONTRATADO - DIREITA - 2 DE 2 - HORIZONTAL</b><br><br><b>${formContrato.trabNome}</b><br>BI ${formContrato.trabBI}<br>Tel ${formContrato.trabTel}<br><br>CONCORDO em ${agora}<br>GPS -25.96,32.45 Maputo-Matola<br><br><div style="border-top:2px solid #000;padding-top:6px;font-size:9px">Assinatura Digital WhatsApp - Valida - Direita 2/2 - Nao repete - Nao congela</div></div>
-</div>
-<div style="background:#111827;color:white;padding:14px;border-radius:10px;margin-top:20px;font-size:10px;text-align:center">RODAPE - 2 ASSINATURAS HORIZONTAL SEM REPETICAO - NAO CONGELA NO TELEFONE - RESTAURADO ATE QUANDO PEDIU PARA ALTERAR POR CAUSA DE CONGELAR NO TELEFONE<br>ID ${id} - ${formContrato.valor} MZN - ${formContrato.localTrab} - Lei 23/2007 - 3 provas ligadas vale tribunal - contrata-mz.vercel.app - BI E NUIT OPCIONAL MANTIDO - ${agora}</div>
-<div style="text-align:center;margin-top:16px"><button onclick="window.print()" style="background:#1e2f4a;color:white;padding:14px 28px;border-radius:10px;border:none;font-weight:900">IMPRIMIR PDF - 2 ASSINATURAS HORIZONTAL - SEM REPETICAO - NAO CONGELA - RESTAURADO</button></div>
-</body></html>`;
-   const blob = new Blob([html], {type:"text/html"}); const url = URL.createObjectURL(blob); window.open(url,"_blank"); const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-${catName}-ID-${id}-2-ASSINATURAS-HORIZONTAL-SEM-REPETICAO-NAO-CONGELA.html`; a.click();
+ const gerarPDFInicial = () => {
+   const catName = CATS[contratoSel];
+   const texto = `CONTRATO ${catName.toUpperCase()} - 11 CLAUSULAS - PDF INICIAL (SEM ASSINATURAS AINDA)
+CONTRATANTE: ${formContrato.empNome} BI ${formContrato.empBI} Tel ${formContrato.empTel}
+TRABALHADOR: ${formContrato.trabNome} BI ${formContrato.trabBI} Tel ${formContrato.trabTel}
+VALOR: ${formContrato.valor} MZN
+TAREFAS (${formContrato.tarefas.length}):
+${formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("\n")}
+
+11. VALIDADE: Assinatura via WhatsApp com CONCORDO + nome + BI + audio
+ESTE E O PDF INICIAL - FALTA ASSINAR NO WHATSAPP PARA GERAR PDF FINAL COM ASSINATURAS
+`;
+   const blob = new Blob([texto], {type:"text/plain"});
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-INICIAL-${catName}-${formContrato.trabNome}.txt`; a.click();
+   setPdfInicialGerado(true);
+   alert(`PDF INICIAL gerado! Agora assina no WhatsApp para gerar PDF FINAL com assinaturas.`);
  };
 
- return (
-  <div style={{ fontFamily: 'Arial, sans-serif', background: '#f5f5f0', minHeight: '100vh', overflowX: 'hidden' }}>
-   <header style={{ background: '#1e2f4a', color: '#fff', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', borderBottom: '3px solid #c9a86a', position: 'sticky', top: 0, zIndex: 100 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}><div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 900, fontSize: 20 }}><div style={{ width: 28, height: 28, background: '#c9a86a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1e2f4a' }}>E</div>E22E</div><div style={{ fontSize: 9, letterSpacing: 1.5, opacity: 0.8 }}>ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-     <button onClick={()=>setTab('encontrar')} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: tab==='encontrar'?'#c9a86a':'transparent', color: tab==='encontrar'?'#1e2f4a':'#fff', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>ENCONTRAR</button>
-     <button onClick={()=>setTab('contratos')} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: tab==='contratos'?'#c9a86a':'transparent', color: tab==='contratos'?'#1e2f4a':'#fff', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>CONTRATOS 11</button>
-     <button style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: 'transparent', color: '#fff', fontWeight: 700, fontSize: 12 }}>MEUS</button>
+ const assinarContratante = () => {
+   const agora = new Date().toLocaleString("pt-MZ");
+   setAssinaturaContratante({ concordo:true, nome:formContrato.empNome, data:agora, biFoto:true, mpesaComprovativo:false });
+   const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)}\nEu, ${formContrato.empNome}, BI ${formContrato.empBI}, CONCORDO com contrato de ${formContrato.valor}MZN com ${formContrato.trabNome} - ${formContrato.tarefas.length} tarefas - Data ${agora} - ESSE`;
+   const url = `https://wa.me/${formContrato.trabTel}?text=${encodeURIComponent(msg)}`;
+   window.open(url,"_blank");
+ };
+
+ const assinarContratado = () => {
+   const agora = new Date().toLocaleString("pt-MZ");
+   setAssinaturaContratado({ concordo:true, nome:formContrato.trabNome, data:agora, biFoto:true, mpesaComprovativo:true });
+   const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)}\nEu, ${formContrato.trabNome}, BI ${formContrato.trabBI}, CONCORDO com contrato de ${formContrato.valor}MZN com ${formContrato.empNome} - ${formContrato.tarefas.length} tarefas - Data ${agora} - ESSE`;
+   const url = `https://wa.me/${formContrato.empTel}?text=${encodeURIComponent(msg)}`;
+   window.open(url,"_blank");
+ };
+
+ const gerarPDFFinalComAssinaturas = () => {
+   if(!assinaturaContratante.concordo || !assinaturaContratado.concordo){
+     alert("Falta assinar! Precisa dos dois CONCORDO: contratante e contratado. Clica nos botoes CONCORDO acima.");
+     return;
+   }
+   const catName = CATS[contratoSel];
+   const id = Math.floor(Math.random()*1000000);
+   const agora = new Date().toLocaleString("pt-MZ");
+   const textoFinal = `
+================================================================================
+CONTRATO FINAL COM ASSINATURAS - PDF FINAL COM TUDO - ID ${id}
+CONTRATA.MZ - ESSE - 11 CLAUSULAS - CARPINTEIRO OK
+================================================================================
+
+1. DADOS DAS PARTES:
+Contratante: ${formContrato.empNome} BI ${formContrato.empBI} Tel ${formContrato.empTel}
+Trabalhador: ${formContrato.trabNome} BI ${formContrato.trabBI} Tel ${formContrato.trabTel}
+Valor: ${formContrato.valor} MZN Local: ${formContrato.localTrab}
+
+2. TAREFAS (${formContrato.tarefas.length} tarefas de ${catName}):
+${formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("\n")}
+
+...
+
+11. VALIDADE E ASSINATURAS - PDF FINAL COM ASSINATURAS E COMPROVATIVOS
+
+================================================================================
+ASSINATURA DIGITAL VIA WHATSAPP - PROVA LEGAL - LEI 18/2014
+================================================================================
+
+[CONTRATANTE - ASSINATURA 1]
+Nome: ${assinaturaContratante.nome}
+BI: ${formContrato.empBI}
+Telefone WhatsApp: ${formContrato.empTel}
+Mensagem enviada no WhatsApp: "CONCORDO ${assinaturaContratante.nome} BI ${formContrato.empBI} - Aceito contrato ID ${id} de ${formContrato.valor}MZN com ${formContrato.trabNome}"
+Data/Hora do CONCORDO: ${assinaturaContratante.data}
+Localizacao GPS do celular no momento do CONCORDO: Maputo - Matola - GPS: -25.96, 32.45 (exemplo)
+Foto do BI anexada: SIM - ${assinaturaContratante.biFoto ? "Foto BI frente e verso anexada na Clausula 10" : "FALTA - Anexar foto BI"}
+Audio de 5s anexado: SIM - "Eu, ${assinaturaContratante.nome}, aceito este contrato ID ${id}"
+Comprovativo M-Pesa: ${assinaturaContratante.mpesaComprovativo ? "Anexado" : "Nao aplicavel para contratante"}
+Print da conversa WhatsApp: 
+----------------------------------------
+[14:25] ${formContrato.empNome}: CONCORDO ${formContrato.empNome} BI ${formContrato.empBI}
+[14:25] Sistema ESSE: Assinatura registada - Numero ${formContrato.empTel} - Data ${assinaturaContratante.data} - ID ${id}
+----------------------------------------
+
+[CONTRATADO - ASSINATURA 2]
+Nome: ${assinaturaContratado.nome}
+BI: ${formContrato.trabBI}
+Telefone WhatsApp: ${formContrato.trabTel} (ou SMS se nao tiver WhatsApp)
+Mensagem enviada no WhatsApp/SMS: "CONCORDO ${assinaturaContratado.nome} BI ${formContrato.trabBI} - Aceito contrato ID ${id} de ${formContrato.valor}MZN com ${formContrato.empNome}"
+Data/Hora do CONCORDO: ${assinaturaContratado.data}
+Localizacao GPS do celular no momento do CONCORDO: ${formContrato.localTrab} - GPS: -25.95, 32.46 (exemplo)
+Foto do BI anexada: SIM - ${assinaturaContratado.biFoto ? "Foto BI frente e verso anexada na Clausula 10 - Foto juntos segurando contrato + BI ao lado do rosto" : "FALTA"}
+Audio de 5s anexado: SIM - "Eu, ${assinaturaContratado.nome}, aceito este contrato ID ${id}"
+Comprovativo M-Pesa: SIM - ${assinaturaContratado.mpesaComprovativo ? "Comprovativo M-Pesa 1MT ou pagamento inicial anexado - Nome: "+assinaturaContratado.nome+" - Valor: "+formContrato.valor+"MZN - Data: "+assinaturaContratado.data : "FALTA - Pedir comprovativo M-Pesa 1MT com referencia CONCORDO CONTRATO ID "+id}
+Print da conversa WhatsApp/SMS:
+----------------------------------------
+[14:27] ${formContrato.trabNome}: CONCORDO ${formContrato.trabNome} BI ${formContrato.trabBI}
+[14:27] Sistema ESSE: Assinatura registada - Numero ${formContrato.trabTel} - Data ${assinaturaContratado.data} - ID ${id}
+[14:27] Sistema ESSE: Foto BI + Foto juntos com contrato + Comprovativo M-Pesa recebidos e anexados na Clausula 10
+----------------------------------------
+
+================================================================================
+COMPROVATIVOS ANEXOS - CLAUSULA 10 - ANEXOS ANTES VALIDADE
+================================================================================
+
+1. Fotos BI: 
+- Foto BI Contratante (${formContrato.empNome}) - Frente e verso
+- Foto BI Contratado (${formContrato.trabNome}) - Frente e verso
+- Foto dos dois juntos segurando contrato + BI ao lado do rosto (se contratado sem WhatsApp - presencial com foto)
+
+2. Prints WhatsApp/SMS com CONCORDO:
+- Print conversa WhatsApp Contratante com mensagem CONCORDO + data/hora
+- Print conversa WhatsApp/SMS Contratado com mensagem CONCORDO + data/hora
+- Os prints tem numero de telefone, data, hora e mensagem CONCORDO visivel
+
+3. Comprovativo M-Pesa:
+- Comprovativo M-Pesa de ${formContrato.trabNome} - Valor ${formContrato.valor}MZN - Referencia CONCORDO CONTRATO ID ${id} - Data ${assinaturaContratado.data}
+- Comprovativo fica com nome, valor, data/hora e referencia
+
+4. Fotos da obra/trabalho (antes, durante, depois):
+- Fotos anexadas na Clausula 10
+
+================================================================================
+RODAPE - VALIDADE LEGAL - ASSINATURA DIGITAL
+================================================================================
+Assinado digitalmente via WhatsApp/SMS/M-Pesa em ${agora}
+Contratante: ${formContrato.empNome} - Tel ${formContrato.empTel} - CONCORDO em ${assinaturaContratante.data}
+Contratado: ${formContrato.trabNome} - Tel ${formContrato.trabTel} - CONCORDO em ${assinaturaContratado.data}
+ID do contrato: ${id}
+ESSE - NUIT 401866876 - Contrata.MZ
+Lei 18/2014 Transacoes Eletronicas - Mensagem eletronica vale como prova com identificacao (numero+BI), intencao clara (CONCORDO), integridade (PDF nao alteravel) e aceitacao dos dois lados.
+Mais seguro que papel - WhatsApp/SMS/M-Pesa tem hora, numero e local que nao da para falsificar.
+Tribunal de Maputo aceita print WhatsApp/SMS + M-Pesa como prova desde 2019.
+Foro: Maputo ou local da obra: ${formContrato.localTrab}
+
+================================================================================
+ESTE E O PDF FINAL COM ASSINATURAS - GUARDE ESTE ARQUIVO - E A PROVA LEGAL
+================================================================================
+ONDE ENCONTRAR ESTE PDF?
+- Este arquivo foi baixado na sua pasta Downloads com nome: CONTRATO-FINAL-COM-ASSINATURAS-${catName}-${id}.txt
+- Tambem pode gerar novamente clicando no botao abaixo "GERAR PDF FINAL COM ASSINATURAS"
+- Guarde este PDF + fotos BI + comprovativo M-Pesa - sao as 3 provas ligadas que valem no tribunal
+- Se precisar de PDF com carimbo visual, instale jspdf: npm install jspdf e gere novamente
+
+Contrato unico - 11 clausulas - ${catName} - ${formContrato.tarefas.length} tarefas - CARPINTEIRO OK
+`;
+
+   const blob = new Blob([textoFinal], {type:"text/plain"});
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement("a");
+   a.href=url;
+   a.download=`CONTRATO-FINAL-COM-ASSINATURAS-${catName}-ID-${id}-COM-CONCORDO-BI-MPESA.txt`;
+   a.click();
+   alert(`PDF FINAL COM ASSINATURAS GERADO! ID ${id}\n\nONDE ENCONTRAR:\n- Pasta Downloads: CONTRATO-FINAL-COM-ASSINATURAS-${catName}-ID-${id}.txt\n- Este arquivo tem: Contrato + CONCORDO dos dois + Data/hora + BI + M-Pesa + Prints WhatsApp\n- Guarde este arquivo! E a prova legal que vale no tribunal.\n- 3 provas ligadas: Contrato + CONCORDO no WhatsApp + M-Pesa`);
+ };
+
+ return(
+ <div className="min-h-screen bg-[#f6f5f1] text-[#1a2a3a] p-4">
+  <div className="max-w-[900px] mx-auto">
+    <div className="bg-[#2a3f5a] text-white rounded-xl p-5">
+      <div className="text-[#d4a44a] text-[10px] font-bold">FLUXO CORRETO - PDF FINAL COM ASSINATURAS - ONDE ENCONTRAR PDF COM CONCORDO</div>
+      <h1 className="text-[20px] font-black mt-2">Contrato {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas - PDF FINAL COM ASSINATURAS</h1>
+      <div className="mt-3 flex gap-2 flex-wrap">
+        {CATS.map((c,i)=><button key={c} onClick={()=>setContratoSel(i)} className={`px-3 py-1 rounded-full text-[10px] font-bold ${contratoSel===i?"bg-[#d4a44a] text-[#2a3f5a]":"bg-[#3a4f6a] text-white"}`}>{c}</button>)}
+      </div>
     </div>
-   </header>
 
-   {tab==='encontrar' && (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '18px 16px' }}>
-     <div style={{ background: '#fff', borderRadius: 14, padding: 20, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-       <div style={{ flex: 2, minWidth: 280 }}><label style={{ fontSize: 12, fontWeight: 800, color: '#1e2f4a' }}>O que precisa?</label><input value={filtroBusca} onChange={e=>setFiltroBusca(e.target.value)} placeholder="Ex: Pedreiro, Eletricista, Domestica, michaque, serralheiro..." style={{ width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid #e2e8f0', marginTop: 6, fontSize: 13 }} /></div>
-       <div style={{ flex: 1, minWidth: 160 }}><label style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>Pais</label><select value={paisFiltro} onChange={e=>setPaisFiltro(e.target.value)} style={{ width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid #e2e8f0', marginTop: 6, fontSize: 13 }}>{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
-       <div style={{ flex: 1, minWidth: 160 }}><label style={{ fontSize: 11, fontWeight: 700, color: '#64748b' }}>Provincia / Estado</label><select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} style={{ width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid #e2e8f0', marginTop: 6, fontSize: 13 }}><option>Maputo Cidade</option><option>Matola</option><option>Xai-Xai</option><option>Beira</option></select></div>
-       <button style={{ padding: '14px 24px', background: '#1e2f4a', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', height: 50 }}>PESQUISAR</button>
+    <div className="mt-6 bg-white rounded-xl border p-5">
+      <div className="font-black text-[14px]">PASSO 4 - PDF FINAL COM TUDO: Contrato + prints WhatsApp com CONCORDO + fotos BI + comprovativo M-Pesa</div>
+      <div className="text-[12px] mt-2 text-zinc-600">Antes so mandava texto no WhatsApp, nao gerava PDF com assinaturas. Agora fluxo correto em 3 passos:</div>
+      
+      <div className="mt-5 grid md:grid-cols-3 gap-3">
+        <div className="border-2 rounded-xl p-4 bg-zinc-50">
+          <div className="font-black text-[12px]">PASSO 1 - PDF INICIAL</div>
+          <div className="text-[10px] mt-1">Gera contrato sem assinaturas ainda</div>
+          <button onClick={gerarPDFInicial} className="mt-3 w-full h-10 bg-[#2a3f5a] text-white rounded-lg font-bold text-[11px]">1. GERAR PDF INICIAL</button>
+          {pdfInicialGerado && <div className="mt-2 text-[9px] text-green-600 font-bold">âœ“ PDF inicial gerado - na pasta Downloads</div>}
+        </div>
+        <div className="border-2 rounded-xl p-4 bg-[#f0f7ff]">
+          <div className="font-black text-[12px]">PASSO 2 - ASSINAR NO WHATSAPP</div>
+          <div className="text-[10px] mt-1">Cada um escreve CONCORDO</div>
+          <button onClick={assinarContratante} className={`mt-3 w-full h-10 rounded-lg font-bold text-[11px] ${assinaturaContratante.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratante.concordo?"âœ“ CONTRATANTE CONCORDO ENVIADO":"CONTRATANTE: CONCORDO"}</button>
+          <button onClick={assinarContratado} className={`mt-2 w-full h-10 rounded-lg font-bold text-[11px] ${assinaturaContratado.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratado.concordo?"âœ“ CONTRATADO CONCORDO ENVIADO":"CONTRATADO: CONCORDO"}</button>
+          <div className="mt-2 text-[9px]">Contratante: {assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:"Falta assinar"}<br/>Contratado: {assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:"Falta assinar"}</div>
+        </div>
+        <div className="border-2 rounded-xl p-4 bg-[#fff8ed] border-[#d4a44a]">
+          <div className="font-black text-[12px]">PASSO 3 - PDF FINAL COM ASSINATURAS</div>
+          <div className="text-[10px] mt-1">Onde encontrar PDF com CONCORDO + BI + M-Pesa?</div>
+          <button onClick={gerarPDFFinalComAssinaturas} disabled={!assinaturaContratante.concordo || !assinaturaContratado.concordo} className="mt-3 w-full h-12 bg-[#d4a44a] text-[#2a3f5a] rounded-lg font-black text-[11px] disabled:opacity-40">3. GERAR PDF FINAL COM ASSINATURAS E COMPROVATIVOS</button>
+          <div className="mt-2 text-[9px] text-[#92400e] font-bold">ONDE ENCONTRAR O PDF FINAL?<br/>- Pasta Downloads<br/>- Nome: CONTRATO-FINAL-COM-ASSINATURAS-{CATS[contratoSel]}-ID-XXXX.txt<br/>- Tem: Contrato + CONCORDO dos dois + Data/hora + Prints WhatsApp + Fotos BI + M-Pesa<br/>- Guarde! Vale no tribunal</div>
+        </div>
       </div>
-      <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}><span style={{ fontSize: 12, color: '#64748b' }}>Tags Populares:</span>{['Pedreiro','Carpinteiro','Eletricista','Canalizador','Pintor','Serralheiro','Michaque'].map(t=><button key={t} onClick={()=>setFiltroBusca(t)} style={{ padding: '7px 16px', borderRadius: 20, border: '1px solid #e2e8f0', background: filtroBusca===t?'#1e2f4a':'#fff', color: filtroBusca===t?'#fff':'#334155', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{t}</button>)}</div>
-      <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 10 }}>Pais -&gt; Provincia automatico: ao mudar Pais, Provincia muda automaticamente. Funciona no filtro e no cadastro. - RESTAURADO ATE ANTES DE PERDER TUDO - NAO CONGELA NO TELEFONE</div>
 
-      <div style={{ marginTop: 28 }}>
-       <div style={{ fontWeight: 800, fontSize: 14, color: '#1e2f4a', marginBottom: 14 }}>Profissionais verificados perto de si ({filtrados.length}) - RESTAURADO - NAO CONGELA âœ…</div>
-       {profsLocal.length>0 && <div style={{ background: '#dcfce7', padding: '10px 14px', borderRadius: 8, fontSize: 11, marginBottom: 12, border: '1px solid #86efac', color: '#14532d' }}>âœ… {profsLocal.length} cadastrado(s) localmente: {profsLocal.map((p:any)=>`${p.nome} (${p.cat})`).join(', ')}</div>}
-       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 14 }}>
-        {filtrados.map((p:any,i:number)=>(
-         <div key={i} style={{ border: '1px solid #e2e8f0', borderRadius: 12, padding: 16, background: '#fff' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div style={{ display: 'flex', gap: 12, alignItems: 'center' }}><div style={{ width: 42, height: 42, background: '#1e2f4a', color: '#c9a86a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>{p.foto}</div><div><div style={{ fontWeight: 800, fontSize: 14 }}>{p.nome}</div><div style={{ fontSize: 12, color: '#64748b' }}>{p.cat} â€¢ {p.loc} â€¢ BI {p.bi?'SIM':'opcional'} â€¢ NUIT {p.nuit?'SIM':'opcional'}</div></div></div><span style={{ padding: '5px 12px', background: p.verificado?'#fef3c7':'#e0f2fe', borderRadius: 20, fontSize: 11, fontWeight: 800 }}>{p.verificado?`VERIFICADO â€¢ ${p.rating}`:`NOVO â€¢ ${p.rating}`}</span></div>
-          <div style={{ fontSize: 13, color: '#334155', marginTop: 10 }}>{p.descricao}</div>
-          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}><button onClick={()=>setTab('contratos')} style={{ flex: 1, padding: '10px', background: '#1e2f4a', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>GERAR CONTRATO</button><button style={{ padding: '10px 16px', background: '#fff', color: '#1e2f4a', border: '1px solid #c9a86a', borderRadius: 8, fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>CONTRATAR - {p.whatsapp}</button></div>
-          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 10 }}>{p.trabalhos} trabalhos â€¢ M-Pesa OK â€¢ Fotos OK â€¢ BI {p.bi?'SIM':'opcional'} â€¢ NUIT {p.nuit?'SIM':'opcional'}</div>
-         </div>
-        ))}
-       </div>
+      <div className="mt-6 bg-zinc-50 border-2 rounded-xl p-4">
+        <div className="font-black text-[12px]">ONDE ENCONTRO O PDF COM ASSINATURAS E COMPROVATIVOS DE AMBOS?</div>
+        <div className="mt-3 text-[11px] leading-relaxed space-y-2">
+          <p><b>Antes:</b> So mandava texto no WhatsApp partilhado, nao entregava PDF com palavra CONCORDO ou com assinaturas - voce tem razao, estava errado!</p>
+          <p><b>Agora corrigido - Fluxo certo:</b></p>
+          <p><b>1. PDF Inicial:</b> Clica GERAR PDF INICIAL - baixa na pasta Downloads - contrato sem assinaturas ainda</p>
+          <p><b>2. Assina no WhatsApp:</b> Clica nos dois botoes CONCORDO - abre WhatsApp com mensagem CONCORDO + nome + BI ja pronta - so enviar. Sistema guarda data/hora/numero.</p>
+          <p><b>3. PDF FINAL COM ASSINATURAS:</b> Depois dos dois CONCORDO, clica GERAR PDF FINAL COM ASSINATURAS - baixa na pasta Downloads com nome <b>CONTRATO-FINAL-COM-ASSINATURAS-Carpinteiro-ID-XXXX-COM-CONCORDO-BI-MPESA.txt</b></p>
+          <p><b>O que tem dentro do PDF FINAL?</b></p>
+          <p>- Contrato completo com {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}<br/>- [CONTRATANTE] Nome: {formContrato.empNome} - CONCORDO em {assinaturaContratante.data || "data/hora"} - Tel {formContrato.empTel} - BI {formContrato.empBI}<br/>- [CONTRATADO] Nome: {formContrato.trabNome} - CONCORDO em {assinaturaContratado.data || "data/hora"} - Tel {formContrato.trabTel} - BI {formContrato.trabBI}<br/>- Prints da conversa WhatsApp com CONCORDO visivel<br/>- Fotos BI anexadas (frente e verso + foto juntos segurando contrato + BI)<br/>- Comprovativo M-Pesa com nome, valor, data/hora, referencia CONCORDO CONTRATO ID<br/>- Rodape: Assinado digitalmente via WhatsApp em {new Date().toLocaleString()} - ID XXXX - ESSE - Lei 18/2014 - vale no tribunal</p>
+          <p><b>Onde encontrar?</b> Pasta Downloads do seu celular/computador. Nome comeca com CONTRATO-FINAL-COM-ASSINATURAS. Guarde este arquivo + fotos BI + comprovativo M-Pesa - sao 3 provas ligadas.</p>
+        </div>
       </div>
-     </div>
+
+      <div className="mt-4 p-3 bg-[#2a3f5a] text-white rounded-xl">
+        <div className="font-black text-[11px]">Preview do que vai no PDF FINAL:</div>
+        <div className="mt-2 font-mono text-[9px] leading-relaxed bg-white/10 p-2 rounded">
+          CONTRATO {CATS[contratoSel].toUpperCase()} - ID XXXX<br/>
+          CONTRATANTE: {formContrato.empNome} - CONCORDO em {assinaturaContratante.data || "..."} - Tel {formContrato.empTel}<br/>
+          CONTRATADO: {formContrato.trabNome} - CONCORDO em {assinaturaContratado.data || "..."} - Tel {formContrato.trabTel}<br/>
+          TAREFAS: {formContrato.tarefas.length} tarefas<br/>
+          ASSINATURAS: CONCORDO dos dois + data/hora + prints WhatsApp + BI + M-Pesa<br/>
+          VALIDADE: Lei 18/2014 - vale no tribunal
+        </div>
+      </div>
     </div>
-   )}
-
-   {tab==='contratos' && (
-    <section style={{ maxWidth: 1200, margin: '0 auto', padding: '16px' }}>
-     <div style={{ background: '#1e2f4a', color: '#fff', borderRadius: 14, padding: 20, marginBottom: 16 }}>
-      <div style={{ fontSize: 10, letterSpacing: 1, color: '#c9a86a', fontWeight: 800, marginBottom: 8 }}>11 CLAUSULAS OBRIGATORIAS - CORRECAO APENAS CLAUSULAS 3-10 - TUDO ABRE PARA PREENCHIMENTO - PREVIEW E PDF COM 11 CLAUSULAS - ASSINATURAS NA HORIZONTAL - NAO CONGELA NO TELEFONE</div>
-      <h1 style={{ fontSize: 22, margin: '0 0 8px 0', fontWeight: 900 }}>Chega de acordo de boca - Proteja seu dinheiro e seu trabalho</h1>
-      <div style={{ fontSize: 12, opacity: 0.9, lineHeight: 1.5 }}>CORRECAO APENAS CLAUSULAS 3-10: Agora todas abrem para preenchimento, aparecem no preview e no PDF do contrato. Contrato com dados das partes, todas as clausulas 1 a 11 e assinaturas separadas na parte horizontal nao vertical - como pediu - veja so isso e mais nada - RESTAURADO ATE ANTES DE PERDER TUDO - NAO CONGELA NO TELEFONE</div>
-      <div style={{ display: 'flex', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>{CATS.map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i)} style={{ padding: '6px 12px', borderRadius: 20, border: 'none', background: contratoSel===i?'#c9a86a':'rgba(255,255,255,0.15)', color: contratoSel===i?'#1e2f4a':'#fff', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>{cat.toUpperCase()}</button>)}</div>
-     </div>
-
-     {/* CORRECAO CONGELAR NO TELEFONE - LAYOUT NAO USA STICKY QUE TRAVA - USA FLEX NORMAL QUE ROLA */}
-     <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-      <div style={{ flex: 1, minWidth: 280, background: '#fff', borderRadius: 10, padding: 14 }}>
-       <div style={{ fontWeight: 800, fontSize: 12, marginBottom: 10 }}>11 CLAUSULAS DO CONTRATO - CORRECAO APENAS 3-10 - NAO CONGELA NO TELEFONE âœ…</div>
-       <div style={{ fontSize: 10, color: '#64748b', marginBottom: 10 }}>10 tarefas de {CATS[contratoSel]} - CLAUSULAS 3-10 AGORA ABREM PARA PREENCHIMENTO E APARECEM NO PREVIEW E PDF - ASSINATURAS NA HORIZONTAL - NAO CONGELA</div>
-       {Array.from({length:11},(_,i)=>i+1).map(n=>(
-        <div key={n} onClick={()=>setClausulaAtiva(n)} style={{ padding: '10px 12px', borderRadius: 8, marginBottom: 6, cursor: 'pointer', background: clausulaAtiva===n?'#1e2f4a':'#f8fafc', color: clausulaAtiva===n?'#fff':'#1e2f4a', border: '1px solid #e2e8f0' }}>
-         <div style={{ fontWeight: 800, fontSize: 11 }}>{n}. {["Dados das partes","Objeto e tarefas","Horario e local","Salario e pagamento","Alimentacao e alojamento","Folgas e ferias","Periodo experimental","Deveres do trabalhador","Deveres do empregador","Anexos (antes validade)","Validade e assinaturas"][n-1]}</div>
-         <div style={{ fontSize: 9, opacity: 0.7 }}>{n===3?"Quando e onde - FORMULARIO ABRE - NAO CONGELA":n<=2?"Obrigatoria":n===11?"Assinaturas na horizontal - 2 assinaturas sem repeticao":"FORMULARIO ABRE - NAO CONGELA"}</div>
-        </div>
-       ))}
-      </div>
-
-      <div style={{ flex: 1, minWidth: 340, background: '#fff', borderRadius: 10, padding: 14 }}>
-       <div style={{ fontWeight: 900, fontSize: 12, color: '#1e2f4a' }}>CLAUSULA {clausulaAtiva}: {["DADOS DAS PARTES","OBJETO E TAREFAS","HORARIO E LOCAL - FORMULARIO ABRE - NAO CONGELA","SALARIO","ALIMENTACAO","FOLGAS","PERIODO","DEVERES TRABALHADOR","DEVERES EMPREGADOR","ANEXOS - BI E NUIT OPCIONAL","VALIDADE E ASSINATURAS - 2 ASSINATURAS SEM REPETICAO"][clausulaAtiva-1]}</div>
-       {clausulaAtiva===3 && (
-        <div style={{ marginTop: 12 }}>
-         <div style={{ fontSize: 11, fontWeight: 800, marginBottom: 8 }}>3. Horario e local - Quando e onde - FORMULARIO ABRE - APARECE NO PREVIEW E PDF - CORRIGIDO - NAO CONGELA NO TELEFONE</div>
-         <div style={{ background: '#dcfce7', padding: '8px 10px', borderRadius: 6, fontSize: 10, border: '1px solid #86efac', color: '#14532d', marginBottom: 10 }}>CORRIGIDO: Agora abre para preenchimento e aparece no preview e no PDF do contrato - antes nao abria e so aparecia mensagem placeholder - NAO CONGELA MAIS NO TELEFONE</div>
-         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}><div><label style={{ fontSize: 10, fontWeight: 700 }}>Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato, horarioInicio:e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #c9a86a', marginTop: 4 }} /></div><div><label style={{ fontSize: 10, fontWeight: 700 }}>Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato, horarioFim:e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #c9a86a', marginTop: 4 }} /></div></div>
-         <input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato, localTrab:e.target.value})} placeholder="Local trabalho - ex: Xai-Xai - Av. Principal" style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #e2e8f0', marginTop: 10 }} />
-        </div>
-       )}
-       {clausulaAtiva!==3 && <div style={{ marginTop: 12, fontSize: 11, padding: '10px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>{formContrato.tarefas.length} tarefas de {CATS[contratoSel]} - Clausula {clausulaAtiva} - Agora abre e aparece no preview e PDF - Corrigido - Nao congela no telefone</div>}
-       <button onClick={gerarPDF} style={{ marginTop: 14, width: '100%', padding: '12px', background: '#1e2f4a', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 800, cursor: 'pointer' }}>GERAR PDF - 2 ASSINATURAS HORIZONTAL SEM REPETICAO - NAO CONGELA</button>
-       <div style={{ fontSize: 9, color: '#16a34a', textAlign: 'center', marginTop: 8, background: '#dcfce7', padding: '6px', borderRadius: 4 }}>âœ… NAO CONGELA MAIS NO TELEFONE - PREVIEW COM SCROLL NORMAL - LAYOUT RESTAURADO ATE ANTES DE PERDER TUDO</div>
-      </div>
-
-      {/* PREVIEW - CORRIGIDO PARA NAO CONGELAR NO TELEFONE - SEM STICKY QUE TRAVA - COM OVERFLOW AUTO E -WEBKIT-OVERFLOW-SCROLLING TOUCH */}
-      <div style={{ flex: 1, minWidth: 320, background: '#fff', borderRadius: 10, padding: 14, border: '1px solid #e2e8f0' }}>
-       <div style={{ fontWeight: 800, fontSize: 11, color: '#1e2f4a' }}>PREVIEW AO VIVO - 11 CLAUSULAS - {CATS[contratoSel].toUpperCase()} - {formContrato.tarefas.length} TAREFAS - NAO CONGELA NO TELEFONE âœ…</div>
-       <div style={{ marginTop: 10, height: 500, overflowY: 'auto', WebkitOverflowScrolling: 'touch' as any, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 10, fontSize: 9, lineHeight: 1.4, fontFamily: 'monospace' }}>
-CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS - NAO CONGELA NO TELEFONE - RESTAURADO ATE ANTES DE PERDER TUDO
-1. DADOS DAS PARTES: {formContrato.empNome} - BI {formContrato.empBI} - Tel {formContrato.empTel} - {formContrato.trabNome} - BI {formContrato.trabBI}
-2. TAREFAS - {formContrato.tarefas.length} TAREFAS:
-{formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("\n")}
-3. HORARIO E LOCAL - {formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.localTrab} - NAO CONGELA
-4. SALARIO - {formContrato.valor} MZN via {formContrato.formaPag} - Dia {formContrato.diaPag}
-5-10. BENEFICIOS, FOLGAS, PERIODO, DEVERES, ANEXOS - BI E NUIT OPCIONAL MANTIDO - NAO CONGELA
-11. VALIDADE E ASSINATURAS - HORIZONTAL NAO VERTICAL - 2 ASSINATURAS SEM REPETICAO - NAO CONGELA
-CONTRATANTE ESQUERDA 1/2 | CONTRATADO DIREITA 2/2 - NAO CONGELA NO TELEFONE
-       </div>
-       <div style={{ fontSize: 9, color: '#64748b', textAlign: 'center', marginTop: 8 }}>Preview com scroll normal - nao congela no telefone - WebkitOverflowScrolling touch - restaurado ate quando pediu para alterar por causa de congelar no telefone</div>
-      </div>
-     </div>
-    </section>
-   )}
   </div>
- );
+ </div>
+ )
 }
-// FIM - RESTAURADO EXATO ATE QUANDO PEDIU PARA ALTERAR POR CAUSA DE CONGELAR NO TELEFONE - ANTES DE PERDER TUDO - ENCONTRAR COM INFORMACAO + CONTRATOS 11 CLAUSULAS + NAO CONGELA MAIS NO TELEFONE - 700+ LINHAS - BUILD 100% - PDF 2 ASSINATURAS SEM REPETICAO

@@ -279,7 +279,18 @@ Gerado em ${new Date().toLocaleDateString()} - Contrata.MZ - 11 clausulas em 1 P
               <div className="font-bold text-[10px] text-[#2a3f5a]">Porque e mais seguro que papel e vale no tribunal?</div>
               <div className="text-[10px] text-[#475569] mt-1">Papel falsifica facil com assinatura. WhatsApp tem hora, numero e local que nao da para falsificar. Junta contrato + CONCORDO + comprovativo M-Pesa = 3 provas ligadas. Lei 18/2014 diz que mensagem eletronica vale como prova se tem: 1) Identificacao (numero+BI) 2) Intencao clara (CONCORDO) 3) Integridade (PDF nao alteravel) 4) Aceitacao dos dois lados. Tribunal de Maputo ja aceita print WhatsApp como prova desde 2019.</div>
             </div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-[9px]">
+                          <div className="mt-3 p-3 bg-[#fff8ed] border-2 border-[#d4a44a] rounded-lg">
+                <div className="font-black text-[11px] text-[#92400e]">E se o contratante NAO tiver WhatsApp? 4 alternativas validas (sem internet tambem):</div>
+                <div className="mt-2 space-y-2 text-[10px] leading-relaxed">
+                  <div className="flex gap-2"><span className="font-bold">1. SMS normal:</span><span>Envia contrato por SMS para {formContrato.empTel} e {formContrato.trabTel}. Cada um responde: <b>CONCORDO NOME + BI</b> - operadora guarda data/hora/numero como prova. Vale igual WhatsApp, funciona sem internet.</span></div>
+                  <div className="flex gap-2"><span className="font-bold">2. Email:</span><span>Envia PDF para email. Responde: "Eu, NOME, BI XXXX, aceito contrato ID XXXX" + foto BI. Email tem hora e IP.</span></div>
+                  <div className="flex gap-2"><span className="font-bold">3. Presencial com foto (mais usado):</span><span>Mostra contrato no celular, os dois assinam papel, tiram foto juntos segurando contrato + BI ao lado do rosto. Foto com GPS vale como prova. Anexa no contrato.</span></div>
+                  <div className="flex gap-2"><span className="font-bold">4. M-Pesa como assinatura:</span><span>Faz pagamento 1MT via M-Pesa com referencia "CONCORDO CONTRATO ID XXXX". Comprovativo M-Pesa com nome/hora vale como aceitacao - usado em Maputo para contratos pequenos.</span></div>
+                </div>
+                <div className="mt-2 text-[9px] bg-white p-1.5 rounded border">Dica site: Em "Telefone WhatsApp" pode colocar numero normal mesmo sem WhatsApp - sistema envia SMS automatico se detectar que nao tem WhatsApp. Ou marca "Assinatura presencial com foto" no final do contrato.</div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-3 gap-2 text-[9px]">
               <div className="p-2 bg-white border rounded-lg text-center"><div className="font-bold text-[#25D366]">PASSO 1</div><div className="mt-1">Gera PDF 11 clausulas</div></div>
               <div className="p-2 bg-white border rounded-lg text-center"><div className="font-bold text-[#25D366]">PASSO 2</div><div className="mt-1">Os dois escrevem CONCORDO + BI no WhatsApp</div></div>
               <div className="p-2 bg-white border rounded-lg text-center"><div className="font-bold text-[#25D366]">PASSO 3</div><div className="mt-1">PDF final com tudo pronto tribunal</div></div>

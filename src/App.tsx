@@ -91,8 +91,22 @@ const PROS=[
  {n:"Rosa Chivale",cat:"Jardineiro",loc:"Inhambane",rate:4.8, jobs:41, price:"800 MT/dia"},
 ];
 
+const CLAUSULAS = [
+ { id:1, titulo:"Dados das partes", short:"Quem contrata e quem faz", icon:"ðŸ‘¥" },
+ { id:2, titulo:"Objeto e tarefas", short:"O que sera feito", icon:"ðŸŽ¯" },
+ { id:3, titulo:"Horario e local", short:"Quando e onde", icon:"ðŸ“" },
+ { id:4, titulo:"Salario e pagamento", short:"Quanto e como paga", icon:"ðŸ’°" },
+ { id:5, titulo:"Alimentacao e alojamento", short:"Beneficios", icon:"ðŸ½ï¸" },
+ { id:6, titulo:"Folgas e ferias", short:"Descanso legal", icon:"ðŸ–ï¸" },
+ { id:7, titulo:"Periodo experimental", short:"Teste inicial", icon:"â±ï¸" },
+ { id:8, titulo:"Deveres do trabalhador", short:"Obrigacoes", icon:"âœ…" },
+ { id:9, titulo:"Deveres do empregador", short:"Obrigacoes", icon:"ðŸ¤" },
+ { id:10, titulo:"Anexos (antes validade)", short:"Fotos e provas", icon:"ðŸ“Ž" },
+ { id:11, titulo:"Validade e assinaturas", short:"Assina no WhatsApp", icon:"âœï¸" },
+];
+
 export default function App(){
- const [tab,setTab]=useState<"encontrar"|"contratos"|"meus">("encontrar");
+ const [tab,setTab]=useState<"encontrar"|"contratos"|"meus">("contratos");
  const [lang,setLang]=useState<"PT"|"EN"|"FR">("PT");
  const [pulse,setPulse]=useState(0);
  const tr=T[lang];
@@ -104,8 +118,58 @@ export default function App(){
  const [tipo,setTipo]=useState<"empresa"|"prof"|"coop">("prof");
  const [contratoSel,setContratoSel]=useState(0);
  const [drag,setDrag]=useState(false);
-
  const provincias=useMemo(()=>PAISES[pais]||[],[pais]);
+
+ // CONTRATOS FORM STATE - 11 clausulas
+ const [clausulaAtiva,setClausulaAtiva]=useState(1);
+ const [formContrato,setFormContrato]=useState({
+  empNome:"Artur Simao Zimba", empBI:"110200011B", empNuit:"401866876", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai",
+  trabNome:"Anastancio Manuel", trabBI:"1102100MM", trabTel:"840532899", trabEnd:"Xai-Xai - Bairro 2", trabProf:"Motorista",
+  tarefas:["Conduzir com seguranca","Levar criancas na escola","Manutencao basica oleo e pneu","Abastecer e controlar consumo"],
+  horarioInicio:"06:00", horarioFim:"17:00", dias:"Segunda a Sabado", dataInicio:new Date().toISOString().split('T')[0], localTrab:"Xai-Xai - casa",
+  valor:"7500", diaPag:"05", formaPag:"M-Pesa", prazo:"30 dias",
+  alimentacao:"Sim - almoco fornecido", alojamento:"Nao", transporte:"Sim - 500MT/mes",
+  folgas:"Domingo e feriados nacionais. Apos 1 ano: 12 dias ferias pagas Lei 23/2007",
+  periodoExp:"90 dias",
+  deveresTrab:"Cumprir horario, guardar sigilo, zelar pelos bens, nao usar viatura sem autorizacao",
+  deveresEmp:"Pagar em dia via M-Pesa com recibo, respeitar dignidade, fornecer material",
+  anexos: [] as any[]
+ });
+
+ const gerarPDF = async () => {
+  try {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF();
+    const M = 15; let y = 20;
+    doc.setFillColor(42,63,90); doc.rect(0,0,210,22,"F");
+    doc.setTextColor(212,164,74); doc.setFontSize(12); doc.setFont("helvetica","bold");
+    doc.text(`CONTRATO - ${CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS`, M, 12);
+    doc.setTextColor(255,255,255); doc.setFontSize(7); doc.text(`Lei 23/2007 - ESSE NUIT 401866876 - Valido Mocambique`, M, 17);
+    y = 30; doc.setTextColor(20,20,20); doc.setFontSize(10);
+    CLAUSULAS.forEach(c=>{
+      doc.setFont("helvetica","bold"); doc.setFillColor(245,247,250); doc.rect(M, y-5, 180, 7, "F");
+      doc.text(`${c.id}. ${c.titulo.toUpperCase()} - ${c.short}`, M+2, y); y+=6;
+      doc.setFont("helvetica","normal"); doc.setFontSize(9);
+      let txt = "";
+      if(c.id===1) txt = `Empregador: ${formContrato.empNome} BI ${formContrato.empBI} NUIT ${formContrato.empNuit} Tel ${formContrato.empTel} End ${formContrato.empEnd}. Trabalhador: ${formContrato.trabNome} BI ${formContrato.trabBI} Tel ${formContrato.trabTel} End ${formContrato.trabEnd} Prof ${formContrato.trabProf}.`;
+      if(c.id===2) txt = `Funcao: ${CATS[contratoSel]}. Tarefas: ${formContrato.tarefas.join(", ")}.`;
+      if(c.id===3) txt = `Horario: ${formContrato.horarioInicio} as ${formContrato.horarioFim}, Dias: ${formContrato.dias}, Inicio: ${formContrato.dataInicio}, Local: ${formContrato.localTrab}.`;
+      if(c.id===4) txt = `Salario: ${formContrato.valor} MT ate dia ${formContrato.diaPag} via ${formContrato.formaPag} para ${formContrato.trabTel}. Prazo: ${formContrato.prazo}.`;
+      if(c.id===5) txt = `Alimentacao: ${formContrato.alimentacao}. Alojamento: ${formContrato.alojamento}. Transporte: ${formContrato.transporte}.`;
+      if(c.id===6) txt = formContrato.folgas;
+      if(c.id===7) txt = `Periodo experimental: ${formContrato.periodoExp} a contar de ${formContrato.dataInicio}. Aviso 15 dias.`;
+      if(c.id===8) txt = formContrato.deveresTrab;
+      if(c.id===9) txt = formContrato.deveresEmp;
+      if(c.id===10) txt = formContrato.anexos.length ? `Anexos: ${formContrato.anexos.map((a:any)=>a.nome).join(", ")} - fazem parte integrante` : "Nenhum anexo - fotos via WhatsApp fazem parte se anexadas.";
+      if(c.id===11) txt = `Validade Art.29 Lei 23/2007. Assinaturas digitais via WhatsApp. ID ${Math.floor(Math.random()*1000000)} - Contrata.MZ - ESSE.`;
+      const lines = doc.splitTextToSize(txt, 180);
+      lines.forEach((l:string)=>{ if(y>270){ doc.addPage(); y=20; } doc.text(l, M, y); y+=5; });
+      y+=4;
+    });
+    doc.save(`Contrato-11-Clausulas-${formContrato.trabNome.replace(/\s+/g,"-")}.pdf`);
+    alert("PDF gerado com 11 clausulas - pronto para WhatsApp");
+  } catch(e){ alert("Erro ao gerar PDF: "+e); }
+ };
 
  return(
  <div className="min-h-screen bg-[#f6f5f1] text-[#1a2a3a] font-sans antialiased selection:bg-[#d4a44a]/30" data-pulse={pulse}>
@@ -130,100 +194,68 @@ export default function App(){
       <button onClick={()=>{setTab("contratos"); setPulse(p=>p+1);}} className={`${tab==="contratos"?"text-[#d4a44a]":"text-black"} hover:opacity-70 transition`}>{tr.contracts}</button>
       <button onClick={()=>{setTab("meus"); setPulse(p=>p+1);}} className={`${tab==="meus"?"text-[#d4a44a]":"text-black"} hover:opacity-70 transition`}>{tr.my}</button>
      </nav>
-     <div className="h-4 w-px bg-[#e8e2d5] hidden md:block"/>
-     <div className="flex items-center gap-2 text-[11px] font-bold">
-      {(["PT","EN","FR"] as const).map(l=>(
-       <button key={l} onClick={()=>{setLang(l); setPulse(p=>p+1);}} className={`${lang===l?"text-[#d4a44a]":"text-[#b0b9c2]"} tracking-wide hover:text-black transition`}>{l}</button>
+     <div className="hidden md:flex items-center gap-1 text-[10px] font-bold">
+      {["PT","EN","FR"].map(l=>(
+       <button key={l} onClick={()=>setLang(l as any)} className={`px-2 py-1 rounded ${lang===l?"bg-[#2a3f5a] text-[#d4a44a]":"bg-[#f1f0eb] text-[#8a97a5]"}`}>{l}</button>
       ))}
      </div>
     </div>
    </div>
-    <div className="h-[3px] w-full bg-[#d4a44a]"/>
+   <div className="h-[3px] w-full bg-[#d4a44a]"/>
   </header>
-  <div className="h-0 overflow-hidden"><span>{pulse}</span></div>
 
-  {/* HERO */}
   {tab==="encontrar" && (
    <>
-   <section className="bg-[#2a3f5a] relative overflow-hidden">
-    <div className="mx-auto max-w-[1280px] px-4 md:px-10 py-8 md:py-10 grid md:grid-cols-[55%_45%] gap-8 md:gap-6 items-start">
-     {/* LEFT */}
+   {/* HERO - LAYOUT EXATO PRINT */}
+   <section className="bg-[#2a3f5a] text-white">
+    <div className="mx-auto max-w-[1280px] px-4 md:px-10 py-8 md:py-10 grid md:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
      <div className="pt-2">
-      <div className="flex items-center gap-3 mb-6">
-       <LogoIcon s={42}/>
+      <div className="flex items-center gap-2 mb-5">
+       <LogoIcon s={34}/>
        <div className="leading-none">
-        <div className="font-black tracking-[0.2em] text-[20px] text-[#d4a44a]">ESSE</div>
-        <div className="text-[8px] text-white/70 tracking-wide mt-1">{tr.sub}</div>
+        <div className="font-black tracking-[0.18em] text-[17px] text-[#d4a44a]">ESSE</div>
+        <div className="text-[7px] tracking-wide text-white/60 uppercase">Energy solutions and services enterprise</div>
        </div>
       </div>
-
-      <h1 className="text-white font-black leading-[0.95] text-[30px] md:text-[44px] tracking-tight">
+      <h1 className="text-[34px] md:text-[44px] font-black leading-[0.95] tracking-tight">
        {tr.h1a}<br/>{tr.h1b}
       </h1>
-
-      <p className="mt-4 text-[#cbd5e1] text-[13px] md:text-[14px] leading-[1.5] max-w-[520px]">{tr.heroSub}</p>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#3a4f6a] border border-[#4a607d] text-white text-[10px] font-semibold">
-        <span className="w-3 h-3 rounded-full bg-white/20 flex items-center justify-center text-[8px]">âœ“</span> {tr.b1}
-       </span>
-       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#3a4f6a] border border-[#4a607d] text-white text-[10px] font-semibold">
-        <span className="w-3 h-3 rounded-full bg-white/20 flex items-center justify-center text-[8px]">âœ“</span> {tr.b2}
-       </span>
-       <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#d4a44a] text-[#2a3f5a] text-[10px] font-extrabold tracking-wide">
-        {tr.b3}
-       </span>
-      </div>
-
-      <div className="mt-8 hidden md:flex gap-6 text-[11px] text-white/60">
-       <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-white/10 grid place-items-center">âœ”</span> M-Pesa â€¢ eMola â€¢ Conta Movel</div>
-       <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-white/10 grid place-items-center">â—</span> Fotos de prova integradas</div>
+      <p className="mt-4 text-[13px] leading-[1.5] text-[#cbd5e1] max-w-[480px]">{tr.heroSub}</p>
+      <div className="mt-5 flex flex-wrap gap-2">
+       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#3a4f6a] border border-[#4a607d] text-[10px] font-bold">âœ“ {tr.b1}</span>
+       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#3a4f6a] border border-[#4a607d] text-[10px] font-bold">âœ“ {tr.b2}</span>
+       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#d4a44a] text-[#2a3f5a] text-[10px] font-black">âœ“ {tr.b3}</span>
       </div>
      </div>
 
-     {/* RIGHT CARD */}
-     <div className="bg-white rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.25)] p-5 md:p-6 w-full">
-      <div className="text-[12px] font-extrabold text-[#334155] tracking-wide mb-4">{tr.cardT}</div>
-
-      <div className="grid grid-cols-3 gap-2 mb-4">
-       <button onClick={()=>setTipo("empresa")} className={`h-[42px] rounded-[8px] border text-[8px] font-extrabold uppercase leading-tight tracking-wide px-1 ${tipo==="empresa"?"bg-[#2a3f5a] text-white border-[#2a3f5a]":"bg-white text-[#475569] border-[#e2e8f0]"}`}>EMPRESA</button>
-       <button onClick={()=>setTipo("prof")} className={`h-[42px] rounded-[8px] border text-[8px] font-extrabold uppercase leading-tight tracking-wide px-1 ${tipo==="prof"?"bg-[#2a3f5a] text-white border-[#2a3f5a]":"bg-white text-[#475569] border-[#e2e8f0]"}`}>
-         <span className="block">PROFISSIONAL</span><span className="block">INDIVIDUAL SINGULAR</span>
-       </button>
-       <button onClick={()=>setTipo("coop")} className={`h-[42px] rounded-[8px] border text-[8px] font-extrabold uppercase leading-tight tracking-wide px-1 ${tipo==="coop"?"bg-[#2a3f5a] text-white border-[#2a3f5a]":"bg-white text-[#475569] border-[#e2e8f0]"}`}>COOPERATIVA</button>
+     <div className="bg-white rounded-[14px] shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-4 md:p-5 text-[#1e293b]">
+      <div className="text-[11px] font-black tracking-wide text-[#334155]">{tr.cardT}</div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+       {[{k:"empresa",l:tr.emp},{k:"prof",l:tr.prof},{k:"coop",l:tr.coop}].map(o=>(
+        <button key={o.k} onClick={()=>setTipo(o.k as any)} className={`min-h-[38px] px-1 py-1 rounded-[6px] border text-[8.5px] font-black leading-[1.1] tracking-wide ${tipo===o.k?"bg-[#2a3f5a] text-white border-[#2a3f5a]":"bg-white text-[#64748b] border-[#e2e8f0]"}`}>{o.l}</button>
+       ))}
       </div>
-
-      <div className="space-y-2">
-       <input value={nome} onChange={e=>setNome(e.target.value)} placeholder={tr.namePh} className="w-full h-[42px] rounded-[8px] border border-[#d7dde4] bg-white px-3 text-[13px] outline-none focus:border-[#d4a44a] placeholder:text-[#94a3b8]"/>
+      <div className="mt-3 space-y-2">
+       <input value={nome} onChange={e=>setNome(e.target.value)} placeholder={tr.namePh} className="w-full h-[40px] px-3 rounded-[6px] border border-[#e2e8f0] text-[12px] outline-none focus:border-[#d4a44a]" />
        <div className="grid grid-cols-2 gap-2">
-        <select value={pais} onChange={e=>{const v=e.target.value; setPais(v); setProv(PAISES[v][0]);}} className="h-[42px] rounded-[8px] border border-[#d7dde4] bg-white px-3 text-[12px] outline-none">
-         {Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}
+        <select value={pais} onChange={e=>{setPais(e.target.value); setProv(PAISES[e.target.value][0]);}} className="h-[40px] px-2 rounded-[6px] border border-[#e2e8f0] text-[12px] bg-white">
+         {Object.keys(PAISES).map(p=><option key={p} value={p}>{p}</option>)}
         </select>
-        <select value={prov} onChange={e=>setProv(e.target.value)} className="h-[42px] rounded-[8px] border border-[#d7dde4] bg-white px-3 text-[12px] outline-none">
-         {provincias.map(pr=><option key={pr}>{pr}</option>)}
+        <select value={prov} onChange={e=>setProv(e.target.value)} className="h-[40px] px-2 rounded-[6px] border border-[#e2e8f0] text-[12px] bg-white">
+         {provincias.map(p=><option key={p} value={p}>{p}</option>)}
         </select>
        </div>
        <div className="grid grid-cols-2 gap-2">
-        <select value={cat} onChange={e=>setCat(e.target.value)} className="h-[42px] rounded-[8px] border border-[#d7dde4] bg-white px-3 text-[12px] outline-none">
-         {CATS.map(c=><option key={c}>{c}</option>)}
+        <select value={cat} onChange={e=>setCat(e.target.value)} className="h-[40px] px-2 rounded-[6px] border border-[#e2e8f0] text-[12px] bg-white">
+         {CATS.map(c=><option key={c} value={c}>{c}</option>)}
         </select>
-        <input value={tel} onChange={e=>setTel(e.target.value)} placeholder={tr.phonePh} className="h-[42px] rounded-[8px] border border-[#d7dde4] bg-white px-3 text-[12px] outline-none placeholder:text-[#94a3b8]"/>
+        <input value={tel} onChange={e=>setTel(e.target.value)} placeholder={tr.phonePh} className="h-[40px] px-3 rounded-[6px] border border-[#e2e8f0] text-[12px]" />
        </div>
-
-       <div onDragOver={e=>{e.preventDefault(); setDrag(true)}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault(); setDrag(false);}}
-        className={`mt-2 h-[70px] rounded-[10px] border border-dashed ${drag?"border-[#2a3f5a] bg-[#fff7e6]":"border-[#d4a44a] bg-[#faf8f3]"} grid place-items-center text-center px-3 cursor-pointer`}>
-        <div>
-         <div className="text-[11px] font-bold text-[#2a3f5a]">{tr.docT}</div>
-         <div className="text-[9px] text-[#94a3b8] mt-0.5">{tr.docS}</div>
-        </div>
+       <div onDragOver={e=>{e.preventDefault(); setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault(); setDrag(false); alert("Documentos anexados: "+e.dataTransfer.files.length);}} className={`mt-1 rounded-[8px] border-2 border-dashed p-3 text-center ${drag?"border-[#d4a44a] bg-[#fff8ed]":"border-[#e2e8f0] bg-[#faf8f3]"}`}>
+        <div className="text-[11px] font-bold text-[#334155]">{tr.docT}</div>
+        <div className="text-[9px] text-[#94a3b8] mt-1">{tr.docS}</div>
        </div>
-
-       <button onClick={()=>alert(lang==="PT"?`Cadastrado! ${nome||"Profissional"} - ${prov} - ${cat}`: lang==="EN"?`Registered! ${nome||"Pro"} - ${prov} - ${cat}`:`Enregistre! ${nome||"Pro"} - ${prov} - ${cat}`)}
-        className="w-full h-[46px] rounded-[8px] bg-[#c8a44a] hover:bg-[#d4a44a] transition text-[#2a3f5a] font-black tracking-[0.12em] text-[12px] mt-2">
-        {tr.send}
-       </button>
-
-       <div className="text-[9px] text-[#94a3b8] text-center pt-1">Lei 23/2007 â€¢ Assinatura via WhatsApp â€¢ Valido em todo Mocambique</div>
+       <button onClick={()=>alert(`Cadastro enviado: ${nome} - ${cat} - ${pais}/${prov} - ${tipo}`)} className="w-full h-[42px] rounded-[8px] bg-[#d4a44a] text-[#2a3f5a] font-black text-[11px] tracking-[0.12em] hover:brightness-95 transition">{tr.send}</button>
       </div>
      </div>
     </div>
@@ -268,50 +300,149 @@ export default function App(){
   )}
 
   {tab==="contratos" && (
-   <section className="mx-auto max-w-[1280px] px-4 md:px-10 py-8">
-    <div className="bg-[#2a3f5a] rounded-[16px] p-6 md:p-8 text-white flex flex-wrap justify-between gap-4">
+   <section className="mx-auto max-w-[1280px] px-4 md:px-10 py-6">
+    <div className="bg-[#2a3f5a] rounded-[16px] p-5 md:p-6 text-white flex flex-wrap justify-between gap-4">
      <div>
       <div className="text-[#d4a44a] text-[10px] tracking-[0.2em] font-bold">11 CLAUSULAS OBRIGATORIAS â€¢ LEI 23/2007</div>
-      <h2 className="text-[26px] md:text-[32px] font-black leading-none mt-2">Contratos 11 - Valido em todo Mocambique</h2>
-      <p className="text-[#cbd5e1] text-[12px] mt-2 max-w-[560px]">Modelo legal com fotos, M-Pesa e assinatura WhatsApp. Protege empregador e trabalhador.</p>
+      <h2 className="text-[22px] md:text-[26px] font-black leading-none mt-1">Contratos 11 Clausulas - Valido em todo Mocambique</h2>
+      <p className="text-[#cbd5e1] text-[11px] mt-2 max-w-[560px]">Agora com clausulas nomeadas - nao sao paginas. Contrato completo em 1 PDF.</p>
      </div>
      <div className="flex gap-2 flex-wrap self-end">
-      {CATS.slice(0,10).map((c,i)=>(
+      {CATS.slice(0,6).map((c,i)=>(
        <button key={c} onClick={()=>setContratoSel(i)} className={`px-3 py-1.5 rounded-full text-[10px] font-bold border ${contratoSel===i?"bg-[#d4a44a] text-[#2a3f5a] border-[#d4a44a]":"bg-[#3a4f6a] text-white border-[#4a607d]"}`}>{c.toUpperCase()}</button>
       ))}
      </div>
     </div>
 
-    <div className="mt-6 grid md:grid-cols-[200px_1fr] gap-6">
-     <div className="bg-white rounded-[12px] border p-3 h-fit">
-      <div className="text-[11px] font-bold text-[#334155] mb-3">11 PAGINAS DO CONTRATO</div>
-      {Array.from({length:11},(_,i)=>i+1).map(n=>(
-       <div key={n} className={`flex items-center justify-between px-3 py-2 rounded-[8px] text-[11px] mb-1 ${n===1?"bg-[#2a3f5a] text-white":"bg-[#f8fafc] text-[#64748b]"}`}>
-        <span className="font-bold">Pagina {n}</span><span className="text-[9px]">{n===1?"Partes": n===11?"Assinaturas":"Clausula "+n}</span>
-       </div>
-      ))}
+    <div className="mt-6 grid md:grid-cols-[260px_1fr_360px] gap-5">
+     {/* ESQUERDA - LISTA CLAUSULAS NOMEADAS - SEM PALAVRA PAGINA */}
+     <div className="bg-white rounded-[12px] border p-3 h-fit sticky top-[70px]">
+      <div className="text-[11px] font-black text-[#334155] mb-3 tracking-wide">11 CLAUSULAS DO CONTRATO</div>
+      <div className="text-[9px] text-[#94a3b8] mb-3">Nao sao paginas - sao partes do contrato. Clique para editar.</div>
+      {CLAUSULAS.map(c=>{
+        const ativo = clausulaAtiva===c.id;
+        return (
+          <button key={c.id} onClick={()=>setClausulaAtiva(c.id)} className={`w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-[8px] mb-1 border transition ${ativo?"bg-[#2a3f5a] text-white border-[#2a3f5a] shadow":"bg-[#f8fafc] text-[#475569] border-[#e2e8f0] hover:bg-white"}`}>
+            <span className="text-[14px]">{c.icon}</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-[11px] leading-tight truncate">{c.id}. {c.titulo}</div>
+              <div className={`text-[9px] leading-tight truncate ${ativo?"text-white/70":"text-[#94a3b8]"}`}>{c.short}</div>
+            </div>
+            {ativo && <span className="text-[10px]">â—</span>}
+          </button>
+        );
+      })}
+      <div className="mt-3 p-2 rounded bg-[#fff8ed] border border-[#fde68a] text-[9px] text-[#92400e]">âœ“ Todas as clausulas vao para 1 PDF unico - nao sao 11 paginas separadas</div>
      </div>
-     <div className="bg-white rounded-[12px] border p-6 md:p-8">
-      <div className="flex items-center gap-2 text-[10px] font-bold tracking-wide">
-       <span className="px-2 py-1 rounded bg-[#fef3c7] text-[#92400e]">TIPO: {CATS[contratoSel].toUpperCase()}</span>
-       <span className="px-2 py-1 rounded bg-[#f0f7e9] text-[#4a7c2e]">M-PESA COMPROVADO</span>
-       <span className="px-2 py-1 rounded bg-[#e0f2fe] text-[#0c4a6e]">FOTOS ANEXO</span>
+
+     {/* CENTRO - FORM DA CLAUSULA ATIVA - ABRE ATE AO FIM */}
+     <div className="bg-white rounded-[12px] border p-5 md:p-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[18px]">{CLAUSULAS[clausulaAtiva-1].icon}</span>
+          <h3 className="font-black text-[14px]">CLAUSULA {clausulaAtiva}: {CLAUSULAS[clausulaAtiva-1].titulo.toUpperCase()}</h3>
+        </div>
+        <span className="px-2 py-1 rounded-full bg-[#fef3c7] text-[#92400e] text-[9px] font-bold">{clausulaAtiva}/11 - {CLAUSULAS[clausulaAtiva-1].short}</span>
       </div>
-      <h3 className="mt-4 text-[18px] font-black">CONTRATO DE PRESTACAO DE SERVICOS - {CATS[contratoSel].toUpperCase()}</h3>
-      <div className="mt-4 space-y-4 text-[12px] leading-[1.6] text-[#334155]">
-       <p><b>CLAUSULA 1 - PARTES:</b> Contratante e Contratado(a) {CATS[contratoSel]}, identificados com BI/NUIT anexos com fotos.</p>
-       <p><b>CLAUSULA 2 - OBJETO:</b> Servicos de {CATS[contratoSel]} conforme descricao e local {prov}.</p>
-       <p><b>CLAUSULA 3 - PRAZO:</b> Inicio e fim com fotos antes/depois obrigatorias.</p>
-       <p><b>CLAUSULA 4 - REMUNERACAO:</b> Valor, forma M-Pesa/eMola, comprovativo anexado.</p>
-       <p><b>CLAUSULA 5 - HORARIO:</b> Dias e horarios, tolerancia e faltas.</p>
-       <p className="opacity-60">... Clausulas 6 a 11 incluem rescisao, multas, foro Maputo, Lei 23/2007 e assinaturas digitais via WhatsApp.</p>
+
+      <div className="mt-5">
+        {clausulaAtiva===1 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px] text-[#334155]">Dados das partes - Quem contrata e quem faz</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div><label className="text-[10px] font-bold">Nome Contratante *</label><input value={formContrato.empNome} onChange={e=>setFormContrato({...formContrato,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">BI / NUIT Contratante</label><input value={formContrato.empBI} onChange={e=>setFormContrato({...formContrato,empBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">Telefone Contratante</label><input value={formContrato.empTel} onChange={e=>setFormContrato({...formContrato,empTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">Endereco Contratante</label><input value={formContrato.empEnd} onChange={e=>setFormContrato({...formContrato,empEnd:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div className="md:col-span-2 h-px bg-zinc-200 my-1"></div>
+              <div><label className="text-[10px] font-bold">Nome Profissional *</label><input value={formContrato.trabNome} onChange={e=>setFormContrato({...formContrato,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">Profissao</label><input value={formContrato.trabProf} onChange={e=>setFormContrato({...formContrato,trabProf:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">BI Profissional</label><input value={formContrato.trabBI} onChange={e=>setFormContrato({...formContrato,trabBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+              <div><label className="text-[10px] font-bold">Telefone M-Pesa Profissional</label><input value={formContrato.trabTel} onChange={e=>setFormContrato({...formContrato,trabTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            </div>
+          </div>
+        )}
+        {clausulaAtiva===2 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px]">Objeto e tarefas - O que sera feito ({formContrato.tarefas.length} tarefas)</div>
+            <div className="flex flex-wrap gap-2">{formContrato.tarefas.map((t,i)=><span key={i} className="px-3 py-1.5 rounded-full bg-[#2a3f5a] text-white text-[11px] flex items-center gap-2">{t}<button onClick={()=>setFormContrato({...formContrato,tarefas:formContrato.tarefas.filter((_,idx)=>idx!==i)})} className="w-4 h-4 rounded-full bg-white/20 grid place-items-center">x</button></span>)}</div>
+            <div className="flex gap-2"><input id="novaTarefa" placeholder="Nova tarefa + Enter" className="flex-1 h-10 px-3 border-2 rounded-lg text-[12px]" onKeyDown={e=>{ if(e.key==="Enter"){ const v=(e.target as any).value.trim(); if(v){ setFormContrato({...formContrato,tarefas:[...formContrato.tarefas,v]}); (e.target as any).value=""; }}}} /><button onClick={()=>{ const el=document.getElementById("novaTarefa") as any; const v=el.value.trim(); if(v){ setFormContrato({...formContrato,tarefas:[...formContrato.tarefas,v]}); el.value=""; }}} className="px-4 h-10 bg-[#2a3f5a] text-white rounded-lg text-[11px] font-bold">Adicionar</button></div>
+            <div className="text-[10px] text-zinc-500">Categoria: {CATS[contratoSel]} - todas as tarefas vao para o PDF final</div>
+          </div>
+        )}
+        {clausulaAtiva===3 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px]">Horario e local - Quando e onde</div>
+            <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Hora inicio</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div><div><label className="text-[10px] font-bold">Hora fim</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div></div>
+            <div><label className="text-[10px] font-bold">Dias da semana</label><input value={formContrato.dias} onChange={e=>setFormContrato({...formContrato,dias:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Data inicio</label><input type="date" value={formContrato.dataInicio} onChange={e=>setFormContrato({...formContrato,dataInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div><div><label className="text-[10px] font-bold">Local trabalho</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div>
+          </div>
+        )}
+        {clausulaAtiva===4 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px]">Salario e pagamento - Quanto e como paga</div>
+            <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Valor MZN *</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg font-bold" /></div><div><label className="text-[10px] font-bold">Dia pagamento</label><input value={formContrato.diaPag} onChange={e=>setFormContrato({...formContrato,diaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div></div>
+            <div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Forma pagamento</label><select value={formContrato.formaPag} onChange={e=>setFormContrato({...formContrato,formaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg"><option>M-Pesa</option><option>e-Mola</option><option>mKesh</option><option>Banco</option><option>Numerario</option></select></div><div><label className="text-[10px] font-bold">Prazo contrato</label><input value={formContrato.prazo} onChange={e=>setFormContrato({...formContrato,prazo:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div></div>
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px]">Pagamento para {formContrato.trabTel} via {formContrato.formaPag} ate dia {formContrato.diaPag} - comprovativo obrigatorio como recibo.</div>
+          </div>
+        )}
+        {clausulaAtiva===5 && (<div className="space-y-3"><div className="font-bold text-[12px]">Alimentacao e alojamento</div><div><label className="text-[10px] font-bold">Alimentacao</label><textarea value={formContrato.alimentacao} onChange={e=>setFormContrato({...formContrato,alimentacao:e.target.value})} className="mt-1 w-full min-h-[60px] p-3 border-2 rounded-lg text-[12px]" /></div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Alojamento</label><input value={formContrato.alojamento} onChange={e=>setFormContrato({...formContrato,alojamento:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div><div><label className="text-[10px] font-bold">Transporte</label><input value={formContrato.transporte} onChange={e=>setFormContrato({...formContrato,transporte:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div></div></div>)}
+        {clausulaAtiva===6 && (<div className="space-y-3"><div className="font-bold text-[12px]">Folgas e ferias</div><div><label className="text-[10px] font-bold">Descricao folgas, feriados, ferias</label><textarea value={formContrato.folgas} onChange={e=>setFormContrato({...formContrato,folgas:e.target.value})} className="mt-1 w-full min-h-[100px] p-3 border-2 rounded-lg text-[12px]" /></div></div>)}
+        {clausulaAtiva===7 && (<div className="space-y-3"><div className="font-bold text-[12px]">Periodo experimental</div><div><label className="text-[10px] font-bold">Duracao periodo experimental</label><input value={formContrato.periodoExp} onChange={e=>setFormContrato({...formContrato,periodoExp:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg" /></div><div className="p-3 bg-zinc-50 border rounded-lg text-[11px]">A contar de {formContrato.dataInicio}, {formContrato.periodoExp} dias. Aviso previo 15 dias neste periodo conforme Lei 23/2007.</div></div>)}
+        {clausulaAtiva===8 && (<div className="space-y-3"><div className="font-bold text-[12px]">Deveres do trabalhador</div><div><label className="text-[10px] font-bold">Deveres - vai para PDF</label><textarea value={formContrato.deveresTrab} onChange={e=>setFormContrato({...formContrato,deveresTrab:e.target.value})} className="mt-1 w-full min-h-[100px] p-3 border-2 rounded-lg text-[12px]" /></div></div>)}
+        {clausulaAtiva===9 && (<div className="space-y-3"><div className="font-bold text-[12px]">Deveres do empregador</div><div><label className="text-[10px] font-bold">Deveres - vai para PDF</label><textarea value={formContrato.deveresEmp} onChange={e=>setFormContrato({...formContrato,deveresEmp:e.target.value})} className="mt-1 w-full min-h-[80px] p-3 border-2 rounded-lg text-[12px]" /></div></div>)}
+        {clausulaAtiva===10 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px]">Anexos (antes validade) - Fotos e provas que fazem parte do contrato</div>
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-[10px]">Anexos vem ANTES da validade, fazem parte integrante. Fotos viram prova legal no tribunal.</div>
+            <label className="w-full min-h-[100px] border-2 border-dashed rounded-xl grid place-items-center p-4 cursor-pointer hover:bg-blue-50"><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e=>{ if(!e.target.files) return; const n=Array.from(e.target.files).map((f:any)=>({id:Math.random().toString(36).slice(2),nome:f.name,tamanho:(f.size/1024).toFixed(1)+" KB"})); setFormContrato({...formContrato,anexos:[...formContrato.anexos,...n].slice(0,10)}); }} /><div className="text-center"><div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 grid place-items-center mx-auto">+</div><div className="font-bold text-[12px] mt-2">Clique para anexar fotos/projetos</div><div className="text-[10px] text-zinc-500">JPG, PNG, PDF - ate 10 arquivos</div></div></label>
+            {formContrato.anexos.length>0 && <div className="space-y-2">{formContrato.anexos.map((a:any)=><div key={a.id} className="flex gap-2 items-center border p-2 rounded-lg bg-white"><div className="flex-1 text-[11px] font-bold">{a.nome} - {a.tamanho}</div><button onClick={()=>setFormContrato({...formContrato,anexos:formContrato.anexos.filter((x:any)=>x.id!==a.id)})} className="w-6 h-6 bg-red-50 text-red-600 rounded-full text-[10px]">x</button></div>)}</div>}
+          </div>
+        )}
+        {clausulaAtiva===11 && (
+          <div className="space-y-3">
+            <div className="font-bold text-[12px]">Validade e assinaturas - Assina no WhatsApp</div>
+            <div className="bg-zinc-50 border-2 rounded-xl p-4"><div className="font-bold text-[11px]">Resumo 11 Clausulas: {CATS[contratoSel]} - {formContrato.valor} MZN - {formContrato.tarefas.length} tarefas - {formContrato.anexos.length} anexos ANTES validade</div><div className="text-[10px] text-zinc-600 mt-1">Validade legal Art.29 Lei 23/2007. Carimbo ESSE. Tudo que editou aparece aqui e no PDF unico.</div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button onClick={gerarPDF} className="h-[52px] rounded-xl bg-[#3a4f6a] text-white font-bold text-[12px] flex flex-col items-center justify-center"><span>FREE - Gerar PDF 11 Clausulas</span><span className="text-[10px] font-normal opacity-80">WhatsApp + PDF unico</span></button>
+                <button onClick={gerarPDF} className="h-[52px] rounded-xl bg-[#2a3d55] text-white font-bold text-[12px] flex flex-col items-center justify-center"><span>PAGO 200MT - Sem marca</span><span className="text-[10px] font-normal opacity-80">M-Pesa e-Mola mKesh Banco</span></button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
       <div className="mt-6 flex gap-2">
-       <button onClick={()=>alert("Contrato gerado PDF")} className="h-10 px-5 rounded-[8px] bg-[#d4a44a] text-[#2a3f5a] font-black text-[11px] tracking-wide">GERAR CONTRATO PDF</button>
-       <button onClick={()=>alert("Enviado WhatsApp")} className="h-10 px-5 rounded-[8px] bg-[#2a3f5a] text-white font-bold text-[11px]">ASSINAR NO WHATSAPP</button>
+        <button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1) as any)} className="flex-1 h-11 border-2 rounded-xl font-bold disabled:opacity-40">â† Voltar: {clausulaAtiva>1?CLAUSULAS[clausulaAtiva-2].titulo:""}</button>
+        <button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1) as any)} className="flex-1 h-11 bg-[#2a3d55] text-white rounded-xl font-bold disabled:opacity-40">Proximo: {clausulaAtiva<11?CLAUSULAS[clausulaAtiva].titulo:""} â†’</button>
       </div>
-     </div>
     </div>
+
+    {/* DIREITA - PREVIEW AO VIVO - SEMPRE MOSTRA CONTRATO COMPLETO ATE AO FIM */}
+    <div className="bg-white rounded-[12px] border p-4 h-fit sticky top-[70px]">
+      <div className="flex items-center justify-between"><span className="text-[10px] font-bold uppercase">Preview ao vivo - 11 clausulas = PDF unico</span><span className="px-2 py-0.5 rounded-full bg-[#fff8ed] border text-[9px] font-bold">{formContrato.anexos.length} anexos antes validade</span></div>
+      <div className="mt-3 h-[520px] overflow-auto bg-[#f8fafc] border rounded-xl p-3 text-[10px] font-mono leading-relaxed">
+        CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS - PDF UNICO<br/>Lei 23/2007<br/><br/>
+        1. DADOS DAS PARTES:<br/>Contratante: {formContrato.empNome} BI {formContrato.empBI} NUIT {formContrato.empNuit} Tel {formContrato.empTel} End {formContrato.empEnd}<br/>Profissional: {formContrato.trabNome} BI {formContrato.trabBI} Tel {formContrato.trabTel} End {formContrato.trabEnd} Prof {formContrato.trabProf}<br/><br/>
+        2. OBJETO E TAREFAS ({formContrato.tarefas.length}):<br/>{formContrato.tarefas.map((t,i)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>
+        3. HORARIO E LOCAL:<br/>{formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.dias} - Inicio {formContrato.dataInicio} - Local {formContrato.localTrab}<br/><br/>
+        4. SALARIO E PAGAMENTO:<br/>{formContrato.valor} MZN ate dia {formContrato.diaPag} via {formContrato.formaPag} para {formContrato.trabTel} - Prazo {formContrato.prazo}<br/><br/>
+        5. ALIMENTACAO E ALOJAMENTO:<br/>{formContrato.alimentacao} - {formContrato.alojamento} - {formContrato.transporte}<br/><br/>
+        6. FOLGAS E FERIAS:<br/>{formContrato.folgas}<br/><br/>
+        7. PERIODO EXPERIMENTAL:<br/>{formContrato.periodoExp} dias desde {formContrato.dataInicio}<br/><br/>
+        8. DEVERES DO TRABALHADOR:<br/>{formContrato.deveresTrab}<br/><br/>
+        9. DEVERES DO EMPREGADOR:<br/>{formContrato.deveresEmp}<br/><br/>
+        10. ANEXOS ({formContrato.anexos.length}) ANTES VALIDADE:<br/>{formContrato.anexos.length?formContrato.anexos.map((a:any)=>a.nome).join(", "):"Nenhum - fotos via WhatsApp fazem parte"}<br/><br/>
+        11. VALIDADE E ASSINATURAS:<br/>Art.29 Lei 23/2007 - ID {Math.floor(Math.random()*1000)} - ESSE NUIT 401866876<br/><br/>
+        Gerado Contrata.MZ - 11 clausulas em 1 PDF unico
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={gerarPDF} className="h-10 bg-[#3a4f6a] text-white rounded-xl font-bold text-[10px]">GERAR PDF UNICO - FREE</button>
+        <button onClick={gerarPDF} className="h-10 bg-[#2a3d55] text-white rounded-xl font-bold text-[10px]">PAGO 200MT - SEM MARCA</button>
+      </div>
+      <div className="mt-2 text-[9px] text-zinc-500 text-center">Preview = PDF final - 1 arquivo unico com 11 clausulas - nao sao 11 paginas separadas</div>
+    </div>
+   </div>
    </section>
   )}
 
@@ -320,14 +451,14 @@ export default function App(){
     <div className="bg-white rounded-[16px] border p-10">
      <LogoIcon s={48}/>
      <h2 className="mt-4 text-[20px] font-black">Meus Contratos & Servicos</h2>
-     <p className="text-[13px] text-[#64748b] mt-2">Aqui voce ve contratos assinados, pagamentos M-Pesa e avaliacoes. FacÌ§a login com WhatsApp para sincronizar.</p>
+     <p className="text-[13px] text-[#64748b] mt-2">Aqui voce ve contratos assinados, pagamentos M-Pesa e avaliacoes.</p>
      <button onClick={()=>setTab("encontrar")} className="mt-6 h-10 px-6 rounded-[8px] bg-[#2a3f5a] text-white text-[11px] font-bold">VOLTAR PARA ENCONTRAR</button>
     </div>
    </section>
   )}
 
   <footer className="mt-10 border-t border-[#e8e2d5] py-6 text-center text-[10px] text-[#94a3b8] tracking-wide">
-   <span className="inline-block">ESSE â€¢ Energy solutions â€¢ Lei 23/2007 â€¢ {prov} â€¢ {pulse>0?`#${pulse}`:""} â€¢ M-Pesa â€¢ WhatsApp â€¢ 11 Clausulas</span>
+   <span className="inline-block">ESSE â€¢ Energy solutions â€¢ Lei 23/2007 â€¢ {prov} â€¢ M-Pesa â€¢ WhatsApp â€¢ 11 Clausulas em 1 PDF unico</span>
   </footer>
  </div>
  )

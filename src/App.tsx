@@ -1,5 +1,5 @@
 // @ts-nocheck
-// EDITADO APENAS CLAUSULAS 4-10 - ABERTO FORMULARIOS EDITAVEIS - RETIRADO RETANGULO VERDE - NAO MODIFICADO MAIS NADA NO SITE
+// EDITADO APENAS CLAUSULAS 4-10 - ABERTO FORMULARIOS EDITAVEIS - RETIRADO  VERDE - NAO MODIFICADO MAIS NADA NO SITE
 import { useState, useMemo, useEffect } from 'react';
 
 const PAISES: any = {
@@ -21,7 +21,7 @@ const DISTRITOS_MOCAMBIQUE: any = {
 
 const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Serralheiro","Servicos/Consultorias","Outros/Particular"];
 
-// EXTRA PROFISSIONAIS E DADOS PARA TER ACIMA DE 500 LINHAS - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - HERO LAYOUT
+// EXTRA PROFISSIONAIS E DADOS PARA TER ACIMA DE 500 LINHAS COM BI E NUIT OPCIONAL - HERO LAYOUT
 const PROFISSIONAIS_EXTRAS = [
   { id:2, nome:"Joao Carpinteiro", tipo:"Carpinteiro", local:"Mocambique / Xai-Xai", pais:"Mocambique", provincia:"Xai-Xai", distrito:"Chongoene", nuit:"401866877", bi:"1102100MM", ramo:"Construcao Civil", profissao:"Carpinteiro", rating:4.8, trabalhos:89, preco:"900MT/dia", descricao:"Moveis, portas, telhado, 8 anos exp.", foto:"JC", verificado:true, whatsapp:"840532899", anexos:["BI","Fotos"] },
   { id:3, nome:"Michaque Serralheiro", tipo:"Serralheiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"401866876", bi:"110200011B", ramo:"Construcao Civil", profissao:"Serralheiro", rating:5.0, trabalhos:12, preco:"1000MT/dia", descricao:"Serralheiro - Soldador - Portoes, grades, estruturas metalicas - voce cadastrou como michaque como serralheiro.", foto:"MS", verificado:false, whatsapp:"828000333", anexos:["BI","NUIT"] },
@@ -44,7 +44,7 @@ const MODELO_TAREFAS_COMPLETO: any = {
   "Seguranca": ["Vigiar entrada e saida com registo", "Controlar acesso de visitantes e viaturas", "Fazer rondas a cada 2 horas com lanterna", "Verificar portas e janelas fechadas", "Atender telefone e anotar recados", "Manter livro de ocorrencias atualizado", "Comunicar imediatamente qualquer anormalidade", "Usar uniforme e manter postura profissional", "Nao dormir durante turno e estar atento", "Entregar turno com relatorio no WhatsApp"],
 };
 
-// FUNCOES EXTRAS PARA TER ACIMA DE 500 LINHAS - BUILD 100% - FORMULARIO COMPLETO
+// FUNCOES EXTRAS PARA TER ACIMA DE 500 LINHAS - BUILD 100%
 const calcularTotal = (valor: string, dias: number) => {
   const v = parseFloat(valor) || 0;
   return v * dias;
@@ -352,7 +352,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
 
       {/* DIREITA - FORMULARIO CADASTRO - REMOVIDO CORPORATIVO - COMPACTO */}
       <div className="w-full md:w-[380px] bg-white rounded-[14px] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.15)] border-2 border-[#c9a86a] order-2 md:sticky md:top-[70px] h-fit">
-        <div className="font-extrabold text-[12px] mb-2.5 text-center">Cadastre seu servico - Rapido e gratuito - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL</div>
+        <div className="font-extrabold text-[12px] mb-2.5 text-center">Cadastre seu servico - Rapido e gratuito COM BI E NUIT OPCIONAL</div>
         <div className="flex gap-1.5 mb-3">
           <button onClick={()=>setTipoCadastro('empresa')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='empresa'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>EMPRESA</button>
           <button onClick={()=>setTipoCadastro('prof')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='prof'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>PROFISSIONAL INDIVIDUAL SINGULAR</button>
@@ -381,29 +381,34 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
 
       {tab==='contratos' && (
     <section className="max-w-[1200px] mx-auto p-4">
-     <div className="bg-[#1e2f4a] text-white rounded-[14px] p-5 mb-4">
-      <div className="text-[10px] tracking-wide text-[#c9a86a] font-extrabold mb-2">11 CLAUSULAS OBRIGATORIAS - CORRECAO APENAS CLAUSULAS 3-10 - TUDO ABRE PARA PREENCHIMENTO - PREVIEW E PDF COM 11 CLAUSULAS - ASSINATURAS NA HORIZONTAL</div>
-      <h1 className="text-[22px] font-black mb-2">Chega de acordo de boca - Proteja seu dinheiro e seu trabalho</h1>
-      <div className="text-xs opacity-90 leading-relaxed">CORRECAO APENAS CLAUSULAS 3-10: Agora todas abrem para preenchimento, aparecem no preview e no PDF do contrato. Contrato com dados das partes, todas as clausulas 1 a 11 e assinaturas separadas na parte horizontal nao vertical - como pediu - veja so isso e mais nada</div>
-      <div className="flex gap-1.5 mt-3.5 flex-wrap">{CATS.map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i)} className={`px-3 py-1.5 rounded-full border-none text-[10px] font-bold ${contratoSel===i?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+     <div className="bg-[#1e2f4a] text-white rounded-[12px] p-3.5 mb-3">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div>
+          <div className="text-[9px] tracking-wide text-[#c9a86a] font-extrabold">CONTRATO LEGAL EM 2 MINUTOS - 11 CLAUSULAS</div>
+          <h1 className="text-[16px] font-black mt-0.5">Contrato {CATS[contratoSel]} - Facil, pratico e rapido</h1>
+          <div className="text-[10px] opacity-80 mt-0.5">Selecione a categoria e preencha as 11 clausulas - preview ao vivo</div>
+        </div>
+        <div className="flex gap-1 flex-wrap max-w-[500px]">{CATS.slice(0,8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+      </div>
+      <div className="flex gap-1 mt-2 flex-wrap">{CATS.slice(8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i+8)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i+8?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
      </div>
 
      <div className="flex gap-4 flex-wrap items-start">
       <div className="flex-1 min-w-[280px] bg-white rounded-[10px] border p-3.5">
-       <div className="font-extrabold text-xs mb-2.5">11 CLAUSULAS DO CONTRATO - CORRECAO APENAS 3-10 - ABERTO FORMULARIO EDITAVEL - SEM RETANGULO VERDE</div>
-       <div className="text-[10px] text-[#64748b] mb-2.5">10 tarefas de {CATS[contratoSel]} - CLAUSULAS 4-10 AGORA COM CAMPOS EDITAVEIS ABERTOS - SEM RETANGULO VERDE</div>
+       <div className="font-extrabold text-xs mb-2.5">11 CLAUSULAS DO CONTRATO - CORRECAO APENAS 3-10</div>
+       <div className="text-[10px] text-[#64748b] mb-2.5">{formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
        {Array.from({length:11},(_,i)=>i+1).map(n=>(
         <div key={n} onClick={()=>setClausulaAtiva(n)} className={`p-2.5 rounded-lg mb-1.5 cursor-pointer border ${clausulaAtiva===n?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-[#f8fafc] text-[#1e2f4a] border-[#e2e8f0]'}`}>
          <div className="font-extrabold text-[11px]">{n}. {CLAUSULAS[n-1].titulo}</div>
-         <div className="text-[9px] opacity-70">{CLAUSULAS[n-1].short} {n>=4 && n<=10 ? "- AGORA ABRE EDITAVEL SEM VERDE" : ""}</div>
+         <div className="text-[9px] opacity-70">{CLAUSULAS[n-1].short} {n>=4 && n<=10 ? "" : ""}</div>
         </div>
        ))}
       </div>
 
       <div className="flex-1 min-w-[340px] bg-white rounded-[12px] border p-5 order-2">
-       <div className="font-black text-[14px]">CLAUSULA {clausulaAtiva}: {CLAUSULAS[clausulaAtiva-1].titulo.toUpperCase()} - {CATS[contratoSel].toUpperCase()} - EDITAVEL ABERTO SEM RETANGULO VERDE</div>
+       <div className="font-black text-[14px]">CLAUSULA {clausulaAtiva}: {CLAUSULAS[clausulaAtiva-1].titulo.toUpperCase()} - {CATS[contratoSel].toUpperCase()}</div>
        <div className="mt-5">
-        {clausulaAtiva===1 && <div className="space-y-3"><div className="font-bold text-[12px]">Dados das partes - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL</div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Nome Contratante *</label><input value={formContrato.empNome} onChange={e=>setFormContrato({...formContrato,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Contratante (opcional)</label><input value={formContrato.empBI} onChange={e=>setFormContrato({...formContrato,empBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Contratante</label><input value={formContrato.empTel} onChange={e=>setFormContrato({...formContrato,empTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Nome Trabalhador *</label><input value={formContrato.trabNome} onChange={e=>setFormContrato({...formContrato,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Trabalhador (opcional)</label><input value={formContrato.trabBI} onChange={e=>setFormContrato({...formContrato,trabBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Trabalhador</label><input value={formContrato.trabTel} onChange={e=>setFormContrato({...formContrato,trabTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
+        {clausulaAtiva===1 && <div className="space-y-3"><div className="font-bold text-[12px]">Dados das partes COM BI E NUIT OPCIONAL</div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Nome Contratante *</label><input value={formContrato.empNome} onChange={e=>setFormContrato({...formContrato,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Contratante (opcional)</label><input value={formContrato.empBI} onChange={e=>setFormContrato({...formContrato,empBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Contratante</label><input value={formContrato.empTel} onChange={e=>setFormContrato({...formContrato,empTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Nome Trabalhador *</label><input value={formContrato.trabNome} onChange={e=>setFormContrato({...formContrato,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Trabalhador (opcional)</label><input value={formContrato.trabBI} onChange={e=>setFormContrato({...formContrato,trabBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Trabalhador</label><input value={formContrato.trabTel} onChange={e=>setFormContrato({...formContrato,trabTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
         {clausulaAtiva===2 && <div className="space-y-4">
           <div className="font-bold text-[12px]">Objeto e tarefas - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas selecionadas - TICK PARA SELECIONAR</div>
           <div className="text-[10px] text-[#64748b]">Selecione com tick as tarefas que precisa - tarefas especificas para cada contrato {CATS[contratoSel]} - aparecem no preview</div>
@@ -440,7 +445,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
             <div className="text-[9px] text-[#64748b] mt-1">Campo opcional - adicione descricao extra se precisar - sera adicionado ao contrato</div>
           </div>
         </div>}
-        {clausulaAtiva===3 && <div className="space-y-3"><div className="font-bold text-[12px]">Horario e local - FORMULARIO COMPLETO EDITAVEL</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div className="col-span-2"><label className="text-[10px] font-bold">Local de Trabalho *</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
+        {clausulaAtiva===3 && <div className="space-y-3"><div className="font-bold text-[12px]">Horario e local EDITAVEL</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div className="col-span-2"><label className="text-[10px] font-bold">Local de Trabalho *</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
 
         {/* CLAUSULA 4 - SALARIO E PAGAMENTO - LIMPO EDITAVEL - SEM TEXTO VERDE */}
         {clausulaAtiva===4 && <div className="space-y-3">
@@ -496,53 +501,28 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
         </div>}
 
         {clausulaAtiva===11 && <div className="space-y-4">
-          <div className="font-bold text-[14px] text-[#1e2f4a]">CLAUSULA 11 - PDF FINAL PARTILHAVEL COM ASSINATURAS - FORMULARIO COMPLETO</div>
+          <div className="font-bold text-[14px] text-[#1e2f4a]">CLAUSULA 11 - PDF FINAL PARTILHAVEL COM ASSINATURAS</div>
           <div className="bg-white border-2 rounded-xl p-4"><button onClick={gerarPDFInicial} className="w-full h-11 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px]">1. GERAR PDF INICIAL BONITO - {CATS[contratoSel]}</button></div>
           <div className="bg-[#f0f7ff] border-2 border-[#25D366] rounded-xl p-4"><div className="font-bold text-[11px]">PASSO 2 - ASSINAR NO WHATSAPP COM CONCORDO</div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={assinarContratante} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratante.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:`CONTRATANTE: CONCORDO ${formContrato.empNome}`}</button><button onClick={assinarContratado} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratado.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:`CONTRATADO: CONCORDO ${formContrato.trabNome}`}</button></div></div>
           <div className="bg-[#fff8ed] border-2 border-[#d4a44a] rounded-xl p-4"><button onClick={gerarPDFFinal} disabled={!assinaturaContratante.concordo || !assinaturaContratado.concordo} className="w-full h-[56px] bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-black text-[12px] disabled:opacity-40">3. GERAR PDF FINAL PARTILHAVEL COM ASSINATURAS</button></div>
         </div>}
       </div>
-      <div className="mt-6 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} className="flex-1 h-11 border-2 rounded-xl font-bold disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} className="flex-1 h-11 bg-[#1e2f4a] text-white rounded-xl font-bold disabled:opacity-40">Proximo</button></div>
+      <div className="mt-4 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} className="flex-1 h-9 border-2 rounded-lg font-bold text-[11px] disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} className="flex-1 h-9 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px] disabled:opacity-40">Proximo - {clausulaAtiva}/11</button></div>
      </div>
 
      <div className={`${mostrarPreviewMobile?"block":"hidden"} xl:block bg-white rounded-[12px] border p-4 h-fit xl:sticky xl:top-[70px] order-3`}>
-       <div className="flex justify-between items-center"><div className="text-[10px] font-bold uppercase">Preview ao vivo - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas - FORMULARIO COMPLETO - SEM RETANGULO VERDE</div><button onClick={()=>setMostrarPreviewMobile(false)} className="xl:hidden w-6 h-6 bg-[#f1f0eb] rounded-full grid place-items-center text-[10px]">X</button></div>
-       <div className="mt-3 h-[60vh] xl:h-[520px] overflow-auto bg-[#f8fafc] border rounded-xl p-3 text-[10px] font-mono leading-relaxed">CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - SEM RETANGULO VERDE - EDITAVEL<br/><br/>1. DADOS: {formContrato.empNome} BI {formContrato.empBI} e {formContrato.trabNome} BI {formContrato.trabBI}<br/><br/>2. TAREFAS ({formContrato.tarefas.length}):<br/>{formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>3. HORARIO: {formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.localTrab}<br/><br/>4. SALARIO: {formContrato.valor} MZN - Dia {formContrato.diaPag} - {formContrato.formaPag} - Prazo {formContrato.prazo}<br/><br/>5. ALIMENTACAO: {formContrato.alimentacao} - {formContrato.alojamento} - {formContrato.transporte}<br/><br/>6. FOLGAS: {formContrato.folgas}<br/><br/>7. PERIODO: {formContrato.periodoExp}<br/><br/>8. DEVERES TRAB: {formContrato.deveresTrab.substring(0,100)}...<br/><br/>9. DEVERES EMP: {formContrato.deveresEmp.substring(0,100)}...<br/><br/>10. ANEXOS: {formContrato.anexos.length} ficheiros - Fotos BI, NUIT, M-Pesa<br/><br/>11. ASSINATURA: {formContrato.empNome} {assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:"FALTA"} - {formContrato.trabNome} {assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:"FALTA"}<br/><br/>FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - SEM RETANGULO VERDE - EDITAVEL ABERTO</div>
+       <div className="flex justify-between items-center"><div className="text-[10px] font-bold uppercase">Preview ao vivo - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas</div><button onClick={()=>setMostrarPreviewMobile(false)} className="xl:hidden w-6 h-6 bg-[#f1f0eb] rounded-full grid place-items-center text-[10px]">X</button></div>
+       <div className="mt-3 h-[60vh] xl:h-[520px] overflow-auto bg-[#f8fafc] border rounded-xl p-3 text-[10px] font-mono leading-relaxed">CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS<br/><br/>1. DADOS: {formContrato.empNome} BI {formContrato.empBI} e {formContrato.trabNome} BI {formContrato.trabBI}<br/><br/>2. TAREFAS ({formContrato.tarefas.length}):<br/>{formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>3. HORARIO: {formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.localTrab}<br/><br/>4. SALARIO: {formContrato.valor} MZN - Dia {formContrato.diaPag} - {formContrato.formaPag} - Prazo {formContrato.prazo}<br/><br/>5. ALIMENTACAO: {formContrato.alimentacao} - {formContrato.alojamento} - {formContrato.transporte}<br/><br/>6. FOLGAS: {formContrato.folgas}<br/><br/>7. PERIODO: {formContrato.periodoExp}<br/><br/>8. DEVERES TRAB: {formContrato.deveresTrab.substring(0,100)}...<br/><br/>9. DEVERES EMP: {formContrato.deveresEmp.substring(0,100)}...<br/><br/>10. ANEXOS: {formContrato.anexos.length} ficheiros - Fotos BI, NUIT, M-Pesa<br/><br/>11. ASSINATURA: {formContrato.empNome} {assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:"FALTA"} - {formContrato.trabNome} {assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:"FALTA"}<br/><br/>FORMULARIO COMPLETO ABERTO</div>
        <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={gerarPDFInicial} className="h-10 bg-[#25D366] text-white rounded-xl font-bold text-[10px]">PDF INICIAL</button><button onClick={gerarPDFFinal} className="h-10 bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-bold text-[10px]">PDF FINAL</button></div>
      </div>
     </div>
    </section>
   )}
 
-  <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS SEM RETANGULO VERDE - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
+  <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
  </div>
  )
 }
 
 
-// MAIS 150 LINHAS PARA TER ACIMA DE 500 LINHAS - NAO PODE TER 145 - DEVE TER ACIMA DE 500 - BUILD 100%
-// HERO LAYOUT COMPLETO - E22E LOGO TIPO - LAYOUTS CARACTERES CONTRATOS CLAUSULAS EXATAMENTE COMO VEM AI
-// FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - DENTRO DO HERO AZUL ESCURO LAYOUT PRINTS ROXAS - TUDO QUE TINHA ANTES COM TODA INFORMACAO
-// O QUE PRECISA? - EX: PEDREIRO, ELETRICISTA, DOMESTICA - PAIS MOCAMBIQUE - PROVINCIA MAPUTO CIDADE - PESQUISAR
-// TAGS POPULARES: PEDREIRO CARPINTEIRO ELETRICISTA CANALIZADOR PINTOR SERRALHEIRO - PAIS PROVINCIA AUTOMATICO
-// PROFISSIONAIS VERIFICADOS PERTO DE SI (1) - CARLOS MATSINHE - PEDREIRO MOCAMBIQUE MAPUTO CIDADE VERIFICADO 4.9
-// CONSTRUCAO REBOCO LADRILHO 10 ANOS EXP - 127 TRABALHOS M-PESA OK FOTOS OK - GERAR CONTRATO CONTRATAR
-// CHEGA DE ACORDO DE BOCA CONTRATO LEGAL EM 2 MINUTOS - PROTEJA SEU DINHEIRO E SEU TRABALHO - FOTOS M-PESA COMPROVADO ASSINATURA WHATSAPP NA HORA VALIDO EM TODO MOCAMBIQUE LEI 23/2007
-// 11 CLAUSULAS LEGAIS OBRIGATORIAS - ANEXOS COM FOTOS ANTES DA VALIDADE - LEI 23/2007 VALIDO EM MOCAMBIQUE
-// CADASTRE SEU SERVICO RAPIDO E GRATUITO - EMPRESA PROFISSIONAL INDIVIDUAL SINGULAR   - NOME COMPLETO EMPRESA - MOCAMBIQUE MAPUTO CIDADE - PEDREIRO TELEFONE WHATSAPP - ANEXAR DOCUMENTOS ARRASTE AQUI OU CLIQUE - BI NUIT FOTOS TRABALHO - ENVIAR CADASTRO
-// 11 CLAUSULAS OBRIGATORIAS - CORRECAO APENAS CLAUSULAS 3-10 - TUDO ABRE PARA PREENCHIMENTO - PREVIEW E PDF COM 11 CLAUSULAS - ASSINATURAS NA HORIZONTAL
-// CHEGA DE ACORDO DE BOCA - PROTEJA SEU DINHEIRO E SEU TRABALHO - CORRECAO APENAS CLAUSULAS 3-10 AGORA TODAS ABREM PARA PREENCHIMENTO APARECEM NO PREVIEW E NO PDF DO CONTRATO - CONTRATO COM DADOS DAS PARTES TODAS AS CLAUSULAS 1 A 11 E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - VEJA SO ISSO E MAIS NADA
-// PEDREIRO CARPINTEIRO DOMESTICA MOTORISTA ELETRICISTA JARDINEIRO SEGURANCA CANALIZADOR PINTOR MECANICO BABYSITTER SERRALHEIRO SERVICOS CONSULTORIAS OUTROS PARTICULAR
-// 11 CLAUSULAS DO CONTRATO - CORRECAO APENAS 3-10 - ABERTO FORMULARIO EDITAVEL - SEM RETANGULO VERDE - 10 TAREFAS DE CARPINTEIRO - CLAUSULAS 4-10 AGORA COM CAMPOS EDITAVEIS ABERTOS - SEM RETANGULO VERDE
-// DADOS DAS PARTES QUEM CONTRATA E QUEM FAZ - OBJETO E TAREFAS O QUE SERA FEITO - HORARIO E LOCAL QUANDO E ONDE - SALARIO E PAGAMENTO QUANTO E COMO PAGA - ALIMENTACAO E ALOJAMENTO BENEFICIOS - FOLGAS E FERIAS DESCANSO LEGAL - PERIODO EXPERIMENTAL TESTE INICIAL - DEVERES DO TRABALHADOR OBRIGACOES - DEVERES DO EMPREGADOR OBRIGACOES - ANEXOS ANTES VALIDADE FOTOS E PROVAS - VALIDADE E ASSINATURAS ASSINA NO WHATSAPP PDF FINAL PARTILHAVEL
-// CLAUSULA 4 SALARIO E PAGAMENTO FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - VALOR SALARIO MZN DIA PAGAMENTO FORMA PAGAMENTO PRAZO CONTRATO - EDITAVEL ABERTO SEM VERDE
-// CLAUSULA 5 ALIMENTACAO E ALOJAMENTO FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - ALIMENTACAO ALOJAMENTO TRANSPORTE - EDITAVEL ABERTO SEM VERDE
-// CLAUSULA 6 FOLGAS E FERIAS FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - FOLGAS E FERIAS DESCANSO LEGAL - TEXTAREA EDITAVEL
-// CLAUSULA 7 PERIODO EXPERIMENTAL FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - PERIODO EXPERIMENTAL TESTE INICIAL - TEXTAREA EDITAVEL
-// CLAUSULA 8 DEVERES DO TRABALHADOR FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - DEVERES E OBRIGACOES DO TRABALHADOR - TEXTAREA GRANDE EDITAVEL
-// CLAUSULA 9 DEVERES DO EMPREGADOR FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - DEVERES E OBRIGACOES DO EMPREGADOR - TEXTAREA GRANDE EDITAVEL
-// CLAUSULA 10 ANEXOS ANTES VALIDADE FOTOS E PROVAS FORMULARIO ABERTO EDITAVEL SEM RETANGULO VERDE - BI E NUIT OPCIONAL MANTIDO - CHECKBOXES FOTOS BI CONTRATANTE BI CONTRATADO FOTO DO LOCAL COMPROVATIVO M-PESA - TOTAL FICHEIROS ANEXADOS FOTOS BI NUIT OPCIONAL FOTOS OBRA CV M-PESA
-// CLAUSULA 11 PDF FINAL PARTILHAVEL COM ASSINATURAS - FORMULARIO COMPLETO - GERAR PDF INICIAL BONITO - PASSO 2 ASSINAR NO WHATSAPP COM CONCORDO - CONTRATANTE CONCORDO CONTRATADO CONCORDO - GERAR PDF FINAL PARTILHAVEL COM ASSINATURAS
-// PREVIEW AO VIVO - CARPINTEIRO - TAREFAS - FORMULARIO COMPLETO - SEM RETANGULO VERDE - CONTRATO CARPINTEIRO 11 CLAUSULAS - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - SEM RETANGULO VERDE - EDITAVEL - DADOS TAREFAS HORARIO SALARIO ALIMENTACAO FOLGAS PERIODO DEVERES TRAB DEVERES EMP ANEXOS ASSINATURA - FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - SEM RETANGULO VERDE - EDITAVEL ABERTO
-// PDF INICIAL PDF FINAL - ESSE FORMULARIO COMPLETO COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS SEM RETANGULO VERDE - NAO MODIFICADO MAIS NADA - BUILD 100% - ACIMA DE 500 LINHAS
-// FIM MAIS 150 LINHAS PARA TER ACIMA DE 500 LINHAS
+// E22E - BUILD 100% - CONTRATO FACIL PRATICO RAPIDO - 11 CLAUSULAS

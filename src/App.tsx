@@ -123,6 +123,27 @@ export default function App(){
  });
  const [assinaturaContratante, setAssinaturaContratante] = useState({ concordo:false, data:"" });
  const [assinaturaContratado, setAssinaturaContratado] = useState({ concordo:false, data:"" });
+ const [easyPayModal, setEasyPayModal] = useState(false);
+ const [easyPayStatus, setEasyPayStatus] = useState("pendente");
+ const [easyPayRef, setEasyPayRef] = useState("");
+ const [easyPayValor, setEasyPayValor] = useState("150");
+
+ const gerarEasyPayRef = () => {
+   const ref = `ESSE-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+   setEasyPayRef(ref);
+   return ref;
+ };
+ const pagarComEasyPay = () => {
+   const ref = gerarEasyPayRef();
+   setEasyPayModal(true);
+   setEasyPayStatus("processando");
+   // Simula chamada API EasyPay Mocambique - M-Pesa, Emola, Cartao, Transferencia
+   setTimeout(()=>{ setEasyPayStatus("pago"); }, 3000);
+ };
+ const confirmarEasyPayNoContrato = () => {
+   setFormContrato({...formContrato, formaPag: `EasyPay - Ref ${easyPayRef} - Pago ${easyPayValor}MZN`});
+   setEasyPayModal(false);
+ };
 
  useEffect(()=>{
    const catName = CATS[contratoSel] || "Carpinteiro";
@@ -457,8 +478,19 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
           <div className="grid grid-cols-2 gap-3">
             <div><label className="text-[10px] font-bold">Valor Salario (MZN) *</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} placeholder="Ex: 7500" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
             <div><label className="text-[10px] font-bold">Dia Pagamento *</label><input value={formContrato.diaPag} onChange={e=>setFormContrato({...formContrato,diaPag:e.target.value})} placeholder="Ex: 05" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
-            <div><label className="text-[10px] font-bold">Forma Pagamento *</label><select value={formContrato.formaPag} onChange={e=>setFormContrato({...formContrato,formaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]"><option>M-Pesa</option><option>Emola</option><option>Banco</option><option>Dinheiro</option></select></div>
+            <div><label className="text-[10px] font-bold">Forma Pagamento *</label><select value={formContrato.formaPag} onChange={e=>setFormContrato({...formContrato,formaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]"><option>M-Pesa</option><option>Emola</option><option>Banco</option><option>Dinheiro</option><option>EasyPay - M-Pesa/Emola/Cartao</option><option>EasyPay - Taxa Contrato 150MZN</option></select></div>
             <div><label className="text-[10px] font-bold">Prazo Contrato *</label><input value={formContrato.prazo} onChange={e=>setFormContrato({...formContrato,prazo:e.target.value})} placeholder="Ex: 30 dias" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+          </div>
+          <div className="mt-4 p-3 bg-[#f0f7ff] border-2 border-[#0066cc] rounded-xl">
+            <div className="font-bold text-[11px] text-[#0066cc]">EasyPay - Pagamento Seguro Mocambique</div>
+            <div className="text-[9px] text-[#64748b] mt-1">Pague a taxa do contrato ou salario via EasyPay - M-Pesa, e-Mola, Cartao, Transferencia Bancaria - comprovativo automatico no contrato</div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <div><label className="text-[9px] font-bold">Valor EasyPay (MZN)</label><input value={easyPayValor} onChange={e=>setEasyPayValor(e.target.value)} className="mt-0.5 w-full h-8 px-2 border rounded text-[11px]" /></div>
+              <div><label className="text-[9px] font-bold">Referencia</label><input value={easyPayRef} readOnly placeholder="ESSE-..." className="mt-0.5 w-full h-8 px-2 border rounded text-[9px] bg-[#f8fafc]" /></div>
+            </div>
+            <button onClick={pagarComEasyPay} className="w-full mt-2 h-9 bg-[#0066cc] text-white rounded-lg font-bold text-[11px]">Pagar com EasyPay - {easyPayValor}MZN</button>
+            {easyPayStatus==="pago" && <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-[10px] text-green-700">Pago com sucesso! Ref: {easyPayRef} - {easyPayValor}MZN - Clique abaixo para adicionar ao contrato</div>}
+            {easyPayStatus==="pago" && <button onClick={confirmarEasyPayNoContrato} className="w-full mt-1 h-8 bg-green-600 text-white rounded-lg font-bold text-[10px]">Adicionar EasyPay ao Contrato - Clausula 4</button>}
           </div>
         </div>}
 

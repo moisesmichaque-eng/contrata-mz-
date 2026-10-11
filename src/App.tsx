@@ -353,9 +353,8 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
         {clausulaAtiva===2 && <div className="space-y-3"><div className="font-bold text-[12px]">Objeto e tarefas - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]} - FORMULARIO COMPLETO</div><div className="flex flex-wrap gap-2">{formContrato.tarefas.map((t:string,i:number)=><span key={i} className="px-3 py-1.5 rounded-full bg-[#1e2f4a] text-white text-[11px] flex items-center gap-2">{t} <button onClick={()=>setFormContrato({...formContrato,tarefas:formContrato.tarefas.filter((_:any,idx:number)=>idx!==i)})} className="w-4 h-4 rounded-full bg-white/20 grid place-items-center text-[8px]">x</button></span>)}</div></div>}
         {clausulaAtiva===3 && <div className="space-y-3"><div className="font-bold text-[12px]">Horario e local - FORMULARIO COMPLETO EDITAVEL</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div className="col-span-2"><label className="text-[10px] font-bold">Local de Trabalho *</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
 
-        {/* CLAUSULA 4 - SALARIO E PAGAMENTO - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 4 - SALARIO E PAGAMENTO - LIMPO EDITAVEL - SEM TEXTO VERDE */}
         {clausulaAtiva===4 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Salario e pagamento - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="text-[10px] font-bold">Valor Salario (MZN) *</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} placeholder="Ex: 7500" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
             <div><label className="text-[10px] font-bold">Dia Pagamento *</label><input value={formContrato.diaPag} onChange={e=>setFormContrato({...formContrato,diaPag:e.target.value})} placeholder="Ex: 05" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
@@ -364,9 +363,8 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
           </div>
         </div>}
 
-        {/* CLAUSULA 5 - ALIMENTACAO E ALOJAMENTO - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 5 - ALIMENTACAO E ALOJAMENTO - LIMPO EDITAVEL */}
         {clausulaAtiva===5 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Alimentacao e alojamento - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div className="space-y-3">
             <div><label className="text-[10px] font-bold">Alimentacao *</label><input value={formContrato.alimentacao} onChange={e=>setFormContrato({...formContrato,alimentacao:e.target.value})} placeholder="Ex: Sim - almoco fornecido no local" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
             <div><label className="text-[10px] font-bold">Alojamento *</label><input value={formContrato.alojamento} onChange={e=>setFormContrato({...formContrato,alojamento:e.target.value})} placeholder="Ex: Nao - trabalhador mora perto" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
@@ -374,33 +372,28 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
           </div>
         </div>}
 
-        {/* CLAUSULA 6 - FOLGAS E FERIAS - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 6 - FOLGAS E FERIAS - LIMPO EDITAVEL */}
         {clausulaAtiva===6 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Folgas e ferias - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div><label className="text-[10px] font-bold">Folgas e Ferias - Descanso Legal *</label><textarea value={formContrato.folgas} onChange={e=>setFormContrato({...formContrato,folgas:e.target.value})} placeholder="Ex: Domingo e feriados nacionais. 12 dias ferias apos 1 ano..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
         </div>}
 
-        {/* CLAUSULA 7 - PERIODO EXPERIMENTAL - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 7 - PERIODO EXPERIMENTAL - LIMPO */}
         {clausulaAtiva===7 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Periodo experimental - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div><label className="text-[10px] font-bold">Periodo Experimental - Teste Inicial *</label><textarea value={formContrato.periodoExp} onChange={e=>setFormContrato({...formContrato,periodoExp:e.target.value})} placeholder="Ex: 90 dias - primeiros 90 dias como periodo de experiencia..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
         </div>}
 
-        {/* CLAUSULA 8 - DEVERES DO TRABALHADOR - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 8 - DEVERES DO TRABALHADOR - LIMPO */}
         {clausulaAtiva===8 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Deveres do trabalhador - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Trabalhador *</label><textarea value={formContrato.deveresTrab} onChange={e=>setFormContrato({...formContrato,deveresTrab:e.target.value})} placeholder="Ex: Cumprir horario 06:00 as 17:00 com pontualidade, guardar sigilo..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
         </div>}
 
-        {/* CLAUSULA 9 - DEVERES DO EMPREGADOR - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 9 - DEVERES DO EMPREGADOR - LIMPO */}
         {clausulaAtiva===9 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Deveres do empregador - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE</div>
           <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Empregador *</label><textarea value={formContrato.deveresEmp} onChange={e=>setFormContrato({...formContrato,deveresEmp:e.target.value})} placeholder="Ex: Pagar salario pontualmente todo dia 05 via M-Pesa..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
         </div>}
 
-        {/* CLAUSULA 10 - ANEXOS - EDITAVEL ABERTO SEM RETANGULO VERDE */}
+        {/* CLAUSULA 10 - ANEXOS - LIMPO */}
         {clausulaAtiva===10 && <div className="space-y-3">
-          <div className="font-bold text-[12px]">Anexos (antes validade) - Fotos e provas - FORMULARIO ABERTO EDITAVEL - SEM RETANGULO VERDE - BI E NUIT OPCIONAL MANTIDO</div>
           <div className="p-3 bg-[#f8fafc] border-2 border-[#c9a86a] rounded-lg">
             <div className="text-[11px] font-bold mb-2">Fotos e comprovativos anexados antes da validade - viram prova legal:</div>
             <div className="space-y-2 text-[11px]">
@@ -409,7 +402,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
               <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto do local: {formContrato.localTrab}</span></div>
               <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Comprovativo M-Pesa: {formContrato.valor} MZN - {formContrato.formaPag}</span></div>
             </div>
-            <div className="mt-3 text-[10px] text-[#64748b]">Total: {formContrato.anexos.length} ficheiros anexados - Fotos BI, NUIT (opcional), Fotos obra, CV, M-Pesa - BI e NUIT opcional mantido igual como pediu - apenas formulario aberto editavel sem retangulo verde</div>
+            <div className="mt-3 text-[10px] text-[#64748b]">Total: {formContrato.anexos.length} ficheiros anexados - Fotos BI, NUIT (opcional), Fotos obra, CV, M-Pesa - BI e NUIT opcional mantido</div>
           </div>
         </div>}
 

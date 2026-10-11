@@ -398,8 +398,20 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
       <div className="flex gap-1 mt-2 flex-wrap">{CATS.slice(8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i+8)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i+8?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
      </div>
 
-     <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_380px] gap-3 items-start">
-      <div className="w-[240px] min-w-[240px] bg-white rounded-[10px] border p-3 h-fit sticky top-[70px]">
+    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_380px] gap-3 items-start">
+  <div className="w-full lg:w- lg:min-w- bg-white rounded- border p-3 h-fit lg:sticky lg:top- order-1">
+   <div className="font-extrabold text- mb-1">Edita a sua escolha</div>
+   <div className="text- text-[#64748b] mb-2.5 hidden lg:block">Selecione a cláusula</div>
+   <div className="text- text-[#64748b] mb-2.5 lg:hidden">Deslize → toque (1-11) - desbloqueado</div>
+   <div className="flex lg:flex-col gap-1.5 overflow-x-auto pb-2">
+    {Array.from({length:11},(_,i)=>i+1).map(n=>(
+     <div key={n} onClick={()=>setClausulaAtiva(n)} className={`min-w- lg:min-w-0 p-2.5 rounded-lg cursor-pointer border flex-shrink-0 ${clausulaAtiva===n?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-[#f8fafc] border-[#e2e8f0]'}`}>
+      <div className="font-extrabold text-">{n}. {CLAUSULAS[n-1].titulo}</div>
+     </div>
+    ))}
+   </div>
+  </div>
+  <div className="bg-white rounded- border-2 border-[#25D366] p-4 order-2 shadow-sm w-full">
        <div className="font-extrabold text-[12px] mb-1">Edita a sua escolha</div>
        <div className="text-[9px] text-[#64748b] mb-2.5">Selecione a clausula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
        {Array.from({length:11},(_,i)=>i+1).map(n=>(

@@ -399,7 +399,11 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
      </div>
 
      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_380px] gap-3 items-start">
-      <div className="w-[240px] min-w-[240px] bg-white rounded-[10px] border p-3 h-fit sticky top-[70px]">
+     <div className="w-full lg:w- lg:min-w- bg-white rounded- border p-3 h-fit lg:sticky lg:top- order-1">
+ <div className="font-extrabold text- mb-1">Edita a sua escolha</div>
+ <div className="text- text-[#64748b] mb-2.5 hidden lg:block">Selecione a cláusula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
+ <div className="text- text-[#64748b] mb-2.5 lg:hidden">Deslize → toque (1-11) - só telefone desbloqueado</div>
+ <div className="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
        <div className="font-extrabold text-[12px] mb-1">Edita a sua escolha</div>
        <div className="text-[9px] text-[#64748b] mb-2.5">Selecione a clausula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
        {Array.from({length:11},(_,i)=>i+1).map(n=>(
@@ -511,7 +515,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
           <div className="bg-[#f0f7ff] border-2 border-[#25D366] rounded-xl p-4"><div className="font-bold text-[11px]">PASSO 2 - ASSINAR NO WHATSAPP COM CONCORDO</div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={assinarContratante} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratante.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:`CONTRATANTE: CONCORDO ${formContrato.empNome}`}</button><button onClick={assinarContratado} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratado.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:`CONTRATADO: CONCORDO ${formContrato.trabNome}`}</button></div></div>
           <div className="bg-[#fff8ed] border-2 border-[#d4a44a] rounded-xl p-4"><button onClick={gerarPDFFinal} disabled={!assinaturaContratante.concordo || !assinaturaContratado.concordo} className="w-full h-[56px] bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-black text-[12px] disabled:opacity-40">3. GERAR PDF FINAL PARTILHAVEL COM ASSINATURAS</button></div>
         </div>}
-      </div>
+     <div className="block bg-white rounded- border-2 border-[#1e2f4a] p-3 h-fit lg:sticky lg:top- order-3 w-full mt-3">
       <div className="mt-4 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} className="flex-1 h-9 border-2 rounded-lg font-bold text-[11px] disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} className="flex-1 h-9 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px] disabled:opacity-40">Proximo - {clausulaAtiva}/11</button></div>
      </div>
 

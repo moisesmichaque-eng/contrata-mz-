@@ -153,6 +153,20 @@ export default function App(){
  const [viagemSel, setViagemSel] = useState<any>(null);
  const [mostrarFormPass, setMostrarFormPass] = useState(false);
  const [mostrarFormEnc, setMostrarFormEnc] = useState(false);
+ // ===== AREA TRANSPORTADOR - App_42 - CADASTRO SEPARADO - 1 CONTA GERENCIA 15 VIATURAS =====
+ const [viagensSubTab, setViagensSubTab] = useState<'viagens'|'transportador'|'frota'>('viagens');
+ const [transportadorLogado, setTransportadorLogado] = useState(false);
+ const [transportadorPerfil, setTransportadorPerfil] = useState({
+   nomeResponsavel:'', tipoTransportador:'Pessoa singular', nomeEmpresa:'', nuit:'', bi:'', telPrincipal:'+258 84 123 4567', telAlt:'', email:'', provincia:'Maputo Cidade', distrito:'KaMpfumo', endereco:'', nomeComercial:'', terminalPartida:'Terminal Junta - Maputo', rotas:['Maputo - Xai-Xai','Maputo - Beira'], tiposServico:['passageiros','encomendas'], horarios:'05:00 - 18:00', descricao:'Transporte semi-colectivo Maputo - Xai-Xai, partidas diÃ¡rias', docBI:'', docEmpresa:'', docLicenca:'', contactoVerificacao:'', password:'', confirmPassword:'', aceitaTermos:false, verificado:false, estadoAprovacao:'Pendente'
+ });
+ const [viaturasFrota, setViaturasFrota] = useState<any[]>([
+   {id:1, tipo:'Minibus / Chapa', marcaModelo:'Toyota Hiace 15 lugares', matricula:'ABX 123 MC', lugares:15, motoristaIncluido:false, ano:2019, cor:'Branco', chassis:'JT123456789', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, fotoExt:'', fotoInt:'', docRegisto:'', inspecaoValida:'2026-12-31', seguroValido:'2026-11-30', estadoOperacional:'Activa', rotaHabitual:'Maputo - Xai-Xai', estadoAprovacao:'Verificada'},
+   {id:2, tipo:'Minibus / Chapa', marcaModelo:'Toyota Coaster 25 lugares', matricula:'ACD 456 MC', lugares:25, motoristaIncluido:false, ano:2021, cor:'Azul', chassis:'JT987654321', arCondicionado:'NÃ£o', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:500, fotoExt:'', fotoInt:'', docRegisto:'', inspecaoValida:'2026-10-15', seguroValido:'2026-09-30', estadoOperacional:'Activa', rotaHabitual:'Maputo - Beira', estadoAprovacao:'Verificada'},
+ ]);
+ const [formViatura, setFormViatura] = useState({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, motoristaIncluido:false, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, fotoExt:'', fotoInt:'', docRegisto:'', inspecaoValida:'', seguroValido:'', estadoOperacional:'Activa', rotaHabitual:'Maputo - Xai-Xai'});
+ const [mostrarFormViatura, setMostrarFormViatura] = useState(false);
+ const [viaturaEditId, setViaturaEditId] = useState<number|null>(null);
+
 
 
 
@@ -645,14 +659,17 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
           <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#0ea5e9] text-white grid place-items-center font-black text-[12px]">ðŸšŒ</div><div className="font-black text-[12px]">Facilita Viagens</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#e0f2fe] border text-[#0c4a6e]">âœ“ Integrado como FaturaÃ§Ã£o - mesmo padrÃ£o</span><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#fef9c3]">Transporte passageiros + encomendas</span></div>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={()=>setViagensTab('overview')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='overview'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>VisÃ£o geral</button>
-              <button onClick={()=>setViagensTab('viajar')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='viajar'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Pesquisar viagens</button>
-              <button onClick={()=>setViagensTab('encomenda')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='encomenda'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Enviar encomenda</button>
-              <button onClick={()=>setViagensTab('minhas')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='minhas'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Minhas reservas</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('overview')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='overview'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>VisÃ£o geral</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('viajar')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='viajar'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Pesquisar viagens</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('encomenda')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='encomenda'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Enviar encomenda</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('minhas')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='minhas'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Minhas reservas</button>
+              <div className="w-px h-5 bg-[#e2e8f0] mx-1"></div>
+              <button onClick={()=>setViagensSubTab('transportador')} className={`px-3 h-7 rounded-full text-[9px] font-black ${viagensSubTab==='transportador'?'bg-[#facc15] text-black ring-2 ring-[#1e2f4a]':'bg-[#fef9c3] border border-[#facc15] text-black'}`}>ðŸ¢ Ãrea Transportador</button>
+              <button onClick={()=>setViagensSubTab('frota')} className={`px-3 h-7 rounded-full text-[9px] font-black ${viagensSubTab==='frota'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#e0f2fe] border text-[#0c4a6e]'}`}>ðŸš Minha Frota ({viaturasFrota.length})</button>
             </div>
           </div>
 
-          {viagensTab==='overview' && (
+          {viagensSubTab==='viagens' && viagensTab==='overview' && (
             <div className="space-y-3">
               <div className="bg-[#0f1e36] rounded-[14px] p-6 text-white text-center">
                 <h2 className="text-[18px] font-black">O que pretende fazer?</h2>
@@ -675,7 +692,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
             </div>
           )}
 
-          {viagensTab==='viajar' && (
+          {viagensSubTab==='viagens' && viagensTab==='viajar' && (
             <div className="flex flex-col lg:flex-row gap-3">
               <div className="flex-1 space-y-3">
                 <div className="bg-white rounded-[12px] border p-4">
@@ -711,7 +728,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
             </div>
           )}
 
-          {viagensTab==='encomenda' && (
+          {viagensSubTab==='viagens' && viagensTab==='encomenda' && (
             <div className="flex flex-col lg:flex-row gap-3">
               <div className="flex-1 space-y-3">
                 <div className="bg-white rounded-[12px] border p-4">
@@ -737,14 +754,149 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
             </div>
           )}
 
-          {viagensTab==='minhas' && (
+          {viagensSubTab==='viagens' && viagensTab==='minhas' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Minhas reservas - Passageiros</div><div className="mt-3 space-y-2">{reservas.length===0?<div className="text-[10px] text-[#94a3b8] py-8 text-center">Nenhuma reserva - pesquisa viagens e reserva lugar</div>:reservas.map(r=><div key={r.id} className="border rounded-[8px] p-2 text-[10px]"><div className="font-bold">{r.origem} â†’ {r.destino} | {r.data} {r.hora} | CÃ³digo {r.codigo}</div><div className="text-[9px] text-[#64748b]">{r.transp} | Passageiro {r.passageiro.nome} Lugar {r.passageiro.lugar} | Estado {r.estado}</div><div className="text-[8px] text-green-600">WhatsApp: Pedido recebido, Partida, Chegada, DisponÃ­vel levantamento, Entregue</div></div>)}</div></div>
               <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Minhas encomendas - Acompanhamento</div><div className="mt-3 space-y-2">{encomendas.length===0?<div className="text-[10px] text-[#94a3b8] py-8 text-center">Nenhuma encomenda - cria pedido na aba Enviar encomenda</div>:encomendas.map(e=><div key={e.id} className="border rounded-[8px] p-2 text-[10px]"><div className="font-bold">{e.origem} â†’ {e.destino} | CÃ³digo {e.codigo} | Estado {e.estado}</div><div className="text-[9px]">Artigo: {e.descricao} Qtd {e.qtd} Peso {e.peso}kg Valor declarado {e.valor} MZN</div><div className="text-[8px] text-[#64748b]">Remetente {e.remetenteNome} â†’ DestinatÃ¡rio {e.destinatarioNome} | HistÃ³rico: {e.historico?.map((h:any)=>h.estado).join(' â†’ ')}</div><div className="mt-1 flex gap-1"><button onClick={()=>{const atual=[...encomendas]; const idx=atual.findIndex(x=>x.id===e.id); const estados=['Aguardar cotaÃ§Ã£o','CotaÃ§Ã£o enviada','CotaÃ§Ã£o aceite','Aguardar pagamento','Pagamento confirmado','Recebida pelo transportador','Associada a viagem','Em trÃ¢nsito','DisponÃ­vel para levantamento','Entregue']; const prox=estados[estados.indexOf(e.estado)+1]||e.estado; atual[idx]={...e, estado:prox, historico:[...e.historico,{estado:prox, data:new Date().toLocaleString('pt-MZ')}]}; setEncomendas(atual);}} className="px-2 py-1 bg-[#0ea5e9] text-white rounded text-[8px]">AvanÃ§ar estado (demo)</button></div></div>)}</div></div>
               <div className="lg:col-span-2 bg-[#fefce8] rounded-[12px] border border-[#fde68a] p-3"><div className="font-bold text-[10px]">BASE DE DADOS proposta - Supabase migraÃ§Ãµes</div><div className="text-[8px] text-[#475569] mt-1 grid grid-cols-2 gap-1"><div>â€¢ transporters - nome, responsÃ¡vel, tel, email, NUIT, provÃ­ncia, rotas, estado aprovaÃ§Ã£o, viaturas</div><div>â€¢ vehicles - matrÃ­cula, capacidade passageiros, carga kg, estado</div><div>â€¢ routes - origem, destino, info rota</div><div>â€¢ trips - transportador, viatura, rota, data, hora, preÃ§o, estado</div><div>â€¢ trip_bookings - reservas associadas</div><div>â€¢ shipments - origem, destino, remetente, destinatÃ¡rio, preÃ§o, valor declarado, estado</div><div>â€¢ shipment_items - descriÃ§Ã£o, qtd, peso, dimensÃµes, valor declarado</div><div>â€¢ shipment_quotes - cotaÃ§Ãµes, validade, preÃ§o</div><div>â€¢ shipment_events - histÃ³rico recepÃ§Ã£o, transporte, chegada, entrega, incidentes</div><div>â€¢ shipment_payments - montante, moeda, ref, fornecedor, estado, data</div></div><div className="text-[7px] text-[#94a3b8] mt-2">RLS + controlo acesso por perfil. Reutiliza autenticaÃ§Ã£o existente. NÃ£o expÃµe chaves secretas no frontend. ValidaÃ§Ã£o cliente+servidor. NÃ£o aceitar mercadorias proibidas/perigosas. Pagamentos MZN - pendente, confirmado, recusado, cancelado, reembolsado - nÃ£o confirma sem validaÃ§Ã£o fornecedor.</div></div>
             </div>
           )}
-        </section>
+        
+          {viagensSubTab==='transportador' && (
+            <div className="space-y-3">
+              {!transportadorLogado ? (
+                <div className="bg-[#1e2f4a] rounded-[14px] p-6 text-white">
+                  <h2 className="text-[16px] font-black text-center">Ãrea do Transportador - 1 conta gere vÃ¡rias viaturas</h2>
+                  <p className="text-[10px] opacity-70 text-center mt-1">Passo 1 Criar conta â†’ Passo 2 Completar perfil â†’ Passo 3 Cadastrar cada viatura (Adicionar viatura) â†’ Passo 4 Gerir operaÃ§Ã£o</p>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5 max-w-[900px] mx-auto">
+                    {/* FORMULARIO REGISTO TRANSPORTADOR - 4 SECCOES */}
+                    <div className="bg-white text-black rounded-[12px] p-4 space-y-4">
+                      <div><div className="font-black text-[11px]">A. Dados do titular da conta</div>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          <div className="col-span-2"><label className="text-[8px] font-bold">Nome completo do responsÃ¡vel *</label><input value={transportadorPerfil.nomeResponsavel} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeResponsavel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="Ex: Michaque Moises" /></div>
+                          <div><label className="text-[8px] font-bold">Tipo transportador *</label><select value={transportadorPerfil.tipoTransportador} onChange={e=>setTransportadorPerfil({...transportadorPerfil,tipoTransportador:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Pessoa singular</option><option>Empresa</option></select></div>
+                          <div><label className="text-[8px] font-bold">Nome empresa (se aplicÃ¡vel)</label><input value={transportadorPerfil.nomeEmpresa} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeEmpresa:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="ESSE Transportes Lda" /></div>
+                          <div><label className="text-[8px] font-bold">NUIT</label><input value={transportadorPerfil.nuit} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nuit:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="400123456" /></div>
+                          <div><label className="text-[8px] font-bold">BI / IdentificaÃ§Ã£o</label><input value={transportadorPerfil.bi} onChange={e=>setTransportadorPerfil({...transportadorPerfil,bi:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="1101..." /></div>
+                          <div><label className="text-[8px] font-bold">Telefone principal *</label><input value={transportadorPerfil.telPrincipal} onChange={e=>setTransportadorPerfil({...transportadorPerfil,telPrincipal:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5 bg-[#f0fdf4]" /></div>
+                          <div><label className="text-[8px] font-bold">Telefone alternativo</label><input value={transportadorPerfil.telAlt} onChange={e=>setTransportadorPerfil({...transportadorPerfil,telAlt:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                          <div><label className="text-[8px] font-bold">E-mail</label><input value={transportadorPerfil.email} onChange={e=>setTransportadorPerfil({...transportadorPerfil,email:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="transportador@..." /></div>
+                          <div><label className="text-[8px] font-bold">ProvÃ­ncia *</label><select value={transportadorPerfil.provincia} onChange={e=>setTransportadorPerfil({...transportadorPerfil,provincia:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Maputo Cidade</option><option>Maputo ProvÃ­ncia</option><option>Gaza</option><option>Inhambane</option><option>Sofala</option><option>Nampula</option></select></div>
+                          <div><label className="text-[8px] font-bold">Distrito/MunicÃ­pio</label><input value={transportadorPerfil.distrito} onChange={e=>setTransportadorPerfil({...transportadorPerfil,distrito:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                          <div className="col-span-2"><label className="text-[8px] font-bold">EndereÃ§o</label><input value={transportadorPerfil.endereco} onChange={e=>setTransportadorPerfil({...transportadorPerfil,endereco:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        </div>
+                      </div>
+                      <div className="border-t pt-3"><div className="font-black text-[11px]">B. Dados operacionais</div>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          <div><label className="text-[8px] font-bold">Nome comercial operador</label><input value={transportadorPerfil.nomeComercial} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeComercial:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                          <div><label className="text-[8px] font-bold">Terminal partida habitual</label><input value={transportadorPerfil.terminalPartida} onChange={e=>setTransportadorPerfil({...transportadorPerfil,terminalPartida:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                          <div className="col-span-2"><label className="text-[8px] font-bold">Rotas que realiza</label><input value={transportadorPerfil.rotas.join(', ')} onChange={e=>setTransportadorPerfil({...transportadorPerfil,rotas:e.target.value.split(',').map(s=>s.trim())})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="Maputo-Xai-Xai, Maputo-Beira" /></div>
+                          <div><label className="text-[8px] font-bold">Tipos serviÃ§o</label><div className="flex gap-2 mt-1"><label className="text-[8px] flex items-center gap-1"><input type="checkbox" checked={transportadorPerfil.tiposServico.includes('passageiros')} onChange={e=>{if(e.target.checked) setTransportadorPerfil({...transportadorPerfil,tiposServico:[...transportadorPerfil.tiposServico,'passageiros']}); else setTransportadorPerfil({...transportadorPerfil,tiposServico:transportadorPerfil.tiposServico.filter(t=>t!=='passageiros')})}} /> Passageiros</label><label className="text-[8px] flex items-center gap-1"><input type="checkbox" checked={transportadorPerfil.tiposServico.includes('encomendas')} onChange={e=>{if(e.target.checked) setTransportadorPerfil({...transportadorPerfil,tiposServico:[...transportadorPerfil.tiposServico,'encomendas']}); else setTransportadorPerfil({...transportadorPerfil,tiposServico:transportadorPerfil.tiposServico.filter(t=>t!=='encomendas')})}} /> Encomendas</label></div></div>
+                          <div><label className="text-[8px] font-bold">HorÃ¡rios habituais</label><input value={transportadorPerfil.horarios} onChange={e=>setTransportadorPerfil({...transportadorPerfil,horarios:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                          <div className="col-span-2"><label className="text-[8px] font-bold">DescriÃ§Ã£o serviÃ§o</label><textarea value={transportadorPerfil.descricao} onChange={e=>setTransportadorPerfil({...transportadorPerfil,descricao:e.target.value})} className="w-full h-12 border rounded text-[10px] p-2 mt-0.5" /></div>
+                        </div>
+                      </div>
+                      <div className="border-t pt-3"><div className="font-black text-[11px]">C. DocumentaÃ§Ã£o e verificaÃ§Ã£o</div><div className="text-[8px] text-[#64748b] mt-1">Documentos protegidos, nÃ£o expostos publicamente. Indica obrigatÃ³rios conforme tipo operador.</div><div className="grid grid-cols-1 gap-2 mt-2"><div><label className="text-[8px] font-bold">BI responsÃ¡vel (quando necessÃ¡rio)</label><input type="file" className="w-full text-[8px] mt-1" /></div><div><label className="text-[8px] font-bold">DocumentaÃ§Ã£o empresarial (se aplicÃ¡vel)</label><input type="file" className="w-full text-[8px] mt-1" /></div><div><label className="text-[8px] font-bold">Licenciamento/autorizaÃ§Ã£o actividade</label><input type="file" className="w-full text-[8px] mt-1" /></div><div><label className="text-[8px] font-bold">Contacto verificaÃ§Ã£o</label><input value={transportadorPerfil.contactoVerificacao} onChange={e=>setTransportadorPerfil({...transportadorPerfil,contactoVerificacao:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div></div></div>
+                      <div className="border-t pt-3"><div className="font-black text-[11px]">D. SeguranÃ§a da conta</div><div className="grid grid-cols-2 gap-2 mt-2"><div><label className="text-[8px] font-bold">Palavra-passe *</label><input type="password" value={transportadorPerfil.password} onChange={e=>setTransportadorPerfil({...transportadorPerfil,password:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div><div><label className="text-[8px] font-bold">Confirmar palavra-passe *</label><input type="password" value={transportadorPerfil.confirmPassword} onChange={e=>setTransportadorPerfil({...transportadorPerfil,confirmPassword:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div><div className="col-span-2 flex items-center gap-2 mt-1"><input type="checkbox" checked={transportadorPerfil.aceitaTermos} onChange={e=>setTransportadorPerfil({...transportadorPerfil,aceitaTermos:e.target.checked})} /><span className="text-[8px]">Aceito termos utilizaÃ§Ã£o + verificaÃ§Ã£o telefone/e-mail</span></div></div></div>
+                      <button onClick={()=>{if(!transportadorPerfil.nomeResponsavel||!transportadorPerfil.telPrincipal||!transportadorPerfil.password){alert('Preencha nome, telefone principal e password'); return;} setTransportadorLogado(true); setTransportadorPerfil({...transportadorPerfil, verificado:true, estadoAprovacao:'Aprovado'}); alert('Conta criada! Agora pode cadastrar viaturas uma por uma. Uma empresa com 15 minibus = 1 conta + 15 viaturas no painel.'); setViagensSubTab('frota');}} className="w-full h-10 bg-[#facc15] text-black rounded-[8px] font-black text-[11px]">Criar conta transportador - Passo 1</button>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="bg-white/10 rounded-[12px] p-4 border border-white/20"><div className="font-bold text-[11px]">Como funciona - 4 passos</div><div className="mt-3 space-y-3 text-[9px]"><div className="flex gap-2"><span className="h-6 w-6 rounded-full bg-[#facc15] text-black grid place-items-center font-black text-[10px]">1</span><div><b>Criar conta</b><br/><span className="opacity-70">Dados pessoais/empresariais, telefone, e-mail, password</span></div></div><div className="flex gap-2"><span className="h-6 w-6 rounded-full bg-white/20 grid place-items-center font-black">2</span><div><b>Completar perfil</b><br/><span className="opacity-70">Empresa, contactos, localizaÃ§Ã£o, rotas, documentos</span></div></div><div className="flex gap-2"><span className="h-6 w-6 rounded-full bg-white/20 grid place-items-center font-black">3</span><div><b>Cadastrar cada viatura - Adicionar viatura</b><br/><span className="opacity-70">MatrÃ­cula, lotaÃ§Ã£o, caracterÃ­sticas, capacidade encomendas</span></div></div><div className="flex gap-2"><span className="h-6 w-6 rounded-full bg-white/20 grid place-items-center font-black">4</span><div><b>Gerir operaÃ§Ã£o</b><br/><span className="opacity-70">Viaturas, viagens, reservas, encomendas, frota</span></div></div></div><div className="mt-4 p-2 rounded bg-[#facc15] text-black text-[8px] font-bold">Importante: cadastro transportador separado do cadastro viaturas. 1 empresa 15 minibus = 1 conta + 15 viaturas no mesmo painel.</div></div>
+                      <div className="bg-white rounded-[12px] p-3 text-black"><div className="font-bold text-[10px]">Exemplo frota - 15 minibus</div><div className="mt-2 text-[8px]">Conta: ESSE Transportes Lda<br/>Viaturas: ABX 123, ACD 456, AEF 789... 15 viaturas<br/>Cada viatura: ficha prÃ³pria, editar, documentos, viagens, estado aprovaÃ§Ã£o</div><div className="mt-2 grid grid-cols-3 gap-1 text-[7px]"><div className="bg-[#f1f5f9] p-1 rounded">Viatura 1 - Hiace 15 lugares - Activa - Maputo-Xai-Xai</div><div className="bg-[#f1f5f9] p-1 rounded">Viatura 2 - Coaster 25 - VerificaÃ§Ã£o</div><div className="bg-[#f1f5f9] p-1 rounded">Viatura 3 - ... 15 viaturas</div></div></div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="flex justify-between items-center"><div><div className="font-black text-[12px]">Bem-vindo, {transportadorPerfil.nomeResponsavel||transportadorPerfil.nomeEmpresa||'Transportador'}</div><div className="text-[9px] text-[#64748b]">{transportadorPerfil.tipoTransportador} {transportadorPerfil.nomeEmpresa?`- ${transportadorPerfil.nomeEmpresa}`:''} | {transportadorPerfil.provincia} | {transportadorPerfil.tiposServico.join(', ')} | Estado: {transportadorPerfil.estadoAprovacao} âœ“</div></div><button onClick={()=>setTransportadorLogado(false)} className="px-3 h-8 border rounded-full text-[9px] font-bold">Sair</button></div>
+                  <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2"><div className="bg-[#f1f5f9] rounded-[8px] p-2"><div className="text-[8px] text-[#64748b]">Viaturas</div><div className="font-black text-[14px]">{viaturasFrota.length}</div></div><div className="bg-[#f1f5f9] rounded-[8px] p-2"><div className="text-[8px] text-[#64748b]">Viagens publicadas</div><div className="font-black text-[14px]">{viagensMock.length}</div></div><div className="bg-[#f1f5f9] rounded-[8px] p-2"><div className="text-[8px] text-[#64748b]">Reservas</div><div className="font-black text-[14px]">{reservas.length}</div></div><div className="bg-[#f1f5f9] rounded-[8px] p-2"><div className="text-[8px] text-[#64748b]">Encomendas</div><div className="font-black text-[14px]">{encomendas.length}</div></div></div>
+                  <div className="mt-3 flex gap-2"><button onClick={()=>setViagensSubTab('frota')} className="px-4 h-9 bg-[#0ea5e9] text-white rounded-full text-[10px] font-bold">Gerir frota - Adicionar viatura</button><button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('viajar')}} className="px-4 h-9 bg-[#1e2f4a] text-white rounded-full text-[10px] font-bold">Publicar viagem</button></div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {viagensSubTab==='frota' && (
+            <div className="space-y-3">
+              <div className="bg-white rounded-[12px] border p-4">
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div><div className="font-black text-[13px]">Minha Frota - GestÃ£o centralizada das viaturas</div><div className="text-[9px] text-[#64748b]">1 conta gere vÃ¡rias viaturas - cadastro separado - lotaÃ§Ã£o respeita documento veÃ­culo - nÃ£o permite inventar capacidade superior</div></div>
+                  <div className="flex gap-2">
+                    <div className="bg-[#f1f5f9] rounded-full px-3 py-1 text-[10px] font-bold">#{viaturasFrota.length} Viaturas registadas</div>
+                    <div className="bg-[#e0f2fe] rounded-full px-3 py-1 text-[10px] font-bold">#{viagensMock.length} Viagens publicadas</div>
+                    <button onClick={()=>{setViaturaEditId(null); setFormViatura({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, motoristaIncluido:false, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, fotoExt:'', fotoInt:'', docRegisto:'', inspecaoValida:'', seguroValido:'', estadoOperacional:'Activa', rotaHabitual:'Maputo - Xai-Xai'}); setMostrarFormViatura(true);}} className="px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">+ Adicionar viatura</button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+                  {viaturasFrota.map(v=>(
+                    <div key={v.id} className="border rounded-[12px] p-3 bg-white hover:shadow-md transition">
+                      <div className="flex justify-between"><div className="font-black text-[11px]">Viatura {v.id} - {v.marcaModelo}</div><span className={`text-[7px] px-2 py-0.5 rounded-full font-bold ${v.estadoOperacional==='Activa'?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700'}`}>{v.estadoOperacional} | {v.estadoAprovacao}</span></div>
+                      <div className="text-[9px] text-[#475569] mt-1 space-y-0.5">
+                        <div><b>MatrÃ­cula:</b> {v.matricula} | <b>Tipo:</b> {v.tipo}</div>
+                        <div><b>Lugares autorizados:</b> {v.lugares} {v.motoristaIncluido?'inclui motorista':'exclui motorista'} | <b>Ano:</b> {v.ano} | <b>Cor:</b> {v.cor}</div>
+                        <div><b>AC:</b> {v.arCondicionado} | <b>Bagagem:</b> {v.bagagem} | <b>Encomendas:</b> {v.aceitaEncomendas} | <b>Carga:</b> {v.capacidadeKg}kg</div>
+                        <div><b>Rota:</b> {v.rotaHabitual} | <b>Chassis:</b> {v.chassis?.substring(0,8)}...</div>
+                        <div className="text-[7px] text-[#94a3b8]">InspecÃ§Ã£o: {v.inspecaoValida} | Seguro: {v.seguroValido} | Doc: {v.docRegisto?'OK':'Pendente'}</div>
+                      </div>
+                      <div className="mt-2 flex gap-1">
+                        <button onClick={()=>{setFormViatura(v); setViaturaEditId(v.id); setMostrarFormViatura(true);}} className="flex-1 h-7 bg-[#f1f5f9] rounded-full text-[8px] font-bold">Editar ficha</button>
+                        <button onClick={()=>{if(confirm('Remover viatura?')) setViaturasFrota(viaturasFrota.filter(x=>x.id!==v.id))}} className="h-7 px-2 border rounded-full text-[8px]">Remover</button>
+                        <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('viajar');}} className="h-7 px-2 bg-[#0ea5e9] text-white rounded-full text-[8px] font-bold">Viagens</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {viaturasFrota.length===0 && <div className="py-12 text-center text-[11px] text-[#94a3b8]">Nenhuma viatura - clique Adicionar viatura - cada veÃ­culo formulÃ¡rio prÃ³prio</div>}
+              </div>
+
+              {mostrarFormViatura && (
+                <div className="bg-white rounded-[12px] border-2 border-[#facc15] p-4">
+                  <div className="font-black text-[12px] mb-3">{viaturaEditId?'Editar viatura':'Adicionar viatura - FormulÃ¡rio completo - exemplo interactivo'} - LotaÃ§Ã£o respeita documento</div>
+                  <div className="space-y-4">
+                    <div><div className="font-bold text-[10px]">1. IdentificaÃ§Ã£o da viatura</div>
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-2">
+                        <div><label className="text-[8px] font-bold">Tipo viatura *</label><select value={formViatura.tipo} onChange={e=>setFormViatura({...formViatura,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Minibus / Chapa</option><option>Autocarro</option><option>Carrinha de transporte</option><option>Outro</option></select></div>
+                        <div><label className="text-[8px] font-bold">Marca e modelo *</label><input value={formViatura.marcaModelo} onChange={e=>setFormViatura({...formViatura,marcaModelo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="Toyota Hiace" /></div>
+                        <div><label className="text-[8px] font-bold">MatrÃ­cula *</label><input value={formViatura.matricula} onChange={e=>setFormViatura({...formViatura,matricula:e.target.value.toUpperCase()})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="ABX 123 MC" /></div>
+                        <div><label className="text-[8px] font-bold">Lugares autorizados *</label><div className="flex gap-1 mt-0.5"><input type="number" value={formViatura.lugares} onChange={e=>setFormViatura({...formViatura,lugares:Math.max(1,Math.min(80,Number(e.target.value)))})} className="flex-1 h-8 border rounded text-[10px] px-2" /><label className="text-[7px] flex items-center gap-1"><input type="checkbox" checked={formViatura.motoristaIncluido} onChange={e=>setFormViatura({...formViatura,motoristaIncluido:e.target.checked})} /> Inclui motorista no doc</label></div></div>
+                        <div><label className="text-[8px] font-bold">Ano fabrico</label><input type="number" value={formViatura.ano} onChange={e=>setFormViatura({...formViatura,ano:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        <div><label className="text-[8px] font-bold">Cor</label><input value={formViatura.cor} onChange={e=>setFormViatura({...formViatura,cor:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        <div><label className="text-[8px] font-bold">NÂº chassis (verificaÃ§Ã£o)</label><input value={formViatura.chassis} onChange={e=>setFormViatura({...formViatura,chassis:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        <div><label className="text-[8px] font-bold">Rota habitual</label><input value={formViatura.rotaHabitual} onChange={e=>setFormViatura({...formViatura,rotaHabitual:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                      </div>
+                    </div>
+                    <div className="border-t pt-3"><div className="font-bold text-[10px]">2. CaracterÃ­sticas e capacidade - respeita documentaÃ§Ã£o e limites carga</div>
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-2">
+                        <div><label className="text-[8px] font-bold">Ar condicionado</label><select value={formViatura.arCondicionado} onChange={e=>setFormViatura({...formViatura,arCondicionado:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Sim</option><option>NÃ£o</option></select></div>
+                        <div><label className="text-[8px] font-bold">Transporta bagagem passageiros?</label><select value={formViatura.bagagem} onChange={e=>setFormViatura({...formViatura,bagagem:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Sim</option><option>NÃ£o</option></select></div>
+                        <div><label className="text-[8px] font-bold">Aceita encomendas?</label><select value={formViatura.aceitaEncomendas} onChange={e=>setFormViatura({...formViatura,aceitaEncomendas:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Sim</option><option>NÃ£o</option></select></div>
+                        <div><label className="text-[8px] font-bold">Capacidade mÃ¡xima carga autorizada (kg) *</label><input type="number" value={formViatura.capacidadeKg} onChange={e=>setFormViatura({...formViatura,capacidadeKg:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" placeholder="300" /></div>
+                        <div><label className="text-[8px] font-bold">Fotografia exterior</label><input type="file" className="w-full text-[8px] mt-1" /></div>
+                        <div><label className="text-[8px] font-bold">Fotografia interior (lugares)</label><input type="file" className="w-full text-[8px] mt-1" /></div>
+                        <div><label className="text-[8px] font-bold">Documento registo viatura</label><input type="file" className="w-full text-[8px] mt-1" /></div>
+                        <div><label className="text-[8px] font-bold">InspecÃ§Ã£o vÃ¡lida atÃ©</label><input type="date" value={formViatura.inspecaoValida} onChange={e=>setFormViatura({...formViatura,inspecaoValida:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        <div><label className="text-[8px] font-bold">Seguro vÃ¡lido atÃ©</label><input type="date" value={formViatura.seguroValido} onChange={e=>setFormViatura({...formViatura,seguroValido:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5" /></div>
+                        <div><label className="text-[8px] font-bold">Estado operacional</label><select value={formViatura.estadoOperacional} onChange={e=>setFormViatura({...formViatura,estadoOperacional:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-0.5"><option>Activa</option><option>Inactiva</option><option>Em manutenÃ§Ã£o</option><option>Suspensa</option></select></div>
+                      </div>
+                      <div className="mt-2 p-2 bg-[#fef3c7] rounded text-[8px]">Importante: lotaÃ§Ã£o deve respeitar nÂº lugares autorizado nos documentos. App nÃ£o permite inventar capacidade superior. Valor carga respeita documentaÃ§Ã£o e limites aplicÃ¡veis + espaÃ§o disponÃ­vel encomendas.</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={()=>{if(!formViatura.marcaModelo||!formViatura.matricula){alert('Marca/modelo e matrÃ­cula obrigatÃ³rios'); return;} if(viaturaEditId){setViaturasFrota(viaturasFrota.map(v=>v.id===viaturaEditId?{...v, ...formViatura, id:viaturaEditId}:v)); setViaturaEditId(null);} else {setViaturasFrota([...viaturasFrota,{id:Date.now(), ...formViatura, estadoAprovacao:'Em verificaÃ§Ã£o'}]);} setMostrarFormViatura(false); alert('Viatura registada! Ficha prÃ³pria criada - pode editar dados, actualizar documentos, consultar viagens, verificar estado aprovaÃ§Ã£o. CalendÃ¡rio disponibilidade impede mesma viatura em 2 viagens incompatÃ­veis.');}} className="flex-1 h-10 bg-[#facc15] text-black rounded-[8px] font-black text-[11px]">{viaturaEditId?'Guardar alteraÃ§Ãµes viatura':'Copiar exemplo preenchido - Registar viatura'}</button>
+                      <button onClick={()=>{setMostrarFormViatura(false); setViaturaEditId(null);}} className="h-10 px-4 border rounded-[8px] text-[10px]">Cancelar</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-white rounded-[12px] border p-3">
+                <div className="font-bold text-[10px]">Como ligar viaturas, viagens, passageiros e encomendas - estrutura escalÃ¡vel</div>
+                <div className="mt-2 flex flex-wrap gap-2 text-[8px]"><span className="px-2 py-1 rounded-full bg-[#1e2f4a] text-white">Conta transportador (1 utilizador/empresa)</span><span>â†’</span><span className="px-2 py-1 rounded-full bg-[#e0f2fe]">Uma ou vÃ¡rias viaturas (lotaÃ§Ã£o + capacidade prÃ³prias)</span><span>â†’</span><span className="px-2 py-1 rounded-full bg-[#fef9c3]">Viagens publicadas (rota, data, horÃ¡rio, lugares, carga)</span><span>â†’</span><span className="px-2 py-1 rounded-full bg-[#dcfce7]">Passageiros (lugares reservados) + Encomendas (volumes/peso)</span></div>
+                <div className="mt-2 text-[8px] text-[#64748b]">Permite empresa usar vÃ¡rias viaturas mesma rota, vÃ¡rias viagens dia, sem duplicar perfil. Motorista associado viatura nome/contacto permissÃµes limitadas. GestÃ£o ajudantes/cobradores opcional. CalendÃ¡rio disponibilidade. GestÃ£o lugares bloqueia reservados. GestÃ£o encomendas verifica espaÃ§o carga. Documentos validade alerta vencimento seguro/inspecÃ§Ã£o/licenÃ§a. AvaliaÃ§Ãµes passageiros. HistÃ³rico operacional viagens realizadas, cancelamentos, reclamaÃ§Ãµes, entregas. VerificaÃ§Ã£o administrativa distingue registadas vs verificadas. Privacidade mostra clientes apenas dados necessÃ¡rios reserva. Ordem cadastro: conta â†’ perfil operador â†’ cadastro individual cada viatura â†’ verificaÃ§Ã£o â†’ publicaÃ§Ã£o viagens â†’ reservas e encomendas.</div>
+              </div>
+            </div>
+          )}
+
+</section>
       )}
 
   <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>

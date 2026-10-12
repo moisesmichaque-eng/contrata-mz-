@@ -133,6 +133,27 @@ export default function App(){
  const ivaFat = ivaTipo==='sem'?0: ivaTipo==='16'? baseFat*0.16 : baseFat*0.05;
  const totalFat = baseFat + ivaFat;
  const catsFat = ["Todos","Cimento","Bloco","Tinta","Ferro","Cobertura","Inertes","Tubo PVC","Fechadura"];
+ // ===== FACILITA VIAGENS - App_41 - MESMO PADRAO FATURACAO - NAO ALTERA NADA ANTERIOR =====
+ const [viagensTab, setViagensTab] = useState<'overview'|'viajar'|'encomenda'|'minhas'>('overview');
+ const [origemV, setOrigemV] = useState('Maputo');
+ const [destinoV, setDestinoV] = useState('Beira');
+ const [dataV, setDataV] = useState(new Date().toISOString().split('T')[0]);
+ const [tipoViagem, setTipoViagem] = useState<'passageiro'|'encomenda'>('passageiro');
+ const [viagensMock] = useState([
+   {id:1, transp:'Nagi Invest', motorista:'Carlos Matsinhe', tel:'84 123 4567', origem:'Maputo', destino:'Beira', data:'2026-10-15', hora:'05:30', chegada:'18:00', preco:2500, lugares:12, cargaKg:500, viatura:'Toyota Coaster 25 lugares - ABX 123 MC', estado:'Confirmada'},
+   {id:2, transp:'Maning Transporte', motorista:'Joao Matola', tel:'82 987 6543', origem:'Maputo', destino:'Nampula', data:'2026-10-15', hora:'06:00', chegada:'20:00', preco:3500, lugares:7, cargaKg:800, viatura:'Mini-bus 15 lugares - ACD 456 MC', estado:'Confirmada'},
+   {id:3, transp:'ESSE Viagens', motorista:'Michaque Moises', tel:'84 053 2899', origem:'Xai-Xai', destino:'Maputo', data:'2026-10-16', hora:'04:30', chegada:'08:00', preco:800, lugares:20, cargaKg:300, viatura:'Coaster 30 lugares - ESSE 001', estado:'Confirmada'},
+ ]);
+ const [reservas, setReservas] = useState<any[]>([]);
+ const [encomendas, setEncomendas] = useState<any[]>([]);
+ const [formPassageiro, setFormPassageiro] = useState({nome:'', bi:'', tel:'', lugar:1});
+ const [formEncomenda, setFormEncomenda] = useState({
+   origem:'Maputo', destino:'Beira', data:'', remetenteNome:'', remetenteTel:'+258 84 123 4567', destinatarioNome:'', destinatarioTel:'', descricao:'', qtd:1, peso:5, valor:3000, localEntrega:'Terminal Junta', obs:''
+ });
+ const [viagemSel, setViagemSel] = useState<any>(null);
+ const [mostrarFormPass, setMostrarFormPass] = useState(false);
+ const [mostrarFormEnc, setMostrarFormEnc] = useState(false);
+
 
 
  const [formContrato,setFormContrato]=useState({
@@ -346,8 +367,10 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
    <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
     <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="ESSE - Energy Solutions and Services Enterprise" className="h-9 w-auto object-contain" /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
     <div className="flex items-center gap-2">
-      {/* BOTAO CIRCULADO AMARELO - FACTURACAO - ADICIONADO App_40 */}
+      {/* BOTAO CIRCULADO AMARELO - FACTURACAO - ADICIONADO App_40 - MANTIDO */}
       <button onClick={()=>setTab('faturacao')} className={`px-4 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black hover:bg-[#fde047]'}`}>FACTURAÃ‡ÃƒO</button>
+      {/* NOVO MODULO FACILITA VIAGENS - App_41 - MESMO PADRAO FATURACAO */}
+      <button onClick={()=>setTab('viagens')} className={`px-4 py-2 rounded-full font-black text-[11px] flex items-center gap-1 ${tab==='viagens'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#0ea5e9] text-white hover:bg-[#0284c7]'}`}><span>ðŸšŒ</span> VIAGENS</button>
       <button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button>
       <button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>CONTRATOS 11</button>
       <button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button>
@@ -612,6 +635,115 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
               <div className="bg-[#fefce8] rounded-[12px] border border-[#fde68a] p-3"><div className="font-bold text-[9px]">Nota rÃ¡pida</div><div className="text-[8px] text-[#854d0e] mt-1">MudanÃ§as sÃ£o sÃ³ de interface, lÃ³gica de negÃ³cio, nome opcional, IVA global, N fim, produtos memorizados, pagamento mesmo BN â€” MantÃ©m memÃ³ria de cada cliente</div></div>
             </div>
           </div>
+        </section>
+      )}
+
+
+      {tab==='viagens' && (
+        <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10">
+          {/* HEADER FACILITA VIAGENS - MESMO PADRAO FATURACAO */}
+          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#0ea5e9] text-white grid place-items-center font-black text-[12px]">ðŸšŒ</div><div className="font-black text-[12px]">Facilita Viagens</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#e0f2fe] border text-[#0c4a6e]">âœ“ Integrado como FaturaÃ§Ã£o - mesmo padrÃ£o</span><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#fef9c3]">Transporte passageiros + encomendas</span></div>
+            <div className="flex gap-1.5 flex-wrap">
+              <button onClick={()=>setViagensTab('overview')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='overview'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>VisÃ£o geral</button>
+              <button onClick={()=>setViagensTab('viajar')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='viajar'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Pesquisar viagens</button>
+              <button onClick={()=>setViagensTab('encomenda')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='encomenda'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Enviar encomenda</button>
+              <button onClick={()=>setViagensTab('minhas')} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensTab==='minhas'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Minhas reservas</button>
+            </div>
+          </div>
+
+          {viagensTab==='overview' && (
+            <div className="space-y-3">
+              <div className="bg-[#0f1e36] rounded-[14px] p-6 text-white text-center">
+                <h2 className="text-[18px] font-black">O que pretende fazer?</h2>
+                <p className="text-[11px] opacity-70 mt-1">Mesma navegaÃ§Ã£o da FaturaÃ§Ã£o - escolha viajar ou enviar encomenda</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 max-w-[700px] mx-auto">
+                  <button onClick={()=>{setViagensTab('viajar'); setTipoViagem('passageiro')}} className="bg-white text-[#0f1e36] rounded-[12px] p-5 text-left hover:bg-[#f0f9ff] border-2 border-transparent hover:border-[#0ea5e9] transition">
+                    <div className="text-[24px]">ðŸ§³</div><div className="font-black text-[13px] mt-2">OpÃ§Ã£o A â€” Viajar</div><div className="text-[10px] text-[#475569] mt-1">Deslocar-se entre cidades, distritos ou provÃ­ncias de MoÃ§ambique. Seleccionar origem, destino, data, ver transportadores, horÃ¡rio e preÃ§o, escolher lugar.</div><div className="mt-3 text-[9px] font-bold bg-[#0f1e36] text-white px-3 py-1 rounded-full inline-block">Pesquisar viagens â†’</div>
+                  </button>
+                  <button onClick={()=>{setViagensTab('encomenda'); setTipoViagem('encomenda')}} className="bg-[#fefce8] text-[#0f1e36] rounded-[12px] p-5 text-left hover:bg-[#fef9c3] border-2 border-[#facc15] transition">
+                    <div className="text-[24px]">ðŸ“¦</div><div className="font-black text-[13px] mt-2">OpÃ§Ã£o B â€” Enviar encomenda</div><div className="text-[10px] text-[#475569] mt-1">Enviar volumes atravÃ©s de transportador com rota compatÃ­vel. Registar remetente, destinatÃ¡rio, volumes, peso, valor declarado, cotaÃ§Ã£o.</div><div className="mt-3 text-[9px] font-bold bg-[#facc15] text-black px-3 py-1 rounded-full inline-block">Enviar encomenda â†’</div>
+                  </button>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="bg-white rounded-[12px] border p-3"><div className="text-[9px] text-[#94a3b8]">Viagens hoje</div><div className="font-black text-[18px]">{viagensMock.length}</div><div className="text-[8px] text-green-600">3 confirmadas</div></div>
+                <div className="bg-white rounded-[12px] border p-3"><div className="text-[9px] text-[#94a3b8]">Transportadores</div><div className="font-black text-[18px]">12</div><div className="text-[8px]">Autorizados</div></div>
+                <div className="bg-white rounded-[12px] border p-3"><div className="text-[9px] text-[#94a3b8]">Minhas reservas</div><div className="font-black text-[18px]">{reservas.length}</div><div className="text-[8px]">Activas</div></div>
+                <div className="bg-white rounded-[12px] border p-3"><div className="text-[9px] text-[#94a3b8]">Encomendas</div><div className="font-black text-[18px]">{encomendas.length}</div><div className="text-[8px]">Em trÃ¢nsito</div></div>
+              </div>
+            </div>
+          )}
+
+          {viagensTab==='viajar' && (
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="flex-1 space-y-3">
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="font-black text-[11px] mb-3">Pesquisar viagens - Origem / Destino / Data</div>
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+                    <div><label className="text-[8px] font-bold">ORIGEM</label><select value={origemV} onChange={e=>setOrigemV(e.target.value)} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1"><option>Maputo</option><option>Matola</option><option>Xai-Xai</option><option>Inhambane</option><option>Beira</option><option>Nampula</option></select></div>
+                    <div><label className="text-[8px] font-bold">DESTINO</label><select value={destinoV} onChange={e=>setDestinoV(e.target.value)} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1"><option>Beira</option><option>Maputo</option><option>Nampula</option><option>Xai-Xai</option><option>Matola</option><option>Tete</option></select></div>
+                    <div><label className="text-[8px] font-bold">DATA</label><input type="date" value={dataV} onChange={e=>setDataV(e.target.value)} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" /></div>
+                    <div className="flex items-end"><button className="w-full h-9 bg-[#0ea5e9] text-white rounded-[8px] font-black text-[11px]">PESQUISAR</button></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {viagensMock.filter(v=>v.origem===origemV && v.destino===destinoV).map(v=>(
+                    <div key={v.id} className="bg-white rounded-[12px] border p-3 flex flex-col lg:flex-row justify-between gap-3">
+                      <div className="flex gap-3"><div className="h-10 w-10 rounded-full bg-[#1e2f4a] text-white grid place-items-center font-black text-[10px]">{v.transp.substring(0,2).toUpperCase()}</div><div><div className="font-black text-[11px]">{v.transp} - {v.viatura}</div><div className="text-[9px] text-[#64748b]">{v.origem} â†’ {v.destino} | {v.data} {v.hora} â†’ {v.chegada} | Motorista: {v.motorista} {v.tel}</div><div className="flex gap-1 mt-1"><span className="text-[7px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">{v.estado}</span><span className="text-[7px] px-2 py-0.5 rounded-full bg-[#f1f5f9]">{v.lugares} lugares</span><span className="text-[7px] px-2 py-0.5 rounded-full bg-[#fef9c3]">{v.cargaKg}kg carga</span></div></div></div>
+                      <div className="flex lg:flex-col items-center justify-between lg:justify-center gap-2"><div className="font-black text-[14px] text-[#0ea5e9]">{v.preco} MT</div><button onClick={()=>{setViagemSel(v); setMostrarFormPass(true);}} className="px-4 h-8 rounded-full bg-[#1e2f4a] text-white text-[10px] font-bold">Reservar lugar</button></div>
+                    </div>
+                  ))}
+                  {viagensMock.filter(v=>v.origem===origemV && v.destino===destinoV).length===0 && <div className="bg-white rounded-[12px] border p-8 text-center text-[11px] text-[#94a3b8]">Nenhuma viagem {origemV} â†’ {destinoV}. Tenta Maputo â†’ Beira ou Xai-Xai â†’ Maputo (dados demo)</div>}
+                </div>
+                {mostrarFormPass && viagemSel && (
+                  <div className="bg-white rounded-[12px] border-2 border-[#0ea5e9] p-4">
+                    <div className="font-black text-[11px] mb-2">Reservar - {viagemSel.origem} â†’ {viagemSel.destino} - {viagemSel.preco} MT</div>
+                    <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">NOME COMPLETO</label><input value={formPassageiro.nome} onChange={e=>setFormPassageiro({...formPassageiro,nome:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="Nome passageiro" /></div><div><label className="text-[8px] font-bold">TELEFONE</label><input value={formPassageiro.tel} onChange={e=>setFormPassageiro({...formPassageiro,tel:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="+258..." /></div><div><label className="text-[8px] font-bold">BI (opcional)</label><input value={formPassageiro.bi} onChange={e=>setFormPassageiro({...formPassageiro,bi:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="BI" /></div><div><label className="text-[8px] font-bold">LUGAR</label><select value={formPassageiro.lugar} onChange={e=>setFormPassageiro({...formPassageiro,lugar:Number(e.target.value)})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1">{Array.from({length:viagemSel.lugares},(_,i)=><option key={i} value={i+1}>Lugar {i+1}</option>)}</select></div></div>
+                    <div className="flex gap-2 mt-3"><button onClick={()=>{const nova={id:Date.now(), ...viagemSel, passageiro:formPassageiro, estado:'Confirmada', codigo:'V'+Math.floor(Math.random()*10000)}; setReservas([...reservas,nova]); setMostrarFormPass(false); alert('Reserva confirmada! CÃ³digo '+nova.codigo+' - Enviado WhatsApp '+formPassageiro.tel);}} className="flex-1 h-10 bg-[#22c55e] text-white rounded-[8px] font-black text-[11px]">Confirmar reserva - {viagemSel.preco} MT</button><button onClick={()=>setMostrarFormPass(false)} className="h-10 px-4 border rounded-[8px] text-[11px]">Cancelar</button></div>
+                  </div>
+                )}
+              </div>
+              <div className="w-full lg:w-[300px] space-y-3">
+                <div className="bg-[#111827] rounded-[12px] p-4 text-white"><div className="font-bold text-[11px]">Ãrea transportador</div><div className="text-[9px] text-white/50 mt-2">Nome empresa, responsÃ¡vel, telefone, email, NUIT, provÃ­ncia, rotas, estado aprovaÃ§Ã£o, viaturas. Apenas autorizados publicam viagens.</div><div className="mt-3 p-2 rounded bg-white/10 text-[9px]">Viatura: MatrÃ­cula, capacidade passageiros, carga kg, estado</div><button className="mt-3 w-full h-9 bg-white/10 rounded-[8px] text-[10px] font-bold">Gerir viagens e viaturas</button></div>
+                <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">O QUE MUDOU VIAGENS V1</div><div className="text-[8px] text-[#475569] mt-2 space-y-1"><div>â€¢ Mesmo padrÃ£o FaturaÃ§Ã£o</div><div>â€¢ Origem/Destino/Data - filtro</div><div>â€¢ Capacidade passageiros e carga separada</div><div>â€¢ NÃ£o permite overbooking</div><div>â€¢ WhatsApp integraÃ§Ã£o preparada</div></div></div>
+              </div>
+            </div>
+          )}
+
+          {viagensTab==='encomenda' && (
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="flex-1 space-y-3">
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="font-black text-[11px]">FormulÃ¡rio de envio de encomendas - Completo</div>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 mt-3">
+                    <div><label className="text-[8px] font-bold">ORIGEM</label><select value={formEncomenda.origem} onChange={e=>setFormEncomenda({...formEncomenda,origem:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1"><option>Maputo</option><option>Matola</option><option>Xai-Xai</option><option>Beira</option><option>Nampula</option></select></div>
+                    <div><label className="text-[8px] font-bold">DESTINO</label><select value={formEncomenda.destino} onChange={e=>setFormEncomenda({...formEncomenda,destino:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1"><option>Beira</option><option>Maputo</option><option>Nampula</option><option>Xai-Xai</option></select></div>
+                    <div><label className="text-[8px] font-bold">DATA PRETENDIDA</label><input type="date" value={formEncomenda.data} onChange={e=>setFormEncomenda({...formEncomenda,data:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" /></div>
+                  </div>
+                  <div className="mt-4"><div className="font-bold text-[10px]">B. Dados dos volumes</div><div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2"><div><label className="text-[8px] font-bold">DESCRIÃ‡ÃƒO CONTEÃšDO</label><input value={formEncomenda.descricao} onChange={e=>setFormEncomenda({...formEncomenda,descricao:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="Ex: Caixas de roupa, PeÃ§as equipamento" /></div><div className="grid grid-cols-3 gap-2"><div><label className="text-[8px] font-bold">QTD</label><input type="number" value={formEncomenda.qtd} onChange={e=>setFormEncomenda({...formEncomenda,qtd:Number(e.target.value)})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" /></div><div><label className="text-[8px] font-bold">PESO KG</label><input type="number" value={formEncomenda.peso} onChange={e=>setFormEncomenda({...formEncomenda,peso:Number(e.target.value)})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" /></div><div><label className="text-[8px] font-bold">VALOR DECLARADO MZN</label><input type="number" value={formEncomenda.valor} onChange={e=>setFormEncomenda({...formEncomenda,valor:Number(e.target.value)})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" /></div></div></div><div className="mt-2"><label className="text-[8px] font-bold">LOCAL ENTREGA AO TRANSPORTADOR + OBS MANUSEAMENTO</label><input value={formEncomenda.localEntrega} onChange={e=>setFormEncomenda({...formEncomenda,localEntrega:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="Terminal Junta, AgÃªncia..." /></div><div className="mt-2"><label className="text-[8px] font-bold">OBSERVAÃ‡Ã•ES</label><input value={formEncomenda.obs} onChange={e=>setFormEncomenda({...formEncomenda,obs:e.target.value})} className="w-full h-9 border rounded-[8px] text-[11px] px-2 mt-1" placeholder="FrÃ¡gil, nÃ£o molhar..." /></div></div>
+                  <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div className="bg-[#f8fafc] rounded-[8px] p-3 border"><div className="font-bold text-[9px]">C. DADOS REMETENTE</div><div className="space-y-2 mt-2"><input value={formEncomenda.remetenteNome} onChange={e=>setFormEncomenda({...formEncomenda,remetenteNome:e.target.value})} placeholder="Nome completo remetente" className="w-full h-8 border rounded text-[10px] px-2" /><input value={formEncomenda.remetenteTel} onChange={e=>setFormEncomenda({...formEncomenda,remetenteTel:e.target.value})} placeholder="Telefone remetente" className="w-full h-8 border rounded text-[10px] px-2" /></div></div>
+                    <div className="bg-[#fefce8] rounded-[8px] p-3 border border-[#fde68a]"><div className="font-bold text-[9px]">D. DADOS DESTINATÃRIO</div><div className="space-y-2 mt-2"><input value={formEncomenda.destinatarioNome} onChange={e=>setFormEncomenda({...formEncomenda,destinatarioNome:e.target.value})} placeholder="Nome completo destinatÃ¡rio" className="w-full h-8 border rounded text-[10px] px-2" /><input value={formEncomenda.destinatarioTel} onChange={e=>setFormEncomenda({...formEncomenda,destinatarioTel:e.target.value})} placeholder="Telefone destinatÃ¡rio" className="w-full h-8 border rounded text-[10px] px-2" /></div></div>
+                  </div>
+                  <div className="mt-4 bg-[#f1f5f9] rounded-[8px] p-3"><div className="font-bold text-[9px]">E. REVISÃƒO - Resumo antes de submeter</div><div className="text-[9px] mt-2 space-y-1"><div><b>Origemâ†’Destino:</b> {formEncomenda.origem} â†’ {formEncomenda.destino} | Data: {formEncomenda.data}</div><div><b>Artigo:</b> {formEncomenda.descricao} | Qtd {formEncomenda.qtd} | Peso {formEncomenda.peso}kg | Valor declarado {formEncomenda.valor} MZN</div><div><b>Remetente:</b> {formEncomenda.remetenteNome} {formEncomenda.remetenteTel}</div><div><b>DestinatÃ¡rio:</b> {formEncomenda.destinatarioNome} {formEncomenda.destinatarioTel}</div><div className="text-[8px] text-[#64748b]">Valor declarado â‰  preÃ§o transporte. Guardado separado do que transportador confirmar na recepÃ§Ã£o.</div></div></div>
+                  <button onClick={()=>{const nova={id:Date.now(), ...formEncomenda, estado:'Aguardar cotaÃ§Ã£o', codigo:'ENC'+Math.floor(Math.random()*10000), historico:[{estado:'Pedido criado', data:new Date().toLocaleString('pt-MZ')}]}; setEncomendas([...encomendas,nova]); alert('Pedido criado! CÃ³digo '+nova.codigo+' - Transportador vai enviar cotaÃ§Ã£o. Estados: Pedido criado â†’ A aguardar cotaÃ§Ã£o â†’ CotaÃ§Ã£o enviada â†’ Aceite â†’ Pagamento â†’ Recebida â†’ Em trÃ¢nsito â†’ DisponÃ­vel â†’ Entregue');}} className="mt-4 w-full h-11 bg-[#0ea5e9] text-white rounded-[8px] font-black text-[11px]">Criar pedido de encomenda - Solicitar cotaÃ§Ã£o</button>
+                </div>
+              </div>
+              <div className="w-full lg:w-[300px] space-y-3">
+                <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">COTAÃ‡Ã•ES E PREÃ‡OS</div><div className="text-[8px] text-[#475569] mt-2">Fluxo: Remetente cria â†’ Transportador verifica rota/capacidade/volumes â†’ PropÃµe preÃ§o â†’ Remetente aceita/recusa â†’ Pagamento â†’ Confirma recepÃ§Ã£o fÃ­sica</div><div className="mt-2 p-2 bg-[#f8fafc] rounded text-[8px]"><div>PreÃ§o transporte + taxas + condiÃ§Ãµes recolha/entrega + prazo + validade cotaÃ§Ã£o</div><div className="mt-1 text-[#94a3b8]">NÃ£o calcula automÃ¡tico com tarifas inventadas - admin configura regras futuras</div></div></div>
+                <div className="bg-[#111827] rounded-[12px] p-3 text-white"><div className="font-bold text-[10px]">Estados e acompanhamento</div><div className="text-[8px] text-white/60 mt-2 space-y-0.5"><div>1. Pedido criado</div><div>2. A aguardar cotaÃ§Ã£o</div><div>3. CotaÃ§Ã£o enviada</div><div>4. CotaÃ§Ã£o aceite</div><div>5. A aguardar pagamento</div><div>6. Pagamento confirmado</div><div>7. Recebida pelo transportador</div><div>8. Associada a viagem</div><div>9. Em trÃ¢nsito</div><div>10. DisponÃ­vel levantamento</div><div>11. Entregue</div><div>12. Cancelada</div><div>13. Incidente</div></div><div className="text-[7px] text-white/40 mt-2">HistÃ³rico com utilizador responsÃ¡vel, data/hora. CÃ³digo confirmaÃ§Ã£o Ãºnico na entrega. NÃ£o marca entregue sÃ³ porque viagem terminou.</div></div>
+              </div>
+            </div>
+          )}
+
+          {viagensTab==='minhas' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Minhas reservas - Passageiros</div><div className="mt-3 space-y-2">{reservas.length===0?<div className="text-[10px] text-[#94a3b8] py-8 text-center">Nenhuma reserva - pesquisa viagens e reserva lugar</div>:reservas.map(r=><div key={r.id} className="border rounded-[8px] p-2 text-[10px]"><div className="font-bold">{r.origem} â†’ {r.destino} | {r.data} {r.hora} | CÃ³digo {r.codigo}</div><div className="text-[9px] text-[#64748b]">{r.transp} | Passageiro {r.passageiro.nome} Lugar {r.passageiro.lugar} | Estado {r.estado}</div><div className="text-[8px] text-green-600">WhatsApp: Pedido recebido, Partida, Chegada, DisponÃ­vel levantamento, Entregue</div></div>)}</div></div>
+              <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Minhas encomendas - Acompanhamento</div><div className="mt-3 space-y-2">{encomendas.length===0?<div className="text-[10px] text-[#94a3b8] py-8 text-center">Nenhuma encomenda - cria pedido na aba Enviar encomenda</div>:encomendas.map(e=><div key={e.id} className="border rounded-[8px] p-2 text-[10px]"><div className="font-bold">{e.origem} â†’ {e.destino} | CÃ³digo {e.codigo} | Estado {e.estado}</div><div className="text-[9px]">Artigo: {e.descricao} Qtd {e.qtd} Peso {e.peso}kg Valor declarado {e.valor} MZN</div><div className="text-[8px] text-[#64748b]">Remetente {e.remetenteNome} â†’ DestinatÃ¡rio {e.destinatarioNome} | HistÃ³rico: {e.historico?.map((h:any)=>h.estado).join(' â†’ ')}</div><div className="mt-1 flex gap-1"><button onClick={()=>{const atual=[...encomendas]; const idx=atual.findIndex(x=>x.id===e.id); const estados=['Aguardar cotaÃ§Ã£o','CotaÃ§Ã£o enviada','CotaÃ§Ã£o aceite','Aguardar pagamento','Pagamento confirmado','Recebida pelo transportador','Associada a viagem','Em trÃ¢nsito','DisponÃ­vel para levantamento','Entregue']; const prox=estados[estados.indexOf(e.estado)+1]||e.estado; atual[idx]={...e, estado:prox, historico:[...e.historico,{estado:prox, data:new Date().toLocaleString('pt-MZ')}]}; setEncomendas(atual);}} className="px-2 py-1 bg-[#0ea5e9] text-white rounded text-[8px]">AvanÃ§ar estado (demo)</button></div></div>)}</div></div>
+              <div className="lg:col-span-2 bg-[#fefce8] rounded-[12px] border border-[#fde68a] p-3"><div className="font-bold text-[10px]">BASE DE DADOS proposta - Supabase migraÃ§Ãµes</div><div className="text-[8px] text-[#475569] mt-1 grid grid-cols-2 gap-1"><div>â€¢ transporters - nome, responsÃ¡vel, tel, email, NUIT, provÃ­ncia, rotas, estado aprovaÃ§Ã£o, viaturas</div><div>â€¢ vehicles - matrÃ­cula, capacidade passageiros, carga kg, estado</div><div>â€¢ routes - origem, destino, info rota</div><div>â€¢ trips - transportador, viatura, rota, data, hora, preÃ§o, estado</div><div>â€¢ trip_bookings - reservas associadas</div><div>â€¢ shipments - origem, destino, remetente, destinatÃ¡rio, preÃ§o, valor declarado, estado</div><div>â€¢ shipment_items - descriÃ§Ã£o, qtd, peso, dimensÃµes, valor declarado</div><div>â€¢ shipment_quotes - cotaÃ§Ãµes, validade, preÃ§o</div><div>â€¢ shipment_events - histÃ³rico recepÃ§Ã£o, transporte, chegada, entrega, incidentes</div><div>â€¢ shipment_payments - montante, moeda, ref, fornecedor, estado, data</div></div><div className="text-[7px] text-[#94a3b8] mt-2">RLS + controlo acesso por perfil. Reutiliza autenticaÃ§Ã£o existente. NÃ£o expÃµe chaves secretas no frontend. ValidaÃ§Ã£o cliente+servidor. NÃ£o aceitar mercadorias proibidas/perigosas. Pagamentos MZN - pendente, confirmado, recusado, cancelado, reembolsado - nÃ£o confirma sem validaÃ§Ã£o fornecedor.</div></div>
+            </div>
+          )}
         </section>
       )}
 

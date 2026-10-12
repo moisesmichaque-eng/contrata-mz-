@@ -107,6 +107,33 @@ export default function App(){
  const [profissionais,setProfissionais]=useState([
   { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456789", bi:"110100123456B", ramo:"Construcao Civil", profissao:"Pedreiro", rating:4.9, trabalhos:127, preco:"800MT/dia", descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823832513", anexos:["BI","NUIT","Fotos obra","CV"] },
  ]);
+ // ===== FACTURACAO - App_40 - MANTIDO App_39 INTACTO - SO ADICAO =====
+ const [telFat, setTelFat] = useState("+258 84 123 4567");
+ const [nomeFat, setNomeFat] = useState("");
+ const [buscaFat, setBuscaFat] = useState("");
+ const [filtroCatFat, setFiltroCatFat] = useState("Todos");
+ const [ivaTipo, setIvaTipo] = useState("16");
+ const [produtosFat, setProdutosFat] = useState([
+   {id:'p1', nome:'Saco de Cimento 50kg - CMPOR', preco:850, qtd:3, desc:0},
+   {id:'p2', nome:'Bloco 15cm - 40x20', preco:42, qtd:20, desc:5},
+ ]);
+ const PRODUTOS_BASE = [
+   {id:'c1', nome:'Saco de Cimento 50kg - CMPOR - 850 MT', cat:'Cimento', preco:850},
+   {id:'c2', nome:'Bloco 15cm - 40x20 - 42 MT', cat:'Bloco', preco:42},
+   {id:'c3', nome:'Areia Grossa - mÂ³ - 1200 MT', cat:'Inertes', preco:1200},
+   {id:'c4', nome:'Tinta PVA Branca 20L - 3500 MT', cat:'Tinta', preco:3500},
+   {id:'c5', nome:'Ferro 12mm - Vara 12m - 950 MT', cat:'Ferro', preco:950},
+   {id:'c6', nome:'Chapa IBR 0.25 - 6m - 2100 MT', cat:'Cobertura', preco:2100},
+   {id:'c7', nome:'Tubo PVC 110mm - 6m - 1800 MT', cat:'Tubo PVC', preco:1800},
+   {id:'c8', nome:'Fechadura Stam 40mm - 650 MT', cat:'Fechadura', preco:650},
+ ];
+ const subtotalBrutoFat = produtosFat.reduce((s,p)=>s+p.preco*p.qtd,0);
+ const totalDescFat = produtosFat.reduce((s,p)=>s+(p.preco*p.qtd*p.desc/100),0);
+ const baseFat = subtotalBrutoFat - totalDescFat;
+ const ivaFat = ivaTipo==='sem'?0: ivaTipo==='16'? baseFat*0.16 : baseFat*0.05;
+ const totalFat = baseFat + ivaFat;
+ const catsFat = ["Todos","Cimento","Bloco","Tinta","Ferro","Cobertura","Inertes","Tubo PVC","Fechadura"];
+
 
  const [formContrato,setFormContrato]=useState({
   empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai",
@@ -318,7 +345,14 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
    <style>{`@media (max-width: 1023px) { input, select, textarea, button { touch-action: manipulation; } input, select, textarea { max-width: 100%; font-size: 16px; } } @media (max-width: 640px) { header { position: sticky; } }`}</style>
    <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
     <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="ESSE - Energy Solutions and Services Enterprise" className="h-9 w-auto object-contain" /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
-    <div className="flex items-center gap-2"><button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button><button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>CONTRATOS 11</button><button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button></div>
+    <div className="flex items-center gap-2">
+      {/* BOTAO CIRCULADO AMARELO - FACTURACAO - ADICIONADO App_40 */}
+      <button onClick={()=>setTab('faturacao')} className={`px-4 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black hover:bg-[#fde047]'}`}>FACTURAÃ‡ÃƒO</button>
+      <button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button>
+      <button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>CONTRATOS 11</button>
+      <button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button>
+      <div className="h-8 w-8 rounded-full bg-[#facc15] flex items-center justify-center text-[11px] font-black text-black ml-1">ADM</div>
+    </div>
    </header>
 
       {tab==='encontrar' && (
@@ -537,6 +571,49 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
     </div>
    </section>
   )}
+
+
+      {tab==='faturacao' && (
+        <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10">
+          {/* TOPO - EXATO DO PRINT */}
+          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#22c55e] text-white grid place-items-center font-black text-[12px]">F</div><div className="font-black text-[12px]">Facilita FaturaÃ§Ã£o</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#f1f5f9] border">âœ“ PÃ¡gina 5 e 10 removidas - Partilha integrada no 7</span><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#fef9c3]">Ocasional permitido sem conta</span></div>
+            <div className="flex gap-2"><button className="px-3 h-7 rounded-full bg-[#1e2f4a] text-white text-[9px] font-bold">7. FacturaÃ§Ã£o - 10 seg - com perfis</button><button className="px-3 h-7 rounded-full bg-white border text-[9px] font-bold">11. Painel da Loja - 5.4k</button><span className="text-[8px] text-[#94a3b8] self-center">8 x 10 removidos - 799F salvo em background</span></div>
+          </div>
+          <div className="flex flex-col lg:flex-row gap-3">
+            {/* ESQUERDA - IGUAL PRINT */}
+            <div className="flex-1 space-y-3">
+              <div className="bg-white rounded-[12px] border p-4">
+                <div className="flex justify-between"><div className="font-black text-[13px] italic">Dados do comprador â€” ultra rÃ¡pido</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#dcfce7] text-[#166534] font-bold">+ Fluxo rÃ¡pido ativo</span></div>
+                <div className="text-[9px] text-[#64748b] mt-1">SÃ³ telefone obrigatÃ³rio. Nome opcional para recibo rÃ¡pido. Tempo alvo: 15s como supermercado.</div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+                  <div><label className="text-[8px] font-bold">TELEFONE / WHATSAPP *</label><input value={telFat} onChange={e=>setTelFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1 bg-[#f0fdf4] border-green-200" placeholder="+258 84 123 4567" /><div className="text-[8px] text-green-600 mt-1">âœ“ NÃºmero vÃ¡lido para WhatsApp/SMS</div><div className="text-[8px] text-[#94a3b8]">+ mais detalhes (NUIT, endereÃ§o) - opcional</div></div>
+                  <div><label className="text-[8px] font-bold">NOME / EMPRESA (opcional)</label><input value={nomeFat} onChange={e=>setNomeFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1 bg-[#f8fafc]" placeholder="Nome opcional - para recibo rÃ¡pido" /></div>
+                </div>
+              </div>
+              <div className="bg-white rounded-[12px] border p-4">
+                <div className="flex justify-between items-center"><div className="font-bold text-[11px]">Produtos e ServiÃ§os â€” IVA no fim - MemÃ³ria ativa</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#f1f5f9] border">Colunas: DescriÃ§Ã£o | QTD | PreÃ§o Unit | Desc % | Subtotal</span></div>
+                <div className="mt-3"><input value={buscaFat} onChange={e=>setBuscaFat(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg - CMPOR - 850 MT" (memÃ³ria IA ferragem)' className="w-full h-10 px-3 rounded-[8px] border text-[11px]" /></div>
+                <div className="mt-3"><div className="text-[8px] font-bold text-[#64748b]">PRODUTOS FREQUENTES DESTA LOJA (IA POR TIPO FERRAGEM)</div><div className="text-[7px] text-[#94a3b8]">1 clique = adiciona com preÃ§o memorizado</div><div className="flex flex-wrap gap-1.5 mt-2">{catsFat.map(c=><button key={c} onClick={()=>setFiltroCatFat(c)} className={`px-2.5 py-1 rounded-full text-[8px] font-bold border ${filtroCatFat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>)}</div><div className="flex flex-wrap gap-1.5 mt-2">{PRODUTOS_BASE.filter(p=>filtroCatFat==='Todos'||p.cat===filtroCatFat).filter(p=>!buscaFat||p.nome.toLowerCase().includes(buscaFat.toLowerCase())).map(p=><button key={p.id} onClick={()=>{const ex=produtosFat.find(x=>x.nome===p.nome); if(ex){setProdutosFat(produtosFat.map(x=>x.nome===p.nome?{...x,qtd:x.qtd+1}:x))} else {setProdutosFat([...produtosFat,{id:p.id,nome:p.nome,preco:p.preco,qtd:1,desc:0}])}}} className="px-2.5 py-1 rounded-full bg-[#1e293b] text-white text-[9px] font-bold">â€¢ {p.nome}</button>)}</div></div>
+                <div className="mt-4 overflow-x-auto"><table className="w-full text-[10px]"><thead><tr className="text-[8px] text-[#94a3b8] border-b"><th className="text-left py-1">DESCRIÃ‡ÃƒO</th><th>QTD</th><th>PREÃ‡O UNIT.</th><th>DESC %</th><th className="text-right">SUBTOTAL</th><th></th></tr></thead><tbody>{produtosFat.map(pr=>(<tr key={pr.id} className="border-b"><td className="py-2"><div className="font-bold text-[10px]">{pr.nome}</div><div className="text-[8px] text-[#94a3b8]">PreÃ§o memorizado - IA ajusta QTD</div></td><td className="text-center"><input type="number" value={pr.qtd} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,qtd:Math.max(0,Number(e.target.value))}:x).filter(x=>x.qtd>0))} className="w-12 h-7 border rounded text-center text-[10px]" /></td><td className="text-center">{pr.preco}</td><td className="text-center"><input type="number" value={pr.desc} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,desc:Math.max(0,Math.min(100,Number(e.target.value)))}:x))} className="w-10 h-7 border rounded text-center text-[10px]" /></td><td className="text-right font-bold">{(pr.preco*pr.qtd*(1-pr.desc/100)).toFixed(0)} MT</td><td><button onClick={()=>setProdutosFat(produtosFat.filter(x=>x.id!==pr.id))} className="text-red-400 ml-1">âœ•</button></td></tr>))}</tbody></table></div>
+                <div className="mt-3 flex justify-end"><div className="w-[200px] space-y-1 text-[10px]"><div className="flex justify-between"><span className="text-[#64748b]">Subtotal bruto</span><span className="font-bold">{subtotalBrutoFat} MT</span></div><div className="flex justify-between text-red-500"><span>Descontos</span><span>- {totalDescFat} MT</span></div><div className="flex justify-between"><span>Subtotal lÃ­quido</span><span>{baseFat} MT</span></div><div className="flex justify-between"><span>IVA ({ivaTipo}%)</span><span>{ivaFat.toFixed(0)} MT</span></div><div className="flex justify-between font-black text-[12px] border-t pt-1"><span>TOTAL</span><span className="text-[#0f766e]">{totalFat.toFixed(0)} MT</span></div></div></div>
+                <div className="mt-3"><div className="text-[8px] font-bold">IVA NO RODAPÃ‰ â€” GLOBAL</div><div className="flex gap-2 mt-1"><button onClick={()=>setIvaTipo('sem')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Sem IVA</button><button onClick={()=>setIvaTipo('16')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='16'?'bg-[#0f766e] text-white':'bg-white'}`}>Com IVA 16%</button><button onClick={()=>setIvaTipo('5')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='5'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Com IVA 5%</button></div><div className="text-[7px] text-[#94a3b8] mt-1">IVA aplica no total final, nÃ£o por produto â€” sistema mais rÃ¡pido</div></div>
+              </div>
+            </div>
+            {/* DIREITA - EXATO PRINT */}
+            <div className="w-full lg:w-[300px] lg:min-w-[300px] space-y-3">
+              <div className="bg-[#111827] rounded-[12px] p-4 text-white">
+                <div className="flex justify-between items-center"><div className="font-bold text-[11px]">Resumo rÃ¡pido</div><span className="text-[7px] px-2 py-0.5 rounded bg-white/10">Supermercado-like</span></div>
+                <div className="mt-3 space-y-2 text-[10px]"><div className="flex justify-between"><span className="text-white/50">Cliente</span><span className="font-bold">â†’ {telFat||'+258 84 123 4567'}</span></div><div className="flex justify-between"><span className="text-white/50">Itens</span><span>2 - QTD total 23</span></div><div className="flex justify-between"><span className="text-white/50">Loja</span><span>Ocasional (sem conta)</span></div><div className="flex justify-between items-center mt-2"><span className="text-white/50">CobranÃ§a actual?</span><div className="h-5 w-9 bg-white/20 rounded-full relative"><div className="h-4 w-4 bg-white rounded-full absolute top-0.5 left-0.5"></div></div></div></div>
+                <button className="mt-4 w-full h-11 rounded-[8px] bg-[#22c55e] text-white font-black text-[11px]">Finalizar Documento DEMO â†’</button>
+                <div className="text-[8px] text-white/40 text-center mt-2">Fluxo mais curto - telefone obrigatÃ³rio - QTD - artigo - Nome, nÃ£o pagamento - IVA ao selecionar activo</div>
+              </div>
+              <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">O QUE MUDOU V2.0 LIMPO</div><div className="mt-2 space-y-1 text-[8px] text-[#475569]"><div>â€¢ Removidas abas 5 e 10 - sÃ³ 7. FacturaÃ§Ã£o e 11. Painel</div><div>â€¢ Partilha integrada no 7 - botÃµes num sÃ³ lugar, mantÃ©m mostra NÃºmero detectado: +258 84 123 4567*</div><div>â€¢ WhatsApp botÃ£o: Partilhar PDF no WhatsApp abre acima com PDF + nota</div><div>â€¢ 35% menos custo: "Loja: Saco Cimento 50kg - CMPOR - 850 MT..." - 7% total</div><div>â€¢ PKV-FM-N-20: gerado tudo em background - "A guardar pagamentos" vs sÃ³ cobranÃ§a activa</div></div></div>
+              <div className="bg-[#fefce8] rounded-[12px] border border-[#fde68a] p-3"><div className="font-bold text-[9px]">Nota rÃ¡pida</div><div className="text-[8px] text-[#854d0e] mt-1">MudanÃ§as sÃ£o sÃ³ de interface, lÃ³gica de negÃ³cio, nome opcional, IVA global, N fim, produtos memorizados, pagamento mesmo BN â€” MantÃ©m memÃ³ria de cada cliente</div></div>
+            </div>
+          </div>
+        </section>
+      )}
 
   <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
  </div>

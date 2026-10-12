@@ -159,7 +159,6 @@ export default function App(){
  const [formParagem, setFormParagem] = useState({local:'', preco:0} as any);
  const [paragensTemp, setParagensTemp] = useState([{local:'Xai-Xai', preco:800}, {local:'Beira', preco:2500}] as any);
  const [reservas, setReservas] = useState<any[]>([]);
-const [reservas, setReservas] = useState<any[]>([]);
  const [encomendas, setEncomendas] = useState<any[]>([]);
  const [formPassageiro, setFormPassageiro] = useState({nome:'', bi:'', tel:'', lugar:1});
  const [formEncomenda, setFormEncomenda] = useState({

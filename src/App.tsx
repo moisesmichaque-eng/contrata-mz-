@@ -4,8 +4,6 @@ import { useState, useMemo, useEffect } from 'react';
 
 const _DARK = ",";
 
-
-
 const PAISES: any = {
   "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","Zambezia - Quelimane","Cabo Delgado - Pemba"],
   "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
@@ -86,7 +84,6 @@ const MODELO_TAREFAS: any = {
   "Outros/Particular": ["Descrever servico personalizado com clareza total", "Definir material necessario e quem fornece", "Definir prazo inicio e entrega com multa", "Combinar valor total e forma pagamento M-Pesa", "Enviar fotos do antes, durante e depois", "Manter comunicacao diaria via WhatsApp", "Cumprir horario e qualidade prometida", "Garantir retrabalho gratuito se nao satisfeito", "Deixar local limpo e organizado", "Entregar com recibo e avaliacao 5 estrelas"]
 };
 
-
 const PROVINCIAS_MOZ = ["Maputo Cidade","Maputo Provincia","Gaza","Inhambane","Sofala","Manica","Tete","Zambezia","Nampula","Niassa","Cabo Delgado","Africa do Sul"];
 const DISTRITOS_POR_PROVINCIA: any = {
   "Maputo Cidade": ["KaMpfumo","Nlhamankulu","KaMaxaquene","KaMavota","KaMubukwana","KaTembe","KaNyaka"],
@@ -122,32 +119,18 @@ export default function App(){
  const provinciasFiltro=useMemo(()=>{ const p=(PAISES as any)[paisFiltro]; return p||[]; },[paisFiltro]);
  const distritosForm=useMemo(()=>{ const d=(DISTRITOS_MOCAMBIQUE as any)[formCadastro.provincia]; return d||["Centro","Bairro 1","Bairro 2"]; },[formCadastro.provincia]);
 
- 
  const [profissionais,setProfissionais]=useState([
   { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456789", bi:"110100123456B", ramo:"Construcao Civil", profissao:"Pedreiro", rating:4.9, trabalhos:127, preco:"800MT/dia", descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823832513", anexos:["BI","NUIT","Fotos obra","CV"] },
  ]);
  // ===== FACTURACAO - MANTIDO - SO ADICAO =====
- const [telFat, setTelFat] = useState("+258 84 123 4567");
- const [nomeFat, setNomeFat] = useState("");
- const [buscaFat, setBuscaFat] = useState("");
- const [filtroCatFat, setFiltroCatFat] = useState("Todos");
- const [ivaTipo, setIvaTipo] = useState("16");
- const [produtosFat, setProdutosFat] = useState([
    {id:'p1', nome:'Saco de Cimento 50kg - CMPOR', preco:850, qtd:3, desc:0},
    {id:'p2', nome:'Bloco 15cm - 40x20', preco:42, qtd:20, desc:5},
  ]);
- const PRODUTOS_BASE_FAT = [
    {id:'c1', nome:'Saco de Cimento 50kg - CMPOR - 850 MT', cat:'Cimento', preco:850},
    {id:'c2', nome:'Bloco 15cm - 40x20 - 42 MT', cat:'Bloco', preco:42},
    {id:'c3', nome:'Areia Grossa - m3 - 1200 MT', cat:'Inertes', preco:1200},
    {id:'c4', nome:'Tinta PVA Branca 20L - 3500 MT', cat:'Tinta', preco:3500},
  ];
- const subtotalBrutoFat = produtosFat.reduce((s,p)=>s+p.preco*p.qtd,0);
- const totalDescFat = produtosFat.reduce((s,p)=>s+(p.preco*p.qtd*p.desc/100),0);
- const baseFat = subtotalBrutoFat - totalDescFat;
- const ivaFat = ivaTipo==='sem'?0: ivaTipo==='16'? baseFat*0.16 : baseFat*0.05;
- const totalFat = baseFat + ivaFat;
- const catsFat = ["Todos","Cimento","Bloco","Tinta","Ferro","Cobertura","Inertes","Tubo PVC","Fechadura"];
  // ===== VIAGENS =====
  const [viagensTab, setViagensTab] = useState('overview');
  const [origemV, setOrigemV] = useState('Maputo');
@@ -172,12 +155,6 @@ export default function App(){
  const [mostrarFormViatura, setMostrarFormViatura] = useState(false);
  const [transportadorInnerTab, setTransportadorInnerTab] = useState('frota');
 
-  const [faturacaoSubTab, setFaturacaoSubTab] = useState('publico');
-  const [faturacaoLogado, setFaturacaoLogado] = useState(false);
-  const [faturacaoInnerTab, setFaturacaoInnerTab] = useState('faturar');
-  const [formLoja, setFormLoja] = useState({nome:'', nuit:'', tel:'', endereco:''});
-  const [fatHistorico, setFatHistorico] = useState([]);
-
  const [loginForm, setLoginForm] = useState({tel:'', password:''});
  const [viaturaEditId, setViaturaEditId] = useState<number|null>(null);
  const [origemProv, setOrigemProv] = useState('Maputo Provincia');
@@ -190,8 +167,6 @@ export default function App(){
  const [assentosSelecionados, setAssentosSelecionados] = useState<number[]>([]);
  const [modoPagamento, setModoPagamento] = useState('M-Pesa');
  const [viagensPublicadas, setViagensPublicadas] = useState<any[]>([]);
-
-
 
  const [formContrato,setFormContrato]=useState({
   empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai",
@@ -404,8 +379,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
    <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
     <div className="flex items-center gap-3"><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
     <div className="flex items-center gap-2">
-      <button onClick={()=>setTab('faturacao')} className={'px-3 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black'}'}>FACTURACAO</button>
-      <button onClick={()=>setTab('viagens')} className={'px-3 py-2 rounded-full font-black text-[11px] ${tab==='viagens'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#0ea5e9] text-white'}'}>VIAGENS</button>
+            <button onClick={()=>setTab('viagens')} className={'px-3 py-2 rounded-full font-black text-[11px] ${tab==='viagens'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#0ea5e9] text-white'}'}>VIAGENS</button>
       <button onClick={()=>setTab('encontrar')} className={'px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}'}>ENCONTRAR</button>
       <button onClick={()=>setTab('contratos')} className={'px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}'}>CONTRATOS 11</button>
       <button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button>
@@ -630,66 +604,9 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
    </section>
   )}
 
-
-      {tab==='faturacao' && (
-        <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10 space-y-4">
-          <div className="flex justify-between gap-2">
-            <div className="font-black text-[14px]">Facilita Faturacao - 10 seg - com perfis</div>
-            <div className="flex gap-2">
-              <button onClick={()=>setFaturacaoSubTab('publico')} className={'px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='publico'?'bg-[#1e2f4a] text-white':'bg-white border'}'}>Usuario Publico Rapido - sem conta</button>
-              <button onClick={()=>setFaturacaoSubTab('loja')} className={'px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='loja'?'bg-[#facc15] text-black':'bg-white border'}'}>Minha Loja - Clientes registados</button>
-            </div>
-          </div>
-          {faturacaoSubTab==='publico' && (<div>
-          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#22c55e] text-white grid place-items-center font-black text-[12px]">F</div><div className="font-black text-[12px]">Facilita Faturacao - Publico Rapido</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#f1f5f9] border">Pagina 5 e 10 removidas - Partilha integrada no 7</span></div>
-            <div className="flex gap-2"><button className="px-3 h-7 rounded-full bg-[#1e2f4a] text-white text-[9px] font-bold">7. Facturacao - 10 seg - com perfis</button><button className="px-3 h-7 rounded-full bg-white border text-[9px] font-bold">11. Painel da Loja</button></div>
-          </div>
-          <div className="flex flex-col lg:flex-row gap-3">
-            <div className="flex-1 space-y-3">
-              <div className="bg-white rounded-[12px] border p-4">
-                <div className="font-black text-[11px]">Dados do comprador - ultra rapido</div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
-                  <div><label className="text-[8px] font-bold">TELEFONE / WHATSAPP *</label><input value={telFat} onChange={e=>setTelFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1 bg-[#f0fdf4]" placeholder="+258 84 123 4567" /></div>
-                  <div><label className="text-[8px] font-bold">NOME (opcional)</label><input value={nomeFat} onChange={e=>setNomeFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1" placeholder="Nome cliente" /></div>
-                </div>
-              </div>
-              <div className="bg-white rounded-[12px] border p-4">
-                <div className="font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
-                <div className="mt-3"><input value={buscaFat} onChange={e=>setBuscaFat(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg"' className="w-full h-10 px-3 rounded-[8px] border text-[11px]" /></div>
-                <div className="mt-3 flex flex-wrap gap-1.5">{catsFat.map(c=><button key={c} onClick={()=>setFiltroCatFat(c)} className={'px-2.5 py-1 rounded-full text-[8px] font-bold border ${filtroCatFat===c?'bg-[#1e2f4a] text-white':'bg-white'}'}>{c}</button>)}</div>
-                <div className="flex flex-wrap gap-1.5 mt-2">{PRODUTOS_BASE_FAT.filter(p=>filtroCatFat==='Todos'||p.cat===filtroCatFat).filter(p=>!buscaFat||p.nome.toLowerCase().includes(buscaFat.toLowerCase())).map(p=><button key={p.id} onClick={()=>{const ex=produtosFat.find(x=>x.nome===p.nome); if(ex){setProdutosFat(produtosFat.map(x=>x.nome===p.nome?{...x,qtd:x.qtd+1}:x))} else {setProdutosFat([...produtosFat,{id:p.id,nome:p.nome,preco:p.preco,qtd:1,desc:0}])}}} className="px-2.5 py-1 rounded-full bg-[#1e293b] text-white text-[9px] font-bold">{p.nome}</button>)}</div>
-                <div className="mt-4 overflow-x-auto"><table className="w-full text-[10px]"><thead><tr className="text-[8px] text-[#94a3b8] border-b"><th className="text-left py-1">DESCRICAO</th><th>QTD</th><th>PRECO</th><th>DESC %</th><th className="text-right">SUBTOTAL</th><th></th></tr></thead><tbody>{produtosFat.map(pr=>(<tr key={pr.id} className="border-b"><td className="py-2 font-bold">{pr.nome}</td><td className="text-center"><input type="number" value={pr.qtd} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,qtd:Math.max(0,Number(e.target.value))}:x).filter(x=>x.qtd>0))} className="w-12 h-7 border rounded text-center" /></td><td className="text-center">{pr.preco}</td><td className="text-center"><input type="number" value={pr.desc} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,desc:Math.max(0,Math.min(100,Number(e.target.value)))}:x))} className="w-10 h-7 border rounded text-center" /></td><td className="text-right font-bold">{(pr.preco*pr.qtd*(1-pr.desc/100)).toFixed(0)} MT</td><td><button onClick={()=>setProdutosFat(produtosFat.filter(x=>x.id!==pr.id))} className="text-red-400 ml-1">X</button></td></tr>))}</tbody></table></div>
-                <div className="mt-3 flex justify-end"><div className="w-[200px] space-y-1 text-[10px]"><div className="flex justify-between"><span>Subtotal</span><span>{subtotalBrutoFat} MT</span></div><div className="flex justify-between"><span>IVA</span><span>{ivaFat.toFixed(0)} MT</span></div><div className="flex justify-between font-black border-t pt-1"><span>TOTAL</span><span>{totalFat.toFixed(0)} MT</span></div></div></div>
-                <div className="mt-3 flex gap-2"><button onClick={()=>setIvaTipo('sem')} className={'px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}'}>Sem IVA</button><button onClick={()=>setIvaTipo('16')} className={'px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='16'?'bg-[#0f766e] text-white':'bg-white'}'}>Com IVA 16%</button><button onClick={()=>setIvaTipo('5')} className={'px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='5'?'bg-[#1e2f4a] text-white':'bg-white'}'}>Com IVA 5%</button></div>
-              </div>
-            </div>
-            <div className="w-full lg:w-[300px] space-y-3">
-              <div className="bg-[#111827] rounded-[12px] p-4 text-white"><div className="font-bold text-[11px]">Resumo rapido</div><div className="mt-3 text-[10px]"><div>Cliente: {telFat}</div><div>Itens: {produtosFat.length}</div></div><button className="mt-4 w-full h-11 rounded-[8px] bg-[#22c55e] text-white font-black text-[11px]">Finalizar Documento DEMO</button></div>
-            </div>
-          </div>
-          </div>}
-          {faturacaoSubTab==='loja' && (
-            <div className="space-y-3">
-              {!faturacaoLogado ? (
-                <div className="bg-white rounded-[12px] border p-6 max-w-[600px]"><div className="font-black text-[13px]">Criar conta loja - Area registada</div><div className="text-[9px] text-[#64748b]">Como area do transportador - 1 conta gere varias lojas/facturas. Formulario complexo e completo igual ao que existe agora.</div><div className="grid grid-cols-2 gap-2 mt-4"><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} placeholder="Nome loja *" className="h-8 border rounded text-[10px] px-2" /><input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} placeholder="NUIT *" className="h-8 border rounded text-[10px] px-2" /><input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} placeholder="Telefone *" className="h-8 border rounded text-[10px] px-2" /><input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} placeholder="Endereco completo *" className="h-8 border rounded text-[10px] px-2 col-span-2" /></div><button onClick={()=>setFaturacaoLogado(true)} className="mt-4 w-full h-9 bg-[#facc15] text-black rounded-full font-black text-[11px]">Criar conta loja e entrar</button><button onClick={()=>setFaturacaoLogado(true)} className="mt-2 w-full h-8 bg-white border rounded-full text-[10px]">Ja tenho conta - Entrar na Minha Loja</button></div>
-              ) : (
-                <div className="space-y-3"><div className="bg-white border rounded-[12px] p-4 flex justify-between"><div className="font-black text-[12px]">{formLoja.nome||'Minha Loja'}</div><div className="flex gap-2"><button onClick={()=>setFaturacaoInnerTab('faturar')} className="px-3 h-8 bg-[#22c55e] text-white rounded-full text-[9px]">Faturar</button><button onClick={()=>setFaturacaoInnerTab('historico')} className="px-3 h-8 bg-[#1e2f4a] text-white rounded-full text-[9px]">Historico na minha loja</button><button onClick={()=>setFaturacaoInnerTab('perfil')} className="px-3 h-8 bg-[#facc15] text-black rounded-full text-[9px]">Editar perfil completo</button></div></div>
-                  {faturacaoInnerTab==='faturar' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold text-[11px]">Faturar - dentro da conta - historico vai para Minha Loja</div><button onClick={()=>{setFatHistorico([...fatHistorico,{id:Date.now(), cliente:'+258 84 123 4567', total:'3884 MT', data:new Date().toLocaleString()} as any]); setFaturacaoInnerTab('historico');}} className="mt-3 w-full h-9 bg-[#22c55e] text-white rounded-full font-black">Finalizar e guardar no historico</button></div>}
-                  {faturacaoInnerTab==='historico' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Historico na minha loja - aparece ao preencher a facturacao</div><div className="mt-2">{fatHistorico.length===0 ? <div className="text-[9px] text-[#64748b]">Nenhuma factura ainda - ao preencher facturacao, aparece aqui</div> : fatHistorico.map((h:any)=>(<div key={h.id} className="border rounded p-2 mt-2 flex justify-between"><div>{h.cliente} - {h.data}</div><div className="font-black text-[#22c55e]">{h.total}</div></div>))}</div></div>}
-                  {faturacaoInnerTab==='perfil' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Editar formulario completo - perfil complexo igual ao que existe agora</div><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-2" /><button className="mt-2 px-4 h-8 bg-[#facc15] rounded-full text-[10px] font-black">Guardar perfil completo</button></div>}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-
-
       {tab==='viagens' && (
         <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10">
           <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#0ea5e9] text-white grid place-items-center font-black text-[12px]">FV</div><div className="font-black text-[12px]">Facilita Viagens</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#e0f2fe] border">Integrado como Faturacao</span></div>
             <div className="flex gap-1.5 flex-wrap">
               <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('overview')}} className={'px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='overview'?'bg-[#1e2f4a] text-white':'bg-white border'}'}>Visao geral</button>
               <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('viajar')}} className={'px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='viajar'?'bg-[#0ea5e9] text-white':'bg-white border'}'}>Pesquisar viagens</button>
@@ -807,11 +724,9 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
         </section>
       )}
 
-
   <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
  </div>
  )
-
 
 // ESSE - BUILD 100% - CONTRATO FACIL PRATICO RAPIDO - 11 CLAUSULAS
 

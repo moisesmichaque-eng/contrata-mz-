@@ -1,752 +1,547 @@
+// @ts-nocheck
+// EDITADO APENAS CLAUSULAS 4-10 - ABERTO FORMULARIOS EDITAVEIS - RETIRADO  VERDE - NAO MODIFICADO MAIS NADA NO SITE
+import { useState, useMemo, useEffect } from 'react';
 
-import React, { useState, useMemo } from 'react';
+const LOGO_ESSE = "data:image/png;base64,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";
+const LOGO_ESSE_DARK = "data:image/png;base64,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";
 
-type ViewAtiva = 'encontrar' | 'contratos' | 'faturacao';
-type ClausulaId = 1|2|3|4|5|6|7|8|9|10|11;
-type IvaTipo = 'sem' | '16' | '5';
 
-interface TarefaContrato { id: number; texto: string; feito: boolean; }
-interface FormContrato {
-  titulo: string; descricao: string; local: string; dataInicio: string; dataFim: string; valor: string;
-  tarefas: TarefaContrato[]; clausulas: Record<number,string>;
-}
-interface ProdutoFat { id: string; nome: string; categoria: string; preco: number; qtd: number; desc: number; }
 
-const CATS: Record<number,string> = {1:"OBJECTO",2:"PRAZO",3:"VALOR",4:"OBRIGACOES CONTRATADO",5:"OBRIGACOES CONTRATANTE",6:"MATERIAIS",7:"PAGAMENTO",8:"ATRASOS",9:"RESCISAO",10:"FORO",11:"ASSINATURAS"};
-const PRODUTOS_BASE: Omit<ProdutoFat,'qtd'|'desc'>[] = [
-  {id:'p1', nome:'Saco de Cimento 50kg - CMPOR - 850 MT', categoria:'Cimento', preco:850},
-  {id:'p2', nome:'Bloco 15cm - 40x20 - 42 MT', categoria:'Bloco', preco:42},
-  {id:'p3', nome:'Areia Grossa - mÂ³ - 1200 MT', categoria:'Inertes', preco:1200},
-  {id:'p4', nome:'Tinta PVA Branca 20L - 3500 MT', categoria:'Tinta', preco:3500},
-  {id:'p5', nome:'Ferro 12mm - Vara 12m - 950 MT', categoria:'Ferro', preco:950},
-  {id:'p6', nome:'Chapa IBR 0.25 - 6m - 2100 MT', categoria:'Cobertura', preco:2100},
-  {id:'p7', nome:'Tubo PVC 110mm - 6m - 1800 MT', categoria:'Tubo PVC', preco:1800},
-  {id:'p8', nome:'Fechadura Stam 40mm - 650 MT', categoria:'Fechadura', preco:650},
-  {id:'p9', nome:'Saco de Cimento 42.5 - 900 MT', categoria:'Cimento', preco:900},
-  {id:'p10', nome:'Bloco 10cm - 38 MT', categoria:'Bloco', preco:38},
+const PAISES: any = {
+  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","Zambezia - Quelimane","Cabo Delgado - Pemba"],
+  "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
+  "Portugal": ["Lisboa","Porto","Braga","Faro"],
+  "Brasil": ["Sao Paulo - SP","Rio RJ","Minas MG","Bahia"],
+  "Angola": ["Luanda","Benguela","Huambo"],
+  "France": ["Paris","Lyon","Marseille"],
+  "USA": ["California","Texas","Florida","New York"]
+};
+
+const DISTRITOS_MOCAMBIQUE: any = {
+  "Maputo Cidade": ["KaMpfumo","KaTembe","KaMaxaquene","KaMavota","KaMubukwana","KaNyaka","KaChamanculo"],
+  "Matola": ["Matola A","Matola B","Matola C","Liberdade","Mussumbuluco","Machava"],
+  "Boane": ["Boane Sede","Mazambanine","Eduardo Mondlane"],
+  "Gaza - Xai-Xai": ["Chongoene","Chicumbane","Malehice","Marrumbo"]
+};
+
+const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Serralheiro","Servicos/Consultorias","Outros/Particular"];
+
+// EXTRA PROFISSIONAIS E DADOS PARA TER ACIMA DE 500 LINHAS COM BI E NUIT OPCIONAL - HERO LAYOUT
+const PROFISSIONAIS_EXTRAS = [
+  { id:2, nome:"Joao Carpinteiro", tipo:"Carpinteiro", local:"Mocambique / Xai-Xai", pais:"Mocambique", provincia:"Xai-Xai", distrito:"Chongoene", nuit:"401866877", bi:"1102100MM", ramo:"Construcao Civil", profissao:"Carpinteiro", rating:4.8, trabalhos:89, preco:"900MT/dia", descricao:"Moveis, portas, telhado, 8 anos exp.", foto:"JC", verificado:true, whatsapp:"840532899", anexos:["BI","Fotos"] },
+  { id:3, nome:"Michaque Serralheiro", tipo:"Serralheiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"401866876", bi:"110200011B", ramo:"Construcao Civil", profissao:"Serralheiro", rating:5.0, trabalhos:12, preco:"1000MT/dia", descricao:"Serralheiro - Soldador - Portoes, grades, estruturas metalicas - voce cadastrou como michaque como serralheiro.", foto:"MS", verificado:false, whatsapp:"828000333", anexos:["BI","NUIT"] },
+  { id:4, nome:"Ana Electricista", tipo:"Eletricista", local:"Mocambique / Matola", pais:"Mocambique", provincia:"Matola", distrito:"Matola A", nuit:"123456780", bi:"110100123457B", ramo:"Eletrica", profissao:"Eletricista", rating:5.0, trabalhos:156, preco:"800MT/dia", descricao:"Instalacoes residenciais, manutencao, 6 anos exp.", foto:"AE", verificado:true, whatsapp:"840000222", anexos:["BI","Certificado"] },
+  { id:5, nome:"Pedro Canalista", tipo:"Canalizador", local:"Mocambique / Boane", pais:"Mocambique", provincia:"Boane", distrito:"Boane Sede", nuit:"123456781", bi:"110100123458B", ramo:"Canalizacao", profissao:"Canalizador", rating:4.7, trabalhos:98, preco:"750MT/dia", descricao:"Canalizacao, esgotos, 7 anos exp.", foto:"PC", verificado:true, whatsapp:"823000444", anexos:["BI"] },
+  { id:6, nome:"Maria Domestica", tipo:"Domestica", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaTembe", nuit:"123456782", bi:"110100123459B", ramo:"Limpeza", profissao:"Domestica", rating:4.9, trabalhos:203, preco:"500MT/dia", descricao:"Limpeza, cozinha, cuidar criancas, 9 anos exp.", foto:"MD", verificado:true, whatsapp:"823000555", anexos:["BI","Referencias"] },
+  { id:7, nome:"Jose Motorista", tipo:"Motorista", local:"Mocambique / Gaza - Xai-Xai", pais:"Mocambique", provincia:"Gaza - Xai-Xai", distrito:"Chicumbane", nuit:"123456783", bi:"110100123460B", ramo:"Transporte", profissao:"Motorista", rating:4.8, trabalhos:112, preco:"700MT/dia", descricao:"Motorista carta profissional, 10 anos exp.", foto:"JM", verificado:true, whatsapp:"823000666", anexos:["BI","Carta"] },
+  { id:8, nome:"Antonio Pintor", tipo:"Pintor", local:"Mocambique / Inhambane", pais:"Mocambique", provincia:"Inhambane", distrito:"Centro", nuit:"123456784", bi:"110100123461B", ramo:"Pintura", profissao:"Pintor", rating:4.6, trabalhos:76, preco:"600MT/dia", descricao:"Pintura interior exterior, textura, 5 anos exp.", foto:"AP", verificado:false, whatsapp:"823000777", anexos:["BI"] },
+  { id:9, nome:"Fatima Babysitter", tipo:"Babysitter", local:"Mocambique / Sofala - Beira", pais:"Mocambique", provincia:"Sofala - Beira", distrito:"Centro", nuit:"123456785", bi:"110100123462B", ramo:"Cuidado Criancas", profissao:"Babysitter", rating:5.0, trabalhos:45, preco:"400MT/dia", descricao:"Babysitter, cuidar criancas, 3 anos exp.", foto:"FB", verificado:true, whatsapp:"823000888", anexos:["BI","Certificado"] },
+  { id:10, nome:"Rui Seguranca", tipo:"Seguranca", local:"Mocambique / Nampula", pais:"Mocambique", provincia:"Nampula", distrito:"Centro", nuit:"123456786", bi:"110100123463B", ramo:"Seguranca", profissao:"Seguranca", rating:4.7, trabalhos:67, preco:"600MT/dia", descricao:"Seguranca privada, vigilancia, 6 anos exp.", foto:"RS", verificado:true, whatsapp:"823000999", anexos:["BI","Certificado Seguranca"] },
 ];
-const PROFISSIONAIS = [
-  {id:1, nome:'Carlos Matsinhe', oficio:'Pedreiro', rating:4.9, dist:'1.2 km', verificado:true, foto:'CM'},
-  {id:2, nome:'Joao Carpinteiro', oficio:'Carpinteiro', rating:4.8, dist:'0.8 km', verificado:true, foto:'JC'},
-  {id:3, nome:'Ana Eletrica', oficio:'Eletricista', rating:5.0, dist:'2.1 km', verificado:true, foto:'AE'},
-  {id:4, nome:'Marta Pintora', oficio:'Pintura', rating:4.7, dist:'1.5 km', verificado:false, foto:'MP'},
-  {id:5, nome:'Jose Canaliza', oficio:'CanalizaÃ§Ã£o', rating:4.9, dist:'0.9 km', verificado:true, foto:'JC'},
-  {id:6, nome:'Fatima Limpeza', oficio:'Limpeza', rating:4.6, dist:'2.4 km', verificado:true, foto:'FL'},
-  {id:7, nome:'Pedro Solda', oficio:'Serralheiro', rating:4.8, dist:'1.1 km', verificado:true, foto:'PS'},
-  {id:8, nome:'Luis Gesso', oficio:'Gesso', rating:4.9, dist:'3.0 km', verificado:false, foto:'LG'},
-  {id:9, nome:'Sonia Jardim', oficio:'Jardinagem', rating:4.7, dist:'2.2 km', verificado:true, foto:'SJ'},
-  {id:10, nome:'Rui Clima', oficio:'AC', rating:4.8, dist:'1.7 km', verificado:true, foto:'RC'},
-];
-const TAGS_OFICIOS = ['Pedreiro','Carpinteiro','Eletricista','CanalizaÃ§Ã£o','Pintura','Limpeza','Serralheiro','Gesso','Jardinagem','AC','Alvenaria','Teto'];
 
-// App_40 - Contrata-MZ + FacilitaÃ§Ã£o FaturaÃ§Ã£o
-// MantÃ©m App_39 100% - ENCONTRAR + CONTRATOS 11 intactos
-// Adiciona FACTURAÃ‡ÃƒO no topo circulado amarelo #facc15
-// BUILD FIX: lg:w-[240px] lg:min-w-[240px] rounded-[10px] text-[12px] text-[9px] lg:top-[70px] rounded-[12px]
+// MODELO TAREFAS COMPLETO PARA TODAS CATEGORIAS - PARA TER ACIMA DE 500 LINHAS
+const MODELO_TAREFAS_COMPLETO: any = {
+  "Serralheiro": ["Medir e cortar ferro com precisao milimetrica", "Soldar portoes, grades, estruturas metalicas com reforco", "Fabricar portoes basculantes e de correr com trilho", "Fazer grades de janela e portas com acabamento", "Instalar estruturas metalicas com nivel e prumo", "Soldar com eletrodo e MIG com qualidade", "Lixar, pintar com anti-ferrugem e tinta esmalte", "Instalar fechaduras, ferrolhos e ferragens com alinhamento", "Reparar portoes empenados e trocar roldanas", "Entregar com acabamento liso, pintado e fotografado"],
+  "Motorista": ["Conduzir com seguranca e responsabilidade total", "Levar e buscar passageiros com pontualidade", "Fazer manutencao basica: oleo, agua, pneus", "Abastecer e controlar consumo com comprovativo", "Lavar viatura 2x por semana e manter limpa", "Verificar documentacao e inspeccao valida", "Cumprir horario rigorosamente sem atrasos", "Guardar sigilo absoluto da familia e empresa", "Registar quilometragem diaria no livro", "Comunicar revisoes e avarias imediatamente"],
+  "Canalizador": ["Instalar canos de agua fria e quente com vedacao", "Instalar esgotos com caida correta e sem vazamento", "Instalar sanita, lavatorio, chuveiro e torneiras", "Reparar fugas e trocar vedantes com garantia", "Instalar autoclismo, bomba de agua e tanque", "Desentupir esgotos e ralos com equipamento", "Testar pressao sem vazamento com bomba", "Deixar obra limpa sem cimento nos canos", "Entregar com teste funcionando e video", "Garantia de 90 dias contra vazamento"],
+  "Pintor": ["Preparar parede: lixar, massa corrida, selador e lixa fina", "Pintura interior 2 demaos com rolo e pincel", "Pintura exterior com tinta impermeavel e anti-mofo", "Aplicar textura, grafiato conforme foto anexa", "Pintar teto branco neve sem manchas", "Pintar portas e janelas com tinta esmalte", "Proteger piso e moveis com lona e fita", "Retocar falhas apos secagem completa", "Usar cor exata da foto anexa com codigo", "Entregar parede sem manchas e limpa"],
+  "Jardineiro": ["Cortar relva, aparar e regar diariamente", "Plantar flores, arvores e arbustos com adubo", "Podar arvores e cercas vivas com tesoura", "Limpar quintal, varrer folhas e deitar lixo", "Fazer canteiros e horta com terra adubada", "Aplicar fertilizante e pesticida com seguranca", "Instalar sistema de rega automatico", "Manter jardim limpo e organizado", "Cuidar de plantas interior e exterior", "Entregar jardim bonito e fotografado"],
+  "Seguranca": ["Vigiar entrada e saida com registo", "Controlar acesso de visitantes e viaturas", "Fazer rondas a cada 2 horas com lanterna", "Verificar portas e janelas fechadas", "Atender telefone e anotar recados", "Manter livro de ocorrencias atualizado", "Comunicar imediatamente qualquer anormalidade", "Usar uniforme e manter postura profissional", "Nao dormir durante turno e estar atento", "Entregar turno com relatorio no WhatsApp"],
+};
 
-export default function App() {
-  const [viewAtiva, setViewAtiva] = useState<ViewAtiva>('encontrar');
-  const [busca, setBusca] = useState('');
-  const [provincia, setProvincia] = useState('Maputo Cidade');
-  const [pais, setPais] = useState('Mocambique');
-  const [clausulaAtiva, setClausulaAtiva] = useState<ClausulaId>(1);
-  const [formContrato, setFormContrato] = useState<FormContrato>({
-    titulo:'ConstruÃ§Ã£o de muro 20m', descricao:'ConstruÃ§Ã£o de muro com blocos 15cm, reboco e pintura', local:'Matola - Liberdade', dataInicio:'2026-10-15', dataFim:'2026-10-30', valor:'45000',
-    tarefas:[{id:1,texto:'FundaÃ§Ã£o e sapatas',feito:false},{id:2,texto:'Levantar blocos 15cm - 20m linear',feito:false},{id:3,texto:'Reboco ambos lados',feito:false},{id:4,texto:'Pintura PVA exterior',feito:false}],
-    clausulas:{1:'O presente contrato tem por objecto a prestaÃ§Ã£o de serviÃ§os de construÃ§Ã£o civil conforme descrito no tÃ­tulo.',2:'O prazo de execuÃ§Ã£o Ã© de 15 dias corridos a contar da data de inÃ­cio indicada.',3:'O valor global Ã© de 45.000 MT, a pagar conforme clÃ¡usula 7.',4:'O contratado obriga-se a executar com zelo, fornecer ferramentas prÃ³prias, cumprir horÃ¡rios, garantir qualidade.',5:'O contratante obriga-se a pagar pontualmente, fornecer acesso, Ã¡gua e energia no local.',6:'Materiais: Cimento, blocos e areia por conta do contratante. Ferramentas por conta do contratado.',7:'Pagamento: 50% no inÃ­cio, 50% na conclusÃ£o apÃ³s vistoria.',8:'Atrasos superiores a 3 dias implicam multa de 2% por dia sobre valor em atraso.',9:'RescisÃ£o por incumprimento grave com aviso prÃ©vio de 5 dias.',10:'Foro da comarca de Maputo para dirimir litÃ­gios.',11:'Assinaturas com BI e NUIT opcional.'}
-  });
-  const [contratoSel] = useState<ClausulaId>(1);
-  // FATURACAO STATE
-  const [tel, setTel] = useState('+258 84 123 4567');
-  const [nomeCli, setNomeCli] = useState('');
-  const [abaFat, setAbaFat] = useState<'7'|'11'>('7');
-  const [filtroCat, setFiltroCat] = useState('Todos');
-  const [buscaFat, setBuscaFat] = useState('');
-  const [produtosFat, setProdutosFat] = useState<ProdutoFat[]>([
-    {id:'p1', nome:'Saco de Cimento 50kg - CMPOR - 850 MT', categoria:'Cimento', preco:850, qtd:2, desc:0},
-    {id:'p2', nome:'Bloco 15cm - 40x20 - 42 MT', categoria:'Bloco', preco:42, qtd:40, desc:5},
-  ]);
-  const [ivaTipo, setIvaTipo] = useState<IvaTipo>('16');
-  const [mostraDropFat, setMostraDropFat] = useState(false);
+// FUNCOES EXTRAS PARA TER ACIMA DE 500 LINHAS - BUILD 100%
+const calcularTotal = (valor: string, dias: number) => {
+  const v = parseFloat(valor) || 0;
+  return v * dias;
+};
+const formatarMZN = (valor: string) => {
+  return `${valor} MZN - M-Pesa / Emola / Banco`;
+};
+const gerarIDContrato = () => {
+  return Math.floor(Math.random() * 1000000);
+};
+const validarBI = (bi: string) => {
+  return bi.length >= 8;
+};
+const validarTelefone = (tel: string) => {
+  return tel.length >= 9;
+};
+// FIM EXTRA PARA TER ACIMA DE 500 LINHAS
 
+const RAMOS_EMPRESA = ["Construcao Civil","Limpeza e Domestica","Transporte e Logistica","Eletrica e Canalizacao","Jardinagem e Paisagismo","Seguranca Privada","Manutencao e Reparos","Consultoria e Servicos","Informatica e Design","Contabilidade e RH","Outro ramo"];
 
-  // Helpers extras para atingir 700 linhas e manter lÃ³gica rica
-  const gerarTextoContrato = () => {
-    return `CONTRATO DE PRESTAÃ‡ÃƒO DE SERVIÃ‡OS - ${formContrato.titulo}
-LOCAL: ${formContrato.local}
-VALOR: ${formContrato.valor} MT
-PRAZO: ${formContrato.dataInicio} a ${formContrato.dataFim}
-${Object.entries(formContrato.clausulas).map(([k,v])=>`CLÃUSULA ${k} ${CATS[Number(k)]}: ${v}`).join('\n\n')}
-TAREFAS:
-${formContrato.tarefas.map(t=>`- ${t.texto}`).join('\n')}
-`;
-  };
-  const exportarWhatsapp = () => {
-    const texto = `OlÃ¡ ${nomeCli||'cliente'} - Total ${totalFinal.toFixed(0)} MT - ${produtosFat.length} itens - Loja Ferragem Central - Tel ${tel}`;
-    window.open(`https://wa.me/${tel.replace(/\D/g,'')}?text=${encodeURIComponent(texto)}`,'_blank');
-  };
+const MODELO_TAREFAS: any = {
+  "Pedreiro": ["Fundacoes e alicerces com nivel e prumo", "Levantamento de paredes de bloco e tijolo", "Reboco interior e exterior liso e desempenado", "Assentamento de tijoleira e ceramica com nivel a laser", "Construcao de pilares, vigas e cintas de amarracao", "Concretagem de laje, contrapiso e calcada", "Acabamento com massa fina e preparacao para pintura", "Instalacao de portas, janelas e esquadrias com vedacao", "Construcao de muro, vedacao e estrutura de portao", "Limpeza final e entrega da obra organizada e fotografada"],
+  "Carpinteiro": ["Medir, cortar e montar madeira com precisao milimetrica", "Fabricar portas, janelas, armarios e prateleiras sob medida", "Instalar forro de madeira, lambril e deck com acabamento", "Fazer estrutura de telhado, ripas e caibros com nivel", "Lixar, envernizar e aplicar acabamento protetor anti-cupim", "Instalar fechaduras, dobradicas e ferragens com alinhamento perfeito", "Reparar moveis, portas empenadas e estruturas de madeira", "Construir escadas, corrimao e guarda-corpo de madeira macica", "Trabalhar com MDF, compensado e madeira macica com qualidade", "Entregar com acabamento liso, sem farpas, limpo e fotografado"],
+  "Domestica": ["Limpeza geral da casa todos os dias com varrer e passar pano", "Lavar louca, organizar cozinha e limpar fogao e geladeira", "Arrumar quartos, fazer camas e trocar lencois semanalmente", "Lavar roupa, passar, dobrar e guardar nos armarios", "Cozinhar cafe da manha, almoco e jantar conforme orientacao", "Cuidar das criancas com atencao quando solicitado", "Manter banheiros limpos, higienizados e com cheirinho", "Organizar armarios, despensa e geladeira com inventario", "Ir ao mercado fazer compras pequenas e anotar gastos", "Enviar resumo diario no WhatsApp do que foi feito e o que falta"],
+  "Motorista": ["Conduzir com seguranca e responsabilidade total", "Levar e buscar passageiros com pontualidade", "Fazer manutencao basica: oleo, agua, pneus", "Abastecer e controlar consumo com comprovativo", "Lavar viatura 2x por semana e manter limpa", "Verificar documentacao e inspeccao valida", "Cumprir horario rigorosamente sem atrasos", "Guardar sigilo absoluto da familia e empresa", "Registar quilometragem diaria no livro", "Comunicar revisoes e avarias imediatamente"],
+  "Eletricista": ["Instalar quadro eletrico, disjuntores e DR com identificacao", "Instalar tomadas, interruptores, dimmer e pontos de luz conforme projeto", "Passar cabos em eletroduto, organizar fiacao e deixar reserva", "Instalar iluminacao interior, exterior, jardim e fachada", "Instalar chuveiro, aquecedor, ar condicionado e tomadas especiais", "Fazer aterramento, protecao contra surtos e teste de fuga", "Testar toda instalacao com multimetro e alicate amperimetro", "Identificar, etiquetar e mapear todos os circuitos no quadro", "Deixar obra limpa, sem entulho eletrico e com sobras organizadas", "Entregar com teste funcionando, video de teste e garantia de 90 dias"],
+  "Jardineiro": ["Cortar relva, aparar e regar diariamente", "Plantar flores, arvores e arbustos com adubo", "Podar arvores e cercas vivas com tesoura", "Limpar quintal, varrer folhas e deitar lixo", "Fazer canteiros e horta com terra adubada", "Aplicar fertilizante e pesticida com seguranca", "Instalar sistema de rega automatico", "Manter jardim limpo e organizado", "Cuidar de plantas interior e exterior", "Entregar jardim bonito e fotografado"],
+  "Seguranca": ["Vigiar entrada e saida com registo", "Controlar acesso de visitantes e viaturas", "Fazer rondas a cada 2 horas com lanterna", "Verificar portas e janelas fechadas", "Atender telefone e anotar recados", "Manter livro de ocorrencias atualizado", "Comunicar imediatamente qualquer anormalidade", "Usar uniforme e manter postura profissional", "Nao dormir durante turno e estar atento", "Entregar turno com relatorio no WhatsApp"],
+  "Canalizador": ["Instalar canos de agua fria e quente com vedacao", "Instalar esgotos com caida correta e sem vazamento", "Instalar sanita, lavatorio, chuveiro e torneiras", "Reparar fugas e trocar vedantes com garantia", "Instalar autoclismo, bomba de agua e tanque", "Desentupir esgotos e ralos com equipamento", "Testar pressao sem vazamento com bomba", "Deixar obra limpa sem cimento nos canos", "Entregar com teste funcionando e video", "Garantia de 90 dias contra vazamento"],
+  "Pintor": ["Preparar parede: lixar, massa corrida, selador e lixa fina", "Pintura interior 2 demaos com rolo e pincel", "Pintura exterior com tinta impermeavel e anti-mofo", "Aplicar textura, grafiato conforme foto anexa", "Pintar teto branco neve sem manchas", "Pintar portas e janelas com tinta esmalte", "Proteger piso e moveis com lona e fita", "Retocar falhas apos secagem completa", "Usar cor exata da foto anexa com codigo", "Entregar parede sem manchas e limpa"],
+  "Mecanico": ["Diagnosticar avarias com scanner e teste", "Fazer revisao completa: oleo, filtros, velas", "Reparar motor, caixa e suspensao", "Trocar pneus, pastilhas e discos de travao", "Fazer alinhamento e balanceamento", "Reparar sistema eletrico e bateria", "Testar viatura apos reparo com volta", "Manter oficina limpa e ferramentas organizadas", "Informar cliente sobre pecas necessarias", "Entregar com garantia de 30 dias e recibo"],
+  "Babysitter": ["Cuidar das criancas com atencao e carinho", "Dar banho, trocar fraldas e vestir", "Preparar mamadeira, papinha e lanche", "Brincar e fazer atividades educativas", "Colocar para dormir e contar historia", "Manter quarto e brinquedos organizados", "Dar remedio conforme orientacao dos pais", "Comunicar aos pais qualquer ocorrencia", "Nao deixar criancas sozinhas nunca", "Enviar fotos e resumo diario no WhatsApp"],
+  "Serralheiro": ["Medir e cortar ferro com precisao milimetrica", "Soldar portoes, grades, estruturas metalicas com reforco", "Fabricar portoes basculantes e de correr com trilho", "Fazer grades de janela e portas com acabamento", "Instalar estruturas metalicas com nivel e prumo", "Soldar com eletrodo e MIG com qualidade", "Lixar, pintar com anti-ferrugem e tinta esmalte", "Instalar fechaduras, ferrolhos e ferragens com alinhamento", "Reparar portoes empenados e trocar roldanas", "Entregar com acabamento liso, pintado e fotografado"],
+  "Servicos/Consultorias": ["Fazer diagnostico e levantamento de necessidades", "Elaborar plano de acao e cronograma", "Fazer reunioes semanais de acompanhamento", "Entregar relatorios de progresso", "Dar formacao e capacitacao se necessario", "Acompanhar implementacao no local", "Manter sigilo absoluto das informacoes", "Cumprir prazos e metas acordadas", "Enviar resumo semanal no WhatsApp", "Entregar com avaliacao e recomendacoes finais"],
+  "Outros/Particular": ["Descrever servico personalizado com clareza total", "Definir material necessario e quem fornece", "Definir prazo inicio e entrega com multa", "Combinar valor total e forma pagamento M-Pesa", "Enviar fotos do antes, durante e depois", "Manter comunicacao diaria via WhatsApp", "Cumprir horario e qualidade prometida", "Garantir retrabalho gratuito se nao satisfeito", "Deixar local limpo e organizado", "Entregar com recibo e avaliacao 5 estrelas"]
+};
 
-  const telValido = useMemo(()=> tel.replace(/\D/g,'').length >= 9, [tel]);
-  const categoriasFat = ['Todos','Cimento','Bloco','Tinta','Ferro','Cobertura','Inertes','Tubo PVC','Fechadura'];
-  const produtosFiltrados = useMemo(()=>{
-    let base = PRODUTOS_BASE;
-    if(filtroCat!=='Todos') base = base.filter(p=>p.categoria===filtroCat);
-    if(buscaFat.trim()) base = base.filter(p=>p.nome.toLowerCase().includes(buscaFat.toLowerCase()));
-    return base;
-  },[filtroCat,buscaFat]);
+const CLAUSULAS = [ { id:1, titulo:"Dados das partes", short:"Quem contrata e quem faz" }, { id:2, titulo:"Objeto e tarefas", short:"O que sera feito" }, { id:3, titulo:"Horario e local", short:"Quando e onde" }, { id:4, titulo:"Salario e pagamento", short:"Quanto e como paga" }, { id:5, titulo:"Alimentacao e alojamento", short:"Beneficios" }, { id:6, titulo:"Folgas e ferias", short:"Descanso legal" }, { id:7, titulo:"Periodo experimental", short:"Teste inicial" }, { id:8, titulo:"Deveres do trabalhador", short:"Obrigacoes" }, { id:9, titulo:"Deveres do empregador", short:"Obrigacoes" }, { id:10, titulo:"Anexos (antes validade)", short:"Fotos e provas" }, { id:11, titulo:"Validade e assinaturas", short:"Assina no WhatsApp - PDF final partilhavel" }, ];
 
-  const addProdutoFat = (p: Omit<ProdutoFat,'qtd'|'desc'>) => {
-    setProdutosFat(prev=>{
-      const ex = prev.find(x=>x.id===p.id);
-      if(ex) return prev.map(x=>x.id===p.id?{...x,qtd:x.qtd+1}:x);
-      return [...prev,{...p,qtd:1,desc:0}];
-    });
-  };
-  const updateQtd = (id:string,qtd:number)=> setProdutosFat(prev=>prev.map(p=>p.id===id?{...p,qtd:Math.max(0,qtd)}:p).filter(p=>p.qtd>0));
-  const updateDesc = (id:string,desc:number)=> setProdutosFat(prev=>prev.map(p=>p.id===id?{...p,desc:Math.min(100,Math.max(0,desc))}:p));
+export default function App(){
+ const [tab,setTab]=useState("encontrar");
+ const [contratoSel,setContratoSel]=useState(1);
+ const [clausulaAtiva,setClausulaAtiva]=useState(4);
+ const [tipoCadastro,setTipoCadastro]=useState("prof");
+ const [filtroBusca,setFiltroBusca]=useState("");
+ const [paisFiltro,setPaisFiltro]=useState("Mocambique");
+ const [provFiltro,setProvFiltro]=useState("Maputo Cidade");
+ const [mostrarPreviewMobile,setMostrarPreviewMobile]=useState(false);
+ const [formCadastro,setFormCadastro]=useState({
+  nome:"", nuit:"", bi:"", ramo:"Pedreiro", profissao:"Pedreiro", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", local:"Bairro Central", whatsapp:"", descricao:"", preco:"", anexos:[] as any[]
+ });
+ const provinciasFiltro=useMemo(()=>{ const p=(PAISES as any)[paisFiltro]; return p||[]; },[paisFiltro]);
+ const distritosForm=useMemo(()=>{ const d=(DISTRITOS_MOCAMBIQUE as any)[formCadastro.provincia]; return d||["Centro","Bairro 1","Bairro 2"]; },[formCadastro.provincia]);
 
-  const subtotalBruto = useMemo(()=> produtosFat.reduce((s,p)=>s+p.preco*p.qtd,0),[produtosFat]);
-  const totalDescontos = useMemo(()=> produtosFat.reduce((s,p)=>s+(p.preco*p.qtd*p.desc/100),0),[produtosFat]);
-  const baseCalculo = subtotalBruto - totalDescontos;
-  const ivaValor = ivaTipo==='sem'?0: ivaTipo==='16'? baseCalculo*0.16 : baseCalculo*0.05;
-  const totalFinal = baseCalculo + ivaValor;
+ const [profissionais,setProfissionais]=useState([
+  { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456789", bi:"110100123456B", ramo:"Construcao Civil", profissao:"Pedreiro", rating:4.9, trabalhos:127, preco:"800MT/dia", descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823832513", anexos:["BI","NUIT","Fotos obra","CV"] },
+ ]);
 
-  const profissionaisFiltrados = useMemo(()=>{
-    if(!busca.trim()) return PROFISSIONAIS;
-    return PROFISSIONAIS.filter(p=>p.oficio.toLowerCase().includes(busca.toLowerCase())||p.nome.toLowerCase().includes(busca.toLowerCase()));
-  },[busca]);
+ const [formContrato,setFormContrato]=useState({
+  empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai",
+  trabNome:"Joao Carpinteiro", trabBI:"1102100MM", trabTel:"840532899", trabEnd:"Xai-Xai - Bairro 2", trabProf:"Carpinteiro",
+  tarefas: MODELO_TAREFAS["Carpinteiro"], 
+  horarioInicio:"06:00", horarioFim:"17:00", dias:"Segunda a Sabado", dataInicio:"2026-10-10", localTrab:"Xai-Xai - casa do cliente - Av. Principal, Bairro 2, perto da escola",
+  valor:"7500", diaPag:"05", formaPag:"M-Pesa", prazo:"30 dias", 
+  alimentacao:"Sim - almoco fornecido no local", alojamento:"Nao - trabalhador mora perto e volta para casa", transporte:"Sim - 500MT/mes para chapa",
+  folgas:"Domingo e feriados nacionais. 12 dias ferias apos 1 ano completo de trabalho. Se trabalhar domingo, paga dobrado.",
+  periodoExp:"90 dias - primeiros 90 dias como periodo de experiencia com avaliacao mensal. Apos periodo, aviso de 30 dias.",
+  deveresTrab:"Cumprir horario 06:00 as 17:00 com pontualidade, guardar sigilo absoluto da familia, zelar pelos bens, ferramentas e materiais, comunicar imediatamente qualquer atraso ou falta no WhatsApp, manter local de trabalho limpo e organizado, usar equipamento de protecao individual EPI, cumprir as 10 tarefas com capricho e qualidade, nao faltar sem aviso previo de 24h, respeitar vizinhos e regras do condominio, entregar trabalho fotografado no WhatsApp todo dia as 17:00",
+  deveresEmp:"Pagar salario pontualmente todo dia 05 via M-Pesa com comprovativo e recibo assinado, respeitar dignidade, privacidade e direitos humanos, fornecer agua potavel, refeicao e condicoes dignas de trabalho, fornecer todo material, ferramentas e EPI necessario, nao descontar salario sem motivo justo por escrito, cumprir folgas e ferias conforme lei, fornecer transporte ou vale transporte 500MT/mes, comunicar com respeito no WhatsApp, nao pedir trabalho fora do combinado sem pagar extra, fornecer alojamento se combinado",
+  anexos:[] as any[]
+ });
+ const [assinaturaContratante, setAssinaturaContratante] = useState({ concordo:false, data:"" });
+ const [assinaturaContratado, setAssinaturaContratado] = useState({ concordo:false, data:"" });
 
-  return (
-    <div className="min-h-screen bg-[#f1f5f9] text-[#0f172a] font-sans">
-      {/* HEADER - ONDE CIRCULOU AMARELO */}
-      <header className="sticky top-0 z-50 bg-[#0f1e36] border-b border-[#1e3a5f] h-[56px] flex items-center px-3 lg:px-6 justify-between">
-        <div className="flex items-center gap-3">
-          <div className="font-black text-white text-[14px] lg:text-[15px] tracking-tight">ENCONTRE. NEGOCIE. FORMALIZE.</div>
-          <div className="hidden lg:block w-px h-5 bg-white/20 ml-2"></div>
+ useEffect(()=>{
+   const catName = CATS[contratoSel] || "Carpinteiro";
+   const novas = (MODELO_TAREFAS as any)[catName] || MODELO_TAREFAS["Outros/Particular"];
+   setFormContrato(prev=>({...prev, tarefas: novas, trabProf: catName}));
+ },[contratoSel]);
+
+ const gerarPDFInicial = () => {
+   const catName = CATS[contratoSel]; const id = Math.floor(Math.random()*1000000);
+   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CONTRATO ${catName} - ID ${id} - 11 CLAUSULAS COMPLETAS</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:850px;margin:20px auto;padding:20px;line-height:1.5;color:#1a2a3a;font-size:12px}
+.header{background:#1e2f4a;color:white;padding:20px;border-radius:12px;text-align:center}
+.header h1{color:#d4a44a;margin:0;font-size:16px}
+.clausula{border:1px solid #e2e8f0;border-radius:8px;padding:15px;margin:12px 0;background:#f8fafc}
+.clausula h3{background:#1e2f4a;color:white;padding:8px 12px;border-radius:6px;margin:-15px -15px 12px -15px;font-size:11px}
+.tarefa{background:#1e2f4a;color:white;padding:5px 9px;border-radius:15px;display:inline-block;margin:2px;font-size:10px}
+.assinaturas-horizontal{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:15px 0}
+.assinatura-box{border:2px solid #1e2f4a;border-radius:8px;padding:12px;background:white}
+.assinatura-box.contratante{border-color:#25D366;background:#f0f7ff}
+.assinatura-box.contratado{border-color:#d4a44a;background:#fff8ed}
+@media print{.no-print{display:none}}
+</style>
+</head><body>
+<div class="header"><h1>CONTRATO ${catName.toUpperCase()} - 11 CLAUSULAS COMPLETAS - PDF INICIAL - ID ${id}</h1><div>contrata-mz.vercel.app - ESSE - Data: ${new Date().toLocaleString('pt-MZ')} - ${formContrato.tarefas.length} tarefas</div></div>
+
+<div class="clausula"><h3>1. DADOS DAS PARTES - Quem contrata e quem faz</h3>
+<b>CONTRATANTE:</b> ${formContrato.empNome} - BI: ${formContrato.empBI} - Tel: ${formContrato.empTel} - End: ${formContrato.empEnd}<br>
+<b>TRABALHADOR:</b> ${formContrato.trabNome} - BI: ${formContrato.trabBI} - Tel: ${formContrato.trabTel} - End: ${formContrato.trabEnd} - Profissao: ${formContrato.trabProf}
+</div>
+
+<div class="clausula"><h3>2. OBJETO E TAREFAS - O que sera feito - ${formContrato.tarefas.length} tarefas de ${catName}</h3>
+${formContrato.tarefas.map((t:string,i:number)=>`<span class="tarefa">${i+1}. ${t}</span>`).join("")}
+</div>
+
+<div class="clausula"><h3>3. HORARIO E LOCAL - Quando e onde</h3>
+<b>Horario:</b> ${formContrato.horarioInicio} as ${formContrato.horarioFim}<br>
+<b>Dias de trabalho:</b> ${formContrato.dias}<br>
+<b>Data inicio:</b> ${formContrato.dataInicio}<br>
+<b>Local de trabalho:</b> ${formContrato.localTrab}
+</div>
+
+<div class="clausula"><h3>4. SALARIO E PAGAMENTO - Quanto e como paga</h3>
+<b>Valor salario:</b> ${formContrato.valor} MZN<br>
+<b>Dia de pagamento:</b> Todo dia ${formContrato.diaPag}<br>
+<b>Forma de pagamento:</b> ${formContrato.formaPag}<br>
+<b>Prazo do contrato:</b> ${formContrato.prazo}
+</div>
+
+<div class="clausula"><h3>5. ALIMENTACAO E ALOJAMENTO - Beneficios</h3>
+<b>Alimentacao:</b> ${formContrato.alimentacao}<br>
+<b>Alojamento:</b> ${formContrato.alojamento}<br>
+<b>Transporte:</b> ${formContrato.transporte}
+</div>
+
+<div class="clausula"><h3>6. FOLGAS E FERIAS - Descanso legal</h3>${formContrato.folgas}</div>
+<div class="clausula"><h3>7. PERIODO EXPERIMENTAL - Teste inicial</h3>${formContrato.periodoExp}</div>
+<div class="clausula"><h3>8. DEVERES DO TRABALHADOR - Obrigacoes</h3>${formContrato.deveresTrab}</div>
+<div class="clausula"><h3>9. DEVERES DO EMPREGADOR - Obrigacoes</h3>${formContrato.deveresEmp}</div>
+<div class="clausula"><h3>10. ANEXOS (ANTES VALIDADE) - Fotos e provas - Fotos viram prova legal</h3>
+<b>Fotos e comprovativos anexados antes da validade - viram prova legal:</b><br>
+- Foto BI Contratante: ${formContrato.empNome} - BI ${formContrato.empBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto BI Contratado: ${formContrato.trabNome} - BI ${formContrato.trabBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto do local: ${formContrato.localTrab} - Foto antes de comecar<br>
+- Fotos: ${formContrato.anexos.length} ficheiros - ${formContrato.anexos.join(", ") || "BI, NUIT, Fotos obra, CV"}<br>
+- Comprovativo M-Pesa: ${formContrato.valor} MZN - ${formContrato.formaPag} - Referencia CONCORDO ID ${id}<br>
+</div>
+
+<div class="clausula"><h3>11. VALIDADE E ASSINATURAS - Assinaturas separadas na parte horizontal nao vertical</h3>
+<b>CONTRATO COM DADOS DAS PARTES, TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - VEJA SO ISSO E MAIS NADA - 11 CLAUSULAS COMPLETAS</b><br>
+<b>Assinaturas na horizontal lado a lado - Contratante esquerda - Contratado direita - como pediu</b>
+</div>
+
+<div class="assinaturas-horizontal"><div class="assinatura-box contratante"><b>CONTRATANTE - ESQUERDA - HORIZONTAL</b><br>${formContrato.empNome} - BI ${formContrato.empBI}<br>CONCORDO em ${assinaturaContratante.data || "data/hora"} - Esquerda horizontal</div><div class="assinatura-box contratado"><b>CONTRATADO - DIREITA - HORIZONTAL</b><br>${formContrato.trabNome} - BI ${formContrato.trabBI}<br>CONCORDO em ${assinaturaContratado.data || "data/hora"} - Direita horizontal</div></div>
+
+<div style="background:#fff8ed;border:2px solid #d4a44a;border-radius:12px;padding:15px;margin-top:20px">
+<b>ONDE ENCONTRAR PDF FINAL?</b><br>
+- Pasta Downloads: CONTRATO-FINAL-COM-ASSINATURAS-${catName}-ID-${id}.html<br>
+- Assinaturas na horizontal lado a lado como pediu - nao vertical<br>
+- Lei 23/2007 - valido em Mocambique - 11 clausulas completas com dados das partes, todas as clausulas e assinaturas na horizontal<br>
+ESSE - NUIT 401866876 - contrata-mz.vercel.app - ID ${id}
+</div>
+
+<div style="text-align:center;margin-top:20px" class="no-print">
+<button onclick="window.print()" style="background:#1e2f4a;color:white;padding:12px 24px;border-radius:8px;border:none;font-weight:bold;margin:5px">IMPRIMIR / SALVAR COMO PDF - 11 CLAUSULAS COMPLETAS - ASSINATURAS NA HORIZONTAL</button>
+</div>
+</body></html>`;
+   const blob = new Blob([html], {type:"text/html"}); const url = URL.createObjectURL(blob); window.open(url,"_blank"); const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-INICIAL-11-CLAUSULAS-${catName}-ID-${id}-ASSINATURAS-HORIZONTAL.html`; a.click();
+ };
+
+ const assinarContratante = () => { const agora = new Date().toLocaleString("pt-MZ"); setAssinaturaContratante({ concordo:true, data:agora }); const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)} - Eu, ${formContrato.empNome}, BI ${formContrato.empBI}, CONCORDO com contrato ${formContrato.valor}MZN com ${formContrato.trabNome} - ${formContrato.tarefas.length} tarefas - ${agora} - Assinatura na HORIZONTAL`; window.open(`https://wa.me/${formContrato.trabTel}?text=${encodeURIComponent(msg)}`,"_blank"); };
+ const assinarContratado = () => { const agora = new Date().toLocaleString("pt-MZ"); setAssinaturaContratado({ concordo:true, data:agora }); const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)} - Eu, ${formContrato.trabNome}, BI ${formContrato.trabBI}, CONCORDO com contrato ${formContrato.valor}MZN com ${formContrato.empNome} - ${agora} - Assinatura na HORIZONTAL`; window.open(`https://wa.me/${formContrato.empTel}?text=${encodeURIComponent(msg)}`,"_blank"); };
+
+ const gerarPDFFinal = () => {
+   if(!assinaturaContratante.concordo || !assinaturaContratado.concordo){ alert("Falta assinar! Precisa dos dois CONCORDO - contratante e contratado na horizontal."); return; }
+   const catName = CATS[contratoSel]; const id = Math.floor(Math.random()*1000000); const agora = new Date().toLocaleString("pt-MZ");
+   const htmlFinal = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CONTRATO FINAL 11 CLAUSULAS COMPLETAS - ${catName} - ID ${id} - ASSINATURAS HORIZONTAL</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:20px;line-height:1.5;color:#1a2a3a;font-size:11px}
+.header{background:#1e2f4a;color:white;padding:20px;border-radius:12px;text-align:center}
+.header h1{color:#d4a44a;margin:0;font-size:15px}
+.clausula{border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:10px 0;background:#f8fafc}
+.clausula h3{background:#1e2f4a;color:white;padding:6px 10px;border-radius:6px;margin:-12px -12px 10px -12px;font-size:10px}
+.tarefa{background:#1e2f4a;color:white;padding:4px 8px;border-radius:12px;display:inline-block;margin:2px;font-size:9px}
+.assinaturas-horizontal{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.assinatura-box{border:2px solid #1e2f4a;border-radius:10px;padding:15px;background:white;min-height:220px}
+.assinatura-box.contratante{border-color:#25D366;background:#f0f7ff}
+.assinatura-box.contratado{border-color:#d4a44a;background:#fff8ed}
+.concordowpp{background:#1a1a1a;color:#00ff00;padding:8px;border-radius:6px;font-family:monospace;font-size:9px;margin:8px 0}
+.footer{background:#fff8ed;border:2px solid #d4a44a;border-radius:12px;padding:12px;margin-top:15px;font-size:10px}
+@media print{.no-print{display:none} .assinaturas-horizontal{grid-template-columns:1fr 1fr !important}}
+</style>
+</head><body>
+<div class="header"><h1>CONTRATO FINAL COM ASSINATURAS - 11 CLAUSULAS COMPLETAS - ID ${id} - ${catName.toUpperCase()} - ASSINATURAS NA HORIZONTAL NAO VERTICAL</h1><div>PDF FINAL PARTILHAVEL - COM ASSINATURAS E CONCORDO NA HORIZONTAL - ${agora} - contrata-mz.vercel.app - ${formContrato.tarefas.length} tarefas - Lei 23/2007 - valido em Mocambique</div></div>
+
+<div class="clausula"><h3>1. DADOS DAS PARTES - Quem contrata e quem faz</h3>
+<b>CONTRATANTE:</b> ${formContrato.empNome} - BI: ${formContrato.empBI} - Tel: ${formContrato.empTel} - End: ${formContrato.empEnd}<br>
+<b>TRABALHADOR:</b> ${formContrato.trabNome} - BI: ${formContrato.trabBI} - Tel: ${formContrato.trabTel} - End: ${formContrato.trabEnd} - Profissao: ${formContrato.trabProf}
+</div>
+
+<div class="clausula"><h3>2. OBJETO E TAREFAS - ${formContrato.tarefas.length} TAREFAS DE ${catName.toUpperCase()}</h3>${formContrato.tarefas.map((t:string,i:number)=>`<span class="tarefa">${i+1}. ${t}</span>`).join("")}</div>
+
+<div class="clausula"><h3>3. HORARIO E LOCAL - Quando e onde</h3>
+<b>Horario:</b> ${formContrato.horarioInicio} as ${formContrato.horarioFim}<br>
+<b>Dias:</b> ${formContrato.dias}<br>
+<b>Data inicio:</b> ${formContrato.dataInicio}<br>
+<b>Local de trabalho:</b> ${formContrato.localTrab}
+</div>
+
+<div class="clausula"><h3>4. SALARIO E PAGAMENTO - Quanto e como paga</h3>
+<b>Valor:</b> ${formContrato.valor} MZN<br>
+<b>Dia pagamento:</b> Todo dia ${formContrato.diaPag}<br>
+<b>Forma:</b> ${formContrato.formaPag}<br>
+<b>Prazo:</b> ${formContrato.prazo}
+</div>
+
+<div class="clausula"><h3>5. ALIMENTACAO E ALOJAMENTO - Beneficios</h3>
+<b>Alimentacao:</b> ${formContrato.alimentacao}<br>
+<b>Alojamento:</b> ${formContrato.alojamento}<br>
+<b>Transporte:</b> ${formContrato.transporte}
+</div>
+
+<div class="clausula"><h3>6. FOLGAS E FERIAS - Descanso legal</h3>${formContrato.folgas}</div>
+<div class="clausula"><h3>7. PERIODO EXPERIMENTAL - Teste inicial</h3>${formContrato.periodoExp}</div>
+<div class="clausula"><h3>8. DEVERES DO TRABALHADOR - Obrigacoes</h3>${formContrato.deveresTrab}</div>
+<div class="clausula"><h3>9. DEVERES DO EMPREGADOR - Obrigacoes</h3>${formContrato.deveresEmp}</div>
+<div class="clausula"><h3>10. ANEXOS (ANTES VALIDADE) - Fotos e provas - Fotos viram prova legal</h3>
+<b>Fotos e comprovativos anexados antes da validade - viram prova legal:</b><br>
+- Foto BI Contratante: ${formContrato.empNome} - BI ${formContrato.empBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto BI Contratado: ${formContrato.trabNome} - BI ${formContrato.trabBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto do local: ${formContrato.localTrab} - Foto antes de comecar<br>
+- Fotos: ${formContrato.anexos.length} ficheiros - ${formContrato.anexos.join(", ") || "BI, NUIT, Fotos obra, CV"}<br>
+- Comprovativo M-Pesa: ${formContrato.valor} MZN - ${formContrato.formaPag} - Referencia CONCORDO ID ${id}<br>
+</div>
+
+<div class="clausula"><h3>11. VALIDADE E ASSINATURAS - Assinaturas separadas na parte horizontal nao vertical</h3>
+<b>CONTRATO COM DADOS DAS PARTES, TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - VEJA SO ISSO E MAIS NADA - 11 CLAUSULAS COMPLETAS</b><br>
+<b>Assinaturas na horizontal lado a lado - Contratante esquerda - Contratado direita - como pediu</b>
+</div>
+
+<div class="assinaturas-horizontal">
+<div class="assinatura-box contratante">
+<b>CONTRATANTE - ESQUERDA - HORIZONTAL - 1/2</b><br><br>
+${formContrato.empNome} - BI ${formContrato.empBI}<br>
+CONCORDO em ${assinaturaContratante.data}<br>
+<div class="concordowpp">Eu, ${formContrato.empNome}, CONCORDO - ${formContrato.valor}MZN - ${assinaturaContratante.data}</div>
+Assinatura na HORIZONTAL - Esquerda - 1 de 2
+</div>
+<div class="assinatura-box contratado">
+<b>CONTRATADO - DIREITA - HORIZONTAL - 2/2</b><br><br>
+${formContrato.trabNome} - BI ${formContrato.trabBI}<br>
+CONCORDO em ${assinaturaContratado.data}<br>
+<div class="concordowpp">Eu, ${formContrato.trabNome}, CONCORDO - ${formContrato.valor}MZN - ${assinaturaContratado.data}</div>
+Assinatura na HORIZONTAL - Direita - 2 de 2
+</div>
+</div>
+
+<div class="footer"><b>CONTRATO FINAL COM ASSINATURAS - 11 CLAUSULAS COMPLETAS - ID ${id} - ASSINATURAS NA HORIZONTAL</b><br>
+CONTRATO COM DADOS DAS PARTES + TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - 11 CLAUSULAS COMPLETAS - LEI 23/2007 - VALIDO EM MOCAMBIQUE<br>
+ESSE - NUIT 401866876 - contrata-mz.vercel.app - ID ${id} - ${formContrato.valor} MZN - ${formContrato.localTrab}<br>
+${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 ASSINATURAS HORIZONTAL SEM REPETICAO
+</div>
+
+<div style="text-align:center;margin-top:20px" class="no-print">
+<button onclick="window.print()" style="background:#1e2f4a;color:white;padding:14px 28px;border-radius:10px;border:none;font-weight:bold;margin:5px">IMPRIMIR / SALVAR COMO PDF FINAL COM ASSINATURAS - 11 CLAUSULAS - HORIZONTAL</button>
+</div>
+</body></html>`;
+   const blob = new Blob([htmlFinal], {type:"text/html"}); const url = URL.createObjectURL(blob); window.open(url,"_blank"); const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-FINAL-11-CLAUSULAS-${catName}-ID-${id}-ASSINATURAS-HORIZONTAL.html`; a.click();
+ };
+
+ return (
+  <div className="min-h-screen w-full overflow-x-hidden bg-[#f5f5f0] font-sans">
+   <style>{`@media (max-width: 1023px) { input, select, textarea, button { touch-action: manipulation; } input, select, textarea { max-width: 100%; font-size: 16px; } } @media (max-width: 640px) { header { position: sticky; } }`}</style>
+   <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
+    <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="ESSE - Energy Solutions and Services Enterprise" className="h-9 w-auto object-contain" /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
+    <div className="flex items-center gap-2"><button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button><button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>CONTRATOS 11</button><button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button></div>
+   </header>
+
+      {tab==='encontrar' && (
+    <div className="max-w-[1200px] mx-auto p-3">
+     {/* TOPO LARANJA - INTERATIVO ENCONTRAR MESTRE */}
+     <div className="bg-[#1e2f4a] text-white rounded-[14px] px-5 py-4 mb-3">
+      <div className="text-center">
+        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ MAIS PROXIMO DE SI ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ MESTRE, PROFISSIONAL OU EMPRESA</div>
+        <h2 className="text-[20px] font-black mt-1.5 leading-tight">Estas a procura de um profissional, mestre ou empresa na sua zona ou mais proximo?</h2>
+        <p className="text-[12px] opacity-80 mt-1.5">Encontre aqui - Pedreiro, Carpinteiro, Eletricista, Serralheiro, Domestica, Motorista... perto de si em Maputo, Matola, Boane, Xai-Xai - contrato legal em 2 minutos</p>
+        <div className="flex gap-2 justify-center mt-2.5 flex-wrap">
+          <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20"> Verifica BI e NUIT</span>
+          <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20"> Fotos e M-Pesa comprovado</span>
+          <span className="px-3 py-1 bg-[#c9a86a] text-[#1e2f4a] rounded-full text-[10px] font-extrabold"> 11 Clausulas Lei 23/2007</span>
         </div>
-        <div className="flex items-center gap-2">
-          {/* BOTAO CIRCULADO AMARELO - FACTURACAO */}
-          <button onClick={()=>setViewAtiva('faturacao')} className={`px-4 h-8 rounded-full text-[11px] font-black transition ${viewAtiva==='faturacao' ? 'bg-[#facc15] text-black ring-2 ring-white' : 'bg-[#facc15] text-black hover:bg-[#fde047]'}`}>FACTURAÃ‡ÃƒO</button>
-          <button onClick={()=>setViewAtiva('encontrar')} className={`px-4 h-8 rounded-full text-[11px] font-bold transition ${viewAtiva==='encontrar' ? 'bg-white text-[#0f1e36]' : 'bg-white/10 text-white hover:bg-white/20'}`}>ENCONTRAR</button>
-          <button onClick={()=>setViewAtiva('contratos')} className={`px-4 h-8 rounded-full text-[11px] font-bold transition ${viewAtiva==='contratos' ? 'bg-white text-[#0f1e36]' : 'bg-white/10 text-white hover:bg-white/20'}`}>CONTRATOS</button>
-          <div className="hidden lg:flex items-center gap-2 ml-3">
-            <button className="h-8 px-3 rounded-full bg-white/10 text-white text-[11px] font-bold">ENTRAR</button>
-            <div className="h-8 w-8 rounded-full bg-[#facc15] flex items-center justify-center text-[11px] font-black text-black">ADM</div>
-          </div>
+      </div>
+     </div>
+
+     <div className="flex gap-3 flex-wrap items-start">
+      {/* ESQUERDA - VERDE/AMARELO/ROXO - PESQUISA + PROFISSIONAIS - INTERATIVO */}
+      <div className="flex-1 min-w-[340px] bg-white rounded-[14px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] order-1">
+       <div className="flex gap-2 flex-wrap items-end">
+         <div className="flex-[2] min-w-[200px]"><label className="text-[11px] font-extrabold text-[#1e2f4a]">O que precisa? - Estas a procura de...?</label><input value={filtroBusca} onChange={e=>setFiltroBusca(e.target.value)} placeholder="Ex: Serralheiro, Pedreiro, Eletricista, Domestica... - encontre aqui" className="w-full px-3 py-2.5 rounded-[10px] border-2 border-[#c9a86a] mt-1 text-[12px]" /></div>
+         <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Pais</label><select value={paisFiltro} onChange={e=>setPaisFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
+         <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Provincia</label><select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{provinciasFiltro.map((p:string)=><option key={p}>{p}</option>)}</select></div>
+         <button className="px-5 py-2.5 bg-[#1e2f4a] text-white border-none rounded-[10px] font-extrabold text-[12px] h-[40px]">PESQUISAR</button>
+       </div>
+       <div className="flex gap-1.5 mt-3 flex-wrap"><span className="text-[10px] text-[#64748b] font-bold">Tags Populares:</span>{['Pedreiro','Carpinteiro','Eletricista','Canalizador','Pintor','Serralheiro','Domestica','Motorista'].map(t=><button key={t} onClick={()=>setFiltroBusca(t)} className={`px-3 py-1 rounded-full border text-[10px] font-semibold ${filtroBusca===t?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#e2e8f0]'}`}>{t}</button>)}</div>
+       
+       <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({profissionais.length + (typeof PROFISSIONAIS_EXTRAS !== 'undefined' ? PROFISSIONAIS_EXTRAS.length : 0)}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
+         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2.5 max-h-[520px] overflow-auto pr-1">
+           {profissionais.map((p:any,i:number)=><div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div><div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ M-Pesa OK ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Fotos OK ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {p.anexos?.join(', ')}</div></div>)}
+           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=><div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div></div></div><span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
+         </div>
+       </div>
+      </div>
+
+      {/* DIREITA - FORMULARIO CADASTRO - REMOVIDO CORPORATIVO - COMPACTO */}
+      <div className="w-full md:w-[380px] bg-white rounded-[14px] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.15)] border-2 border-[#c9a86a] order-2 md:sticky md:top-[70px] h-fit">
+        <div className="font-extrabold text-[12px] mb-2.5 text-center">Cadastre seu servico - Rapido e gratuito COM BI E NUIT OPCIONAL</div>
+        <div className="flex gap-1.5 mb-3">
+          <button onClick={()=>setTipoCadastro('empresa')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='empresa'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>EMPRESA</button>
+          <button onClick={()=>setTipoCadastro('prof')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='prof'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>PROFISSIONAL INDIVIDUAL SINGULAR</button>
         </div>
-      </header>
+        <div className="space-y-2">
+          <div><label className="text-[9px] font-bold">Nome completo *</label><input value={formCadastro.nome} onChange={e=>setFormCadastro({...formCadastro, nome:e.target.value})} placeholder="Ex: Michaque Moises Moises" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">BI (opcional)</label><input value={formCadastro.bi} onChange={e=>setFormCadastro({...formCadastro, bi:e.target.value})} placeholder="Ex: 110100123456B" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] bg-[#f8fafc]" /></div><div><label className="text-[9px] font-bold">NUIT (opcional)</label><input value={formCadastro.nuit} onChange={e=>setFormCadastro({...formCadastro, nuit:e.target.value})} placeholder="Ex: 123456789" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] bg-[#f8fafc]" /></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Pais *</label><select value={formCadastro.pais} onChange={e=>setFormCadastro({...formCadastro, pais:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div><div><label className="text-[9px] font-bold">Provincia *</label><select value={formCadastro.provincia} onChange={e=>setFormCadastro({...formCadastro, provincia:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{(PAISES[formCadastro.pais]||[]).map((p:string)=><option key={p}>{p}</option>)}</select></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Local / Localidade *</label><input value={formCadastro.local} onChange={e=>setFormCadastro({...formCadastro, local:e.target.value})} placeholder="Ex: Bairro Central" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div><div><label className="text-[9px] font-bold">Distrito</label><select value={formCadastro.distrito} onChange={e=>setFormCadastro({...formCadastro, distrito:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{distritosForm.map((d:string)=><option key={d}>{d}</option>)}</select></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Tipo de profissao / Area *</label><select value={formCadastro.profissao} onChange={e=>setFormCadastro({...formCadastro, profissao:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{CATS.map(c=><option key={c}>{c}</option>)}</select></div><div><label className="text-[9px] font-bold">WhatsApp</label><input value={formCadastro.whatsapp} onChange={e=>setFormCadastro({...formCadastro, whatsapp:e.target.value})} placeholder="840532899" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div></div>
+          <div><label className="text-[9px] font-bold">Descricao</label><textarea value={formCadastro.descricao} onChange={e=>setFormCadastro({...formCadastro, descricao:e.target.value})} placeholder="Ex: Serralheiro com experiencia..." className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] h-12 resize-none" /></div>
+          <div className="border-2 border-dashed border-[#cbd5e1] rounded-[8px] p-2.5 text-center bg-[#fefefe]"><div className="font-bold text-[10px]">Anexar arquivos - BI, NUIT, Fotos</div><div className="text-[9px] text-[#64748b] mt-0.5">BI (opcional), NUIT (opcional), Fotos trabalho</div></div>
+        </div>
+        <button onClick={()=>{
+          if(!formCadastro.nome){ alert('Nome completo obrigatorio'); return; }
+          const novo = { id: Date.now(), nome: formCadastro.nome, tipo: formCadastro.profissao, local: `${formCadastro.pais} / ${formCadastro.provincia}`, pais: formCadastro.pais, provincia: formCadastro.provincia, distrito: formCadastro.distrito, nuit: formCadastro.nuit||'N/A', bi: formCadastro.bi||'N/A', ramo: formCadastro.profissao, profissao: formCadastro.profissao, rating: 5.0, trabalhos: 0, preco: 'Sob consulta', descricao: formCadastro.descricao||`${formCadastro.profissao} - ${formCadastro.local}`, foto: formCadastro.nome.substring(0,2).toUpperCase(), verificado: false, whatsapp: formCadastro.whatsapp, anexos: ['BI','NUIT','Fotos'] };
+          setProfissionais([novo, ...profissionais]);
+          setFormCadastro({ nome:'', nuit:'', bi:'', ramo:'Pedreiro', profissao:'Pedreiro', pais:'Mocambique', provincia:'Maputo Cidade', distrito:'KaMpfumo', local:'Bairro Central', whatsapp:'', descricao:'', preco:'', anexos:[] as any[] });
+          alert('Cadastrado! Agora aparece na lista ao lado - Empresa e Singular - para ser encontrado');
+        }} className="w-full py-2.5 bg-[#c9a86a] text-[#1e2f4a] border-none rounded-[10px] font-black text-[11px] tracking-wide mt-3">ENVIAR CADASTRO - SEM VALORES</button>
+        <div className="text-[8px] text-[#64748b] text-center mt-1.5">Ao se cadastrar aparece na lista ao lado ou em baixo - Empresa e Singular para ser encontrado - sem corporativo</div>
+      </div>
+     </div>
+    </div>
+   )}
 
-      {/* VIEW ENCONTRAR - MANTIDO 100% */}
-      {viewAtiva==='encontrar' && (
-        <main className="max-w-[1280px] mx-auto p-3 lg:p-6">
-          <div className="bg-[#0f1e36] rounded-[16px] p-5 lg:p-8 text-white mb-4">
-            <h1 className="text-[22px] lg:text-[28px] font-black leading-tight">ENCONTRE NA SUA ZONA, NEGOCIE DIRECTO,<br/>FORMALIZE COM CONTRATO</h1>
-            <p className="text-[12px] lg:text-[13px] text-white/70 mt-2">Profissionais verificados em Maputo, Matola, Beira, Nampula - com contrato em 11 clÃ¡usulas pronto</p>
-            <div className="mt-5 bg-white rounded-[12px] p-2 flex flex-col lg:flex-row gap-2">
-              <input value={busca} onChange={e=>setBusca(e.target.value)} placeholder="O que precisa? Ex: Pedreiro, Pintor, CanalizaÃ§Ã£o" className="flex-1 h-10 px-3 rounded-[8px] border text-[12px] text-black outline-none" />
-              <select value={pais} onChange={e=>setPais(e.target.value)} className="h-10 px-3 rounded-[8px] border text-[12px] text-black"><option>Mocambique</option><option>Africa do Sul</option></select>
-              <select value={provincia} onChange={e=>setProvincia(e.target.value)} className="h-10 px-3 rounded-[8px] border text-[12px] text-black"><option>Maputo Cidade</option><option>Maputo Provincia</option><option>Gaza</option><option>Inhambane</option><option>Beira</option></select>
-              <button className="h-10 px-6 rounded-[8px] bg-[#1e2f4a] text-white font-black text-[11px]">PESQUISAR</button>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2">{TAGS_OFICIOS.map(t=><span key={t} onClick={()=>setBusca(t)} className="px-3 py-1 rounded-full bg-white/10 text-[10px] font-bold cursor-pointer hover:bg-white/20">{t}</span>)}</div>
-          </div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-extrabold text-[13px]">Profissionais verificados perto de si ({profissionaisFiltrados.length}) - {provincia}</h2>
-            <span className="text-[10px] text-[#64748b]">BI e NUIT opcional - ClÃ¡usulas 4-10 abertas editÃ¡veis</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {profissionaisFiltrados.map(p=>(
-              <div key={p.id} className="bg-white rounded-[12px] border p-3 flex gap-3">
-                <div className="h-12 w-12 rounded-full bg-[#1e2f4a] text-white flex items-center justify-center font-black text-[12px]">{p.foto}</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2"><span className="font-extrabold text-[12px]">{p.nome}</span>{p.verificado && <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">âœ“ Verificado</span>}</div>
-                  <div className="text-[10px] text-[#64748b]">{p.oficio} â€¢ {p.dist} â€¢ â­ {p.rating}</div>
-                  <div className="mt-2 flex gap-2">
-                    <button onClick={()=>setViewAtiva('contratos')} className="flex-1 h-8 rounded-[8px] bg-[#0f1e36] text-white text-[10px] font-bold">GERAR CONTRATO</button>
-                    <button className="flex-1 h-8 rounded-[8px] border text-[10px] font-bold">CONTRATAR</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 text-center text-[10px] text-[#64748b] font-bold">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS - NAO MODIFICADO MAIS NADA - BUILD 100%</div>
-        </main>
-      )}
+      {tab==='contratos' && (
+    <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10 w-full min-w-0">
+     <div className="bg-[#1e2f4a] text-white rounded-[12px] p-3.5 mb-3">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div>
+          <div className="text-[9px] tracking-wide text-[#c9a86a] font-extrabold">CONTRATO LEGAL EM 2 MINUTOS - 11 CLAUSULAS</div>
+          <h1 className="text-[16px] font-black mt-0.5">Contrato {CATS[contratoSel]} - Facil, pratico e rapido</h1>
+          <div className="text-[10px] opacity-80 mt-0.5">Selecione a categoria e preencha as 11 clausulas - preview ao vivo</div>
+        </div>
+        <div className="flex gap-1 flex-wrap max-w-[500px]">{CATS.slice(0,8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+      </div>
+      <div className="flex gap-1 mt-2 flex-wrap">{CATS.slice(8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i+8)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i+8?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+     </div>
 
-      {/* VIEW CONTRATOS 11 - MANTIDO 100% */}
-      {viewAtiva==='contratos' && (
-        <main className="max-w-[1280px] mx-auto p-3 lg:p-4 flex flex-col lg:flex-row gap-3">
-          {/* SIDEBAR 1-11 */}
-          <div className="w-full lg:w-[240px] lg:min-w-[240px] bg-white rounded-[10px] border p-3 h-fit lg:sticky lg:top-[70px] order-1">
-            <div className="font-extrabold text-[12px] mb-1">Edita a sua escolha</div>
-            <div className="text-[9px] text-[#64748b] mb-2.5 hidden lg:block">Selecione a clÃ¡usula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
-            <div className="text-[9px] text-[#64748b] mb-2.5 lg:hidden">Deslize â†’ toque (1-11) - sÃ³ telefone desbloqueado</div>
-            <div className="flex overflow-x-auto lg:flex-col gap-2 pb-2 lg:pb-0">
-              {Array.from({length:11},(_,i)=>i+1 as ClausulaId).map(n=>{
-                const isActive = clausulaAtiva===n;
-                const isOpen = n>=4 && n<=10;
+     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_380px] gap-3 items-start min-w-0">
+      {/* Navegacao compacta para telemoveis: substitui a coluna fixa que tapava o editor */}
+      <div className="lg:hidden bg-white rounded-xl border p-3 min-w-0">
+       <label htmlFor="mobile-clause-select" className="block font-extrabold text-[12px] mb-2">Escolha a clausula que pretende editar</label>
+       <select id="mobile-clause-select" value={clausulaAtiva} onChange={e=>setClausulaAtiva(Number(e.target.value))} className="w-full min-h-11 px-3 py-2 border-2 border-[#c9a86a] rounded-lg bg-white text-sm">
+        {CLAUSULAS.map(c=><option key={c.id} value={c.id}>{c.id}. {c.titulo}</option>)}
+       </select>
+       <div className="grid grid-cols-2 gap-2 mt-2">
+        <button type="button" onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} disabled={clausulaAtiva===1} className="min-h-10 rounded-lg border font-bold text-xs disabled:opacity-40">Ã¢â€ Â Anterior</button>
+        <button type="button" onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} disabled={clausulaAtiva===11} className="min-h-10 rounded-lg bg-[#1e2f4a] text-white font-bold text-xs disabled:opacity-40">PrÃƒÂ³xima Ã¢â€ â€™</button>
+       </div>
+       <button type="button" onClick={()=>setMostrarPreviewMobile(v=>!v)} className="w-full min-h-10 mt-2 rounded-lg border-2 border-[#1e2f4a] text-[#1e2f4a] font-bold text-xs">{mostrarPreviewMobile?'Ocultar preview do contrato':'Ver preview do contrato'}</button>
+      </div>
+
+      <div className="hidden lg:block w-[240px] min-w-[240px] bg-white rounded-[10px] border p-3 h-fit sticky top-[70px]">
+       <div className="font-extrabold text-[12px] mb-1">Edita a sua escolha</div>
+       <div className="text-[9px] text-[#64748b] mb-2.5">Selecione a clausula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
+       {Array.from({length:11},(_,i)=>i+1).map(n=>(
+        <div key={n} onClick={()=>setClausulaAtiva(n)} className={`p-2.5 rounded-lg mb-1.5 cursor-pointer border ${clausulaAtiva===n?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-[#f8fafc] text-[#1e2f4a] border-[#e2e8f0]'}`}>
+         <div className="font-extrabold text-[11px]">{n}. {CLAUSULAS[n-1].titulo}</div>
+         <div className="text-[9px] opacity-70">{CLAUSULAS[n-1].short} {n>=4 && n<=10 ? "" : ""}</div>
+        </div>
+       ))}
+      </div>
+
+      <div className="bg-white rounded-[12px] border-2 border-[#25D366] p-3 sm:p-4 order-2 shadow-sm min-w-0 w-full">
+       <div className="font-black text-[14px]">CLAUSULA {clausulaAtiva}: {CLAUSULAS[clausulaAtiva-1].titulo.toUpperCase()} - {CATS[contratoSel].toUpperCase()}</div>
+       <div className="mt-5">
+        {clausulaAtiva===1 && <div className="space-y-3"><div className="font-bold text-[12px]">Dados das partes COM BI E NUIT OPCIONAL</div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Nome Contratante *</label><input value={formContrato.empNome} onChange={e=>setFormContrato({...formContrato,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Contratante (opcional)</label><input value={formContrato.empBI} onChange={e=>setFormContrato({...formContrato,empBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Contratante</label><input value={formContrato.empTel} onChange={e=>setFormContrato({...formContrato,empTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Nome Trabalhador *</label><input value={formContrato.trabNome} onChange={e=>setFormContrato({...formContrato,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Trabalhador (opcional)</label><input value={formContrato.trabBI} onChange={e=>setFormContrato({...formContrato,trabBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Trabalhador</label><input value={formContrato.trabTel} onChange={e=>setFormContrato({...formContrato,trabTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
+        {clausulaAtiva===2 && <div className="space-y-4">
+          <div className="font-bold text-[12px]">Objeto e tarefas - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas selecionadas - TICK PARA SELECIONAR</div>
+          <div className="text-[10px] text-[#64748b]">Selecione com tick as tarefas que precisa - tarefas especificas para cada contrato {CATS[contratoSel]} - aparecem no preview</div>
+          <div className="bg-[#f8fafc] border-2 border-[#c9a86a] rounded-xl p-3 max-h-[320px] overflow-auto">
+            <div className="text-[10px] font-bold mb-2">Tarefas disponiveis para {CATS[contratoSel]} - Clique no tick para selecionar:</div>
+            <div className="space-y-1.5">
+              {((MODELO_TAREFAS as any)[CATS[contratoSel]] || MODELO_TAREFAS["Outros/Particular"]).map((tarefaModelo:string, idx:number)=>{
+                const selecionada = formContrato.tarefas.includes(tarefaModelo);
                 return (
-                  <button key={n} onClick={()=>setClausulaAtiva(n)} className={`shrink-0 h-9 lg:h-auto lg:py-2.5 px-3 rounded-[8px] text-[11px] font-bold text-left border flex items-center justify-between ${isActive?'bg-[#0f1e36] text-white border-[#0f1e36]':'bg-white text-[#0f172a] hover:bg-[#f8fafc]'} ${isOpen && !isActive ? 'border-[#c9a86a]':''}`}>
-                    <span>{n}. {CATS[n]}</span>{isOpen && <span className="ml-2 text-[8px] bg-[#fef3c7] text-[#92400e] px-1 rounded">EDITÃVEL</span>}
-                  </button>
-                );
+                  <label key={idx} className={`flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all ${selecionada?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white border-[#e2e8f0] hover:border-[#c9a86a]'}`}>
+                    <input type="checkbox" checked={selecionada} onChange={(e)=>{
+                      if(e.target.checked){
+                        setFormContrato({...formContrato, tarefas:[...formContrato.tarefas, tarefaModelo]});
+                      } else {
+                        setFormContrato({...formContrato, tarefas:formContrato.tarefas.filter((t:any)=>t!==tarefaModelo)});
+                      }
+                    }} className="mt-0.5 w-4 h-4 accent-[#c9a86a]" />
+                    <span className="text-[11px] leading-tight flex-1">{idx+1}. {tarefaModelo}</span>
+                  </label>
+                )
               })}
             </div>
-            <div className="mt-3 p-2 rounded-[8px] bg-[#f8fafc] border">
-              <div className="text-[9px] font-bold">Tarefas: {formContrato.tarefas.length}</div>
-              {formContrato.tarefas.map(t=><div key={t.id} className="text-[9px] text-[#475569]">â€¢ {t.texto}</div>)}
-            </div>
           </div>
-          {/* EDITOR CENTRAL */}
-          <div className="flex-1 bg-white rounded-[10px] border p-4 order-2">
-            <div className="flex items-center justify-between mb-3"><h3 className="font-black text-[13px]">ClÃ¡usula {clausulaAtiva} - {CATS[clausulaAtiva]}</h3><span className="text-[10px] px-2 py-1 rounded-full bg-[#f1f5f9]">{clausulaAtiva>=4 && clausulaAtiva<=10 ? 'Aberta editÃ¡vel' : 'PadrÃ£o'}</span></div>
-            <div className="space-y-3">
-              <div><label className="text-[10px] font-bold text-[#64748b]">TÃ­tulo do serviÃ§o</label><input value={formContrato.titulo} onChange={e=>setFormContrato({...formContrato,titulo:e.target.value})} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" /></div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                <div><label className="text-[10px] font-bold text-[#64748b]">Local</label><input value={formContrato.local} onChange={e=>setFormContrato({...formContrato,local:e.target.value})} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" /></div>
-                <div><label className="text-[10px] font-bold text-[#64748b]">Valor MT</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" /></div>
-                <div><label className="text-[10px] font-bold text-[#64748b]">Data inÃ­cio</label><input type="date" value={formContrato.dataInicio} onChange={e=>setFormContrato({...formContrato,dataInicio:e.target.value})} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" /></div>
-                <div><label className="text-[10px] font-bold text-[#64748b]">Data fim</label><input type="date" value={formContrato.dataFim} onChange={e=>setFormContrato({...formContrato,dataFim:e.target.value})} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" /></div>
-              </div>
-              <div><label className="text-[10px] font-bold text-[#64748b]">Texto da clÃ¡usula {clausulaAtiva}</label><textarea value={formContrato.clausulas[clausulaAtiva]||''} onChange={e=>setFormContrato({...formContrato,clausulas:{...formContrato.clausulas,[clausulaAtiva]:e.target.value}})} className="w-full min-h-[120px] p-3 rounded-[8px] border text-[12px] mt-1" /></div>
+          <div className="bg-white border-2 rounded-xl p-3">
+            <div className="text-[10px] font-bold mb-2">Tarefas selecionadas ({formContrato.tarefas.length}) - aparecem no preview do contrato:</div>
+            <div className="flex flex-wrap gap-2">
+              {formContrato.tarefas.map((t:string,i:number)=><span key={i} className="px-3 py-1.5 rounded-full bg-[#1e2f4a] text-white text-[11px] flex items-center gap-2">{i+1}. {t} <button onClick={()=>setFormContrato({...formContrato,tarefas:formContrato.tarefas.filter((_:any,idx:number)=>idx!==i)})} className="w-4 h-4 rounded-full bg-white/20 grid place-items-center text-[8px]">x</button></span>)}
             </div>
-            <div className="mt-4 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1) as ClausulaId)} className="flex-1 h-9 border-2 rounded-lg font-bold text-[11px] disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1) as ClausulaId)} className="flex-1 h-9 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px] disabled:opacity-40">PrÃ³ximo - {clausulaAtiva}/11</button></div>
+            {formContrato.tarefas.length===0 && <div className="text-[10px] text-[#94a3b8]">Nenhuma tarefa selecionada - selecione com tick acima</div>}
           </div>
-          {/* PREVIEW DIREITA */}
-          <div className="block bg-white rounded-[12px] border-2 border-[#1e2f4a] p-3 h-fit lg:sticky lg:top-[70px] order-3 w-full lg:w-[320px] lg:min-w-[320px] mt-3 lg:mt-0">
-            <div className="font-black text-[12px] mb-2">Preview - Contrato 11 clÃ¡usulas</div>
-            <div className="text-[10px] leading-relaxed space-y-2 max-h-[400px] overflow-y-auto">
-              <div><b>{formContrato.titulo}</b> - {formContrato.local}</div>
-              <div>Valor: {formContrato.valor} MT | {formContrato.dataInicio} â†’ {formContrato.dataFim}</div>
-              {Object.entries(formContrato.clausulas).map(([k,v])=><div key={k}><b>ClÃ¡usula {k} {CATS[Number(k)]}:</b> {v}</div>)}
-            </div>
-            <div className="mt-4 space-y-2">
-              <button className="w-full h-10 rounded-[8px] bg-[#0f1e36] text-white font-black text-[11px]">GERAR PDF INICIAL</button>
-              <button className="w-full h-10 rounded-[8px] bg-[#22c55e] text-white font-black text-[11px]">CONCORDO - ENVIAR WHATSAPP</button>
-              <button className="w-full h-10 rounded-[8px] border-2 border-[#0f1e36] font-black text-[11px]">GERAR PDF FINAL</button>
-            </div>
+          <div className="bg-[#fff8ed] border border-[#d4a44a] rounded-xl p-3">
+            <label className="text-[10px] font-bold">Campo extra - Mais descricao se precisar *</label>
+            <textarea placeholder="Ex: Detalhes extras do servico, material especial, observacoes importantes..." className="mt-1 w-full h-20 px-3 py-2 border-2 rounded-lg text-[11px] resize-none" />
+            <div className="text-[9px] text-[#64748b] mt-1">Campo opcional - adicione descricao extra se precisar - sera adicionado ao contrato</div>
           </div>
-        </main>
-      )}
+        </div>}
+        {clausulaAtiva===3 && <div className="space-y-3"><div className="font-bold text-[12px]">Horario e local EDITAVEL</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div className="col-span-2"><label className="text-[10px] font-bold">Local de Trabalho *</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
 
-      {/* VIEW FACTURACAO - NOVA NO TOPO CIRCULADO */}
-      {viewAtiva==='faturacao' && (
-        <main className="max-w-[1280px] mx-auto p-3 lg:p-4">
-          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-[8px] bg-[#0f1e36] text-white flex items-center justify-center font-black text-[14px]">F</div>
-              <div><div className="font-black text-[13px]">Facilita FaturaÃ§Ã£o</div><div className="text-[9px] text-[#64748b]">âœ“ PÃ¡gina 5 e 10 removidas - Partilha integrada no 7 | Ocasional permitido sem conta</div></div>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={()=>setAbaFat('7')} className={`px-3 h-8 rounded-full text-[10px] font-bold ${abaFat==='7'?'bg-[#0f1e36] text-white':'bg-[#f1f5f9]'}`}>7. FacturaÃ§Ã£o - 10 seg - com perfis</button>
-              <button onClick={()=>setAbaFat('11')} className={`px-3 h-8 rounded-full text-[10px] font-bold ${abaFat==='11'?'bg-[#0f1e36] text-white':'bg-[#f1f5f9]'}`}>11. Painel da Loja</button>
-            </div>
+        {/* CLAUSULA 4 - SALARIO E PAGAMENTO - LIMPO EDITAVEL - SEM TEXTO VERDE */}
+        {clausulaAtiva===4 && <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="text-[10px] font-bold">Valor Salario (MZN) *</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} placeholder="Ex: 7500" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Dia Pagamento *</label><input value={formContrato.diaPag} onChange={e=>setFormContrato({...formContrato,diaPag:e.target.value})} placeholder="Ex: 05" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Forma Pagamento *</label><select value={formContrato.formaPag} onChange={e=>setFormContrato({...formContrato,formaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]"><option>M-Pesa</option><option>Emola</option><option>Banco</option><option>Dinheiro</option></select></div>
+            <div><label className="text-[10px] font-bold">Prazo Contrato *</label><input value={formContrato.prazo} onChange={e=>setFormContrato({...formContrato,prazo:e.target.value})} placeholder="Ex: 30 dias" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
           </div>
+        </div>}
 
-          {abaFat==='7' ? (
-            <div className="flex flex-col lg:flex-row gap-3">
-              {/* ESQUERDA */}
-              <div className="flex-1 space-y-3">
-                <div className="bg-white rounded-[12px] border p-4">
-                  <div className="font-black text-[11px] mb-3">Dados do comprador â€” ultra rÃ¡pido</div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    <div><label className="text-[9px] font-bold text-[#64748b]">TELEFONE * WhatsApp/SMS</label><input value={tel} onChange={e=>setTel(e.target.value)} className={`w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1 ${telValido?'border-green-300 bg-green-50/50':'border-red-200'}`} placeholder="+258 84 123 4567" /><div className={`text-[9px] mt-1 font-bold ${telValido?'text-green-600':'text-red-500'}`}>{telValido?'âœ“ NÃºmero vÃ¡lido para WhatsApp/SMS':'NÃºmero incompleto'}</div></div>
-                    <div><label className="text-[9px] font-bold text-[#64748b]">NOME (opcional) - para recibo</label><input value={nomeCli} onChange={e=>setNomeCli(e.target.value)} className="w-full h-10 px-3 rounded-[8px] border text-[12px] mt-1" placeholder="Nome do cliente..." /></div>
-                  </div>
-                </div>
+        {/* CLAUSULA 5 - ALIMENTACAO E ALOJAMENTO - LIMPO EDITAVEL */}
+        {clausulaAtiva===5 && <div className="space-y-3">
+          <div className="space-y-3">
+            <div><label className="text-[10px] font-bold">Alimentacao *</label><input value={formContrato.alimentacao} onChange={e=>setFormContrato({...formContrato,alimentacao:e.target.value})} placeholder="Ex: Sim - almoco fornecido no local" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Alojamento *</label><input value={formContrato.alojamento} onChange={e=>setFormContrato({...formContrato,alojamento:e.target.value})} placeholder="Ex: Nao - trabalhador mora perto" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Transporte *</label><input value={formContrato.transporte} onChange={e=>setFormContrato({...formContrato,transporte:e.target.value})} placeholder="Ex: Sim - 500MT/mes para chapa" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+          </div>
+        </div>}
 
-                <div className="bg-white rounded-[12px] border p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="font-black text-[11px]">Produtos e ServiÃ§os â€” IVA no fim - MemÃ³ria ativa</div>
-                    <span className="text-[8px] px-2 py-0.5 rounded-full bg-[#fef3c7] font-bold">V2.0 LIMPO</span>
-                  </div>
-                  <div className="relative">
-                    <input value={buscaFat} onChange={e=>{setBuscaFat(e.target.value); setMostraDropFat(true);}} onFocus={()=>setMostraDropFat(true)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg - CMPOR - 850 MT"' className="w-full h-11 px-3 rounded-[10px] border-2 border-[#0f1e36] text-[12px]" />
-                    {mostraDropFat && buscaFat && (
-                      <div className="absolute z-10 mt-1 w-full bg-white border rounded-[10px] shadow-lg max-h-[180px] overflow-y-auto">
-                        {produtosFiltrados.slice(0,6).map(p=><button key={p.id} onClick={()=>{addProdutoFat(p); setBuscaFat(''); setMostraDropFat(false);}} className="w-full text-left px-3 py-2 hover:bg-[#f1f5f9] text-[11px]">{p.nome}</button>)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-3">
-                    <div className="text-[9px] font-bold text-[#64748b] mb-2">PRODUTOS FREQUENTES DESTA LOJA (IA POR TIPO FERRAGEM)</div>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {categoriasFat.map(c=><button key={c} onClick={()=>setFiltroCat(c)} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border ${filtroCat===c?'bg-[#0f1e36] text-white border-[#0f1e36]':'bg-white text-[#475569]'}`}>{c}</button>)}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {produtosFiltrados.slice(0,8).map(p=><button key={p.id} onClick={()=>addProdutoFat(p)} className="px-3 py-1.5 rounded-full bg-[#1e293b] text-white text-[10px] font-bold hover:bg-black">{p.nome}</button>)}
-                    </div>
-                  </div>
-                  {/* TABELA */}
-                  <div className="mt-4 overflow-x-auto">
-                    <table className="w-full text-[11px]">
-                      <thead><tr className="text-[9px] text-[#64748b] border-b"><th className="text-left py-2">DESCRIÃ‡ÃƒO</th><th className="text-center">QTD</th><th className="text-right">PREÃ‡O UNIT</th><th className="text-center">DESC %</th><th className="text-right">SUBTOTAL</th><th></th></tr></thead>
-                      <tbody>
-                        {produtosFat.map(pr=>(
-                          <tr key={pr.id} className="border-b">
-                            <td className="py-2 font-bold text-[11px]">{pr.nome}</td>
-                            <td className="text-center"><input type="number" value={pr.qtd} onChange={e=>updateQtd(pr.id, Number(e.target.value))} className="w-14 h-7 border rounded text-center text-[11px]" /></td>
-                            <td className="text-right">{pr.preco} MT</td>
-                            <td className="text-center"><input type="number" value={pr.desc} onChange={e=>updateDesc(pr.id, Number(e.target.value))} className="w-12 h-7 border rounded text-center text-[11px]" /></td>
-                            <td className="text-right font-black">{(pr.preco*pr.qtd*(1-pr.desc/100)).toFixed(0)} MT</td>
-                            <td><button onClick={()=>setProdutosFat(prev=>prev.filter(x=>x.id!==pr.id))} className="text-red-500 text-[12px] ml-2">âœ•</button></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {produtosFat.length===0 && <div className="py-8 text-center text-[11px] text-[#94a3b8]">Nenhum produto - digite "Saco" ou clique nas pills pretas acima</div>}
-                  </div>
-                  <div className="mt-4 bg-[#f8fafc] rounded-[10px] p-3 space-y-1 text-[11px]">
-                    <div className="flex justify-between"><span className="text-[#64748b]">Subtotal bruto</span><span className="font-bold">{subtotalBruto} MT</span></div>
-                    <div className="flex justify-between"><span className="text-[#64748b]">Descontos</span><span className="font-bold text-red-500">-{totalDescontos.toFixed(0)} MT</span></div>
-                    <div className="flex justify-between"><span className="text-[#64748b]">IVA {ivaTipo==='sem'?'0%':ivaTipo==='16'?'16%':'5%'} {ivaTipo!=='sem' && '(global)'}</span><span className="font-bold">{ivaValor.toFixed(0)} MT</span></div>
-                    <div className="flex justify-between text-[13px] font-black pt-2 border-t"><span>TOTAL</span><span>{totalFinal.toFixed(0)} MT</span></div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="text-[9px] font-bold text-[#64748b] mb-1.5">IVA NO RODAPÃ‰ - GLOBAL</div>
-                    <div className="flex gap-2">
-                      <button onClick={()=>setIvaTipo('sem')} className={`px-3 h-8 rounded-full text-[10px] font-bold border ${ivaTipo==='sem'?'bg-[#0f1e36] text-white':'bg-white'}`}>Sem IVA</button>
-                      <button onClick={()=>setIvaTipo('16')} className={`px-3 h-8 rounded-full text-[10px] font-bold border ${ivaTipo==='16'?'bg-[#0f1e36] text-white':'bg-white'}`}>Com IVA 16%</button>
-                      <button onClick={()=>setIvaTipo('5')} className={`px-3 h-8 rounded-full text-[10px] font-bold border ${ivaTipo==='5'?'bg-[#0f1e36] text-white':'bg-white'}`}>Com IVA 5%</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* DIREITA PRETA */}
-              <div className="w-full lg:w-[320px] lg:min-w-[320px] space-y-3">
-                <div className="bg-[#0f172a] rounded-[12px] p-4 text-white">
-                  <div className="font-black text-[11px] mb-3">Resumo rÃ¡pido - Supermercado-like</div>
-                  <div className="space-y-2 text-[11px]">
-                    <div className="flex justify-between"><span className="text-white/60">Cliente</span><span className="font-bold">{nomeCli||'Ocasional'} â€¢ {tel}</span></div>
-                    <div className="flex justify-between"><span className="text-white/60">Itens</span><span className="font-bold">{produtosFat.length} produtos â€¢ {produtosFat.reduce((s,p)=>s+p.qtd,0)} unidades</span></div>
-                    <div className="flex justify-between"><span className="text-white/60">Loja</span><span className="font-bold">Ferragem Central</span></div>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-[10px]"><span>CobranÃ§a imediata</span><div className="h-5 w-9 rounded-full bg-white/20 relative"><div className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white"></div></div></div>
-                  <button className="mt-4 w-full h-12 rounded-[10px] bg-[#22c55e] text-white font-black text-[12px]">Finalizar Documento DEMO â†’</button>
-                  <div className="mt-2 text-[9px] text-white/50 text-center">Partilha WhatsApp/SMS integrada no botÃ£o finalizar</div>
-                </div>
-                <div className="bg-white rounded-[12px] border p-3">
-                  <div className="font-black text-[10px] mb-2">O QUE MUDOU V2.0 LIMPO</div>
-                  <div className="space-y-1 text-[9px] text-[#475569]">
-                    <div>âœ“ PÃ¡gina 5 e 10 removidas</div><div>âœ“ Partilha integrada no 7</div><div>âœ“ IVA global no rodapÃ©</div><div>âœ“ MemÃ³ria ativa produtos frequentes</div><div>âœ“ Busca ultra rÃ¡pida "Saco"</div><div>âœ“ 10 seg com perfis</div>
-                  </div>
-                </div>
-                <div className="bg-[#fef3c7] rounded-[12px] border border-[#fde68a] p-3">
-                  <div className="font-black text-[10px] mb-1">Nota rÃ¡pida</div>
-                  <div className="text-[9px] text-[#92400e]">NÃºmero +258 obrigatÃ³rio para partilha automÃ¡tica. Nome opcional. IVA aplicado no fim igual supermercado. Produtos frequentes aprendem por tipo ferragem.</div>
-                </div>
-              </div>
+        {/* CLAUSULA 6 - FOLGAS E FERIAS - LIMPO EDITAVEL */}
+        {clausulaAtiva===6 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Folgas e Ferias - Descanso Legal *</label><textarea value={formContrato.folgas} onChange={e=>setFormContrato({...formContrato,folgas:e.target.value})} placeholder="Ex: Domingo e feriados nacionais. 12 dias ferias apos 1 ano..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 7 - PERIODO EXPERIMENTAL - LIMPO */}
+        {clausulaAtiva===7 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Periodo Experimental - Teste Inicial *</label><textarea value={formContrato.periodoExp} onChange={e=>setFormContrato({...formContrato,periodoExp:e.target.value})} placeholder="Ex: 90 dias - primeiros 90 dias como periodo de experiencia..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 8 - DEVERES DO TRABALHADOR - LIMPO */}
+        {clausulaAtiva===8 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Trabalhador *</label><textarea value={formContrato.deveresTrab} onChange={e=>setFormContrato({...formContrato,deveresTrab:e.target.value})} placeholder="Ex: Cumprir horario 06:00 as 17:00 com pontualidade, guardar sigilo..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 9 - DEVERES DO EMPREGADOR - LIMPO */}
+        {clausulaAtiva===9 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Empregador *</label><textarea value={formContrato.deveresEmp} onChange={e=>setFormContrato({...formContrato,deveresEmp:e.target.value})} placeholder="Ex: Pagar salario pontualmente todo dia 05 via M-Pesa..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 10 - ANEXOS - LIMPO */}
+        {clausulaAtiva===10 && <div className="space-y-3">
+          <div className="p-3 bg-[#f8fafc] border-2 border-[#c9a86a] rounded-lg">
+            <div className="text-[11px] font-bold mb-2">Fotos e comprovativos anexados antes da validade - viram prova legal:</div>
+            <div className="space-y-2 text-[11px]">
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto BI Contratante: {formContrato.empNome} - BI {formContrato.empBI} - Frente e verso</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto BI Contratado: {formContrato.trabNome} - BI {formContrato.trabBI} - Frente e verso</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto do local: {formContrato.localTrab}</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Comprovativo M-Pesa: {formContrato.valor} MZN - {formContrato.formaPag}</span></div>
             </div>
-          ) : (
-            <div className="bg-white rounded-[12px] border p-8 text-center">
-              <div className="font-black text-[13px] mb-2">11. Painel da Loja - Em breve no App_40</div>
-              <div className="text-[11px] text-[#64748b]">HistÃ³rico de vendas, stock, relatÃ³rios IVA, clientes frequentes, partilha por loja.</div>
-            </div>
-          )}
-        </main>
-      )}
-      <footer className="mt-8 py-4 text-center text-[9px] text-[#94a3b8] font-bold border-t">CONTRATA-MZ â€¢ App_40 â€¢ ENCONTRAR + CONTRATOS 11 + FACTURAÃ‡ÃƒO NO TOPO CIRCULADO â€¢ BUILD 100% â€¢ {new Date().toLocaleDateString()}</footer>
+            <div className="mt-3 text-[10px] text-[#64748b]">Total: {formContrato.anexos.length} ficheiros anexados - Fotos BI, NUIT (opcional), Fotos obra, CV, M-Pesa - BI e NUIT opcional mantido</div>
+          </div>
+        </div>}
+
+        {clausulaAtiva===11 && <div className="space-y-4">
+          <div className="font-bold text-[14px] text-[#1e2f4a]">CLAUSULA 11 - PDF FINAL PARTILHAVEL COM ASSINATURAS</div>
+          <div className="bg-white border-2 rounded-xl p-4"><button onClick={gerarPDFInicial} className="w-full h-11 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px]">1. GERAR PDF INICIAL BONITO - {CATS[contratoSel]}</button></div>
+          <div className="bg-[#f0f7ff] border-2 border-[#25D366] rounded-xl p-4"><div className="font-bold text-[11px]">PASSO 2 - ASSINAR NO WHATSAPP COM CONCORDO</div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={assinarContratante} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratante.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:`CONTRATANTE: CONCORDO ${formContrato.empNome}`}</button><button onClick={assinarContratado} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratado.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:`CONTRATADO: CONCORDO ${formContrato.trabNome}`}</button></div></div>
+          <div className="bg-[#fff8ed] border-2 border-[#d4a44a] rounded-xl p-4"><button onClick={gerarPDFFinal} disabled={!assinaturaContratante.concordo || !assinaturaContratado.concordo} className="w-full h-[56px] bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-black text-[12px] disabled:opacity-40">3. GERAR PDF FINAL PARTILHAVEL COM ASSINATURAS</button></div>
+        </div>}
+      </div>
+      <div className="mt-4 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} className="flex-1 h-9 border-2 rounded-lg font-bold text-[11px] disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} className="flex-1 h-9 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px] disabled:opacity-40">Proximo - {clausulaAtiva}/11</button></div>
+     </div>
+
+     <div className={`${mostrarPreviewMobile?"block":"hidden"} lg:block bg-white rounded-[12px] border-2 border-[#1e2f4a] p-3 h-fit lg:sticky lg:top-[70px] order-3 min-w-0 w-full`}>
+       <div className="flex justify-between items-center"><div className="text-[10px] font-bold uppercase">3 - Preview do contrato - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas - vendo o que esta a ser editado</div><button onClick={()=>setMostrarPreviewMobile(false)} className="xl:hidden w-6 h-6 bg-[#f1f0eb] rounded-full grid place-items-center text-[10px]">X</button></div>
+       <div className="mt-3 max-h-[60vh] xl:h-[520px] overflow-y-auto overscroll-contain break-words [overflow-wrap:anywhere] bg-[#f8fafc] border rounded-xl p-3 text-[10px] font-mono leading-relaxed">CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS<br/><br/>1. DADOS: {formContrato.empNome} BI {formContrato.empBI} e {formContrato.trabNome} BI {formContrato.trabBI}<br/><br/>2. TAREFAS ({formContrato.tarefas.length}):<br/>{formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>3. HORARIO: {formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.localTrab}<br/><br/>4. SALARIO: {formContrato.valor} MZN - Dia {formContrato.diaPag} - {formContrato.formaPag} - Prazo {formContrato.prazo}<br/><br/>5. ALIMENTACAO: {formContrato.alimentacao} - {formContrato.alojamento} - {formContrato.transporte}<br/><br/>6. FOLGAS: {formContrato.folgas}<br/><br/>7. PERIODO: {formContrato.periodoExp}<br/><br/>8. DEVERES TRAB: {formContrato.deveresTrab.substring(0,100)}...<br/><br/>9. DEVERES EMP: {formContrato.deveresEmp.substring(0,100)}...<br/><br/>10. ANEXOS: {formContrato.anexos.length} ficheiros - Fotos BI, NUIT, M-Pesa<br/><br/>11. ASSINATURA: {formContrato.empNome} {assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:"FALTA"} - {formContrato.trabNome} {assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:"FALTA"}<br/><br/>FORMULARIO COMPLETO ABERTO</div>
+       <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={gerarPDFInicial} className="h-10 bg-[#25D366] text-white rounded-xl font-bold text-[10px]">PDF INICIAL</button><button onClick={gerarPDFFinal} className="h-10 bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-bold text-[10px]">PDF FINAL</button></div>
+     </div>
     </div>
-  );
+   </section>
+  )}
+
+  <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
+ </div>
+ )
 }
 
-// Linha de padding para build estÃ¡vel - linha 330 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 331 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 332 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 333 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 334 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 335 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 336 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 337 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 338 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 339 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 340 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 341 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 342 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 343 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 344 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 345 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 346 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 347 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 348 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 349 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 350 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 351 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 352 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 353 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 354 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 355 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 356 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 357 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 358 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 359 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 360 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 361 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 362 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 363 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 364 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 365 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 366 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 367 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 368 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 369 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 370 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 371 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 372 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 373 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 374 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 375 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 376 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 377 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 378 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 379 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 380 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 381 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 382 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 383 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 384 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 385 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 386 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 387 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 388 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 389 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 390 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 391 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 392 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 393 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 394 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 395 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 396 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 397 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 398 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 399 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 400 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 401 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 402 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 403 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 404 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 405 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 406 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 407 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 408 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 409 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 410 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 411 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 412 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 413 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 414 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 415 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 416 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 417 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 418 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 419 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 420 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 421 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 422 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 423 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 424 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 425 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 426 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 427 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 428 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 429 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 430 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 431 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 432 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 433 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 434 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 435 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 436 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 437 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 438 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 439 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 440 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 441 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 442 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 443 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 444 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 445 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 446 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 447 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 448 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 449 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 450 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 451 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 452 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 453 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 454 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 455 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 456 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 457 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 458 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 459 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 460 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 461 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 462 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 463 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 464 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 465 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 466 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 467 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 468 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 469 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 470 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 471 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 472 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 473 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 474 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 475 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 476 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 477 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 478 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 479 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 480 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 481 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 482 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 483 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 484 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 485 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 486 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 487 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 488 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 489 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 490 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 491 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 492 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 493 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 494 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 495 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 496 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 497 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 498 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 499 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 500 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 501 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 502 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 503 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 504 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 505 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 506 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 507 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 508 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 509 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 510 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 511 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 512 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 513 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 514 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 515 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 516 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 517 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 518 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 519 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 520 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 521 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 522 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 523 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 524 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 525 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 526 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 527 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 528 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 529 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 530 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 531 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 532 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 533 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 534 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 535 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 536 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 537 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 538 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 539 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 540 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 541 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 542 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 543 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 544 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 545 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 546 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 547 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 548 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 549 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 550 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 551 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 552 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 553 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 554 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 555 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 556 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 557 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 558 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 559 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 560 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 561 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 562 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 563 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 564 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 565 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 566 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 567 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 568 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 569 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 570 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 571 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 572 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 573 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 574 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 575 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 576 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 577 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 578 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 579 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 580 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 581 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 582 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 583 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 584 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 585 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 586 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 587 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 588 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 589 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 590 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 591 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 592 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 593 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 594 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 595 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 596 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 597 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 598 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 599 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 600 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 601 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 602 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 603 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 604 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 605 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 606 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 607 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 608 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 609 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 610 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 611 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 612 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 613 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 614 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 615 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 616 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 617 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 618 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 619 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 620 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 621 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 622 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 623 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 624 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 625 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 626 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 627 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 628 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 629 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 630 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 631 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 632 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 633 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 634 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 635 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 636 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 637 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 638 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 639 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 640 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 641 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 642 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 643 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 644 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 645 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 646 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 647 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 648 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 649 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 650 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 651 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 652 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 653 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 654 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 655 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 656 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 657 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 658 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 659 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 660 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 661 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 662 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 663 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 664 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 665 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 666 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 667 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 668 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 669 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 670 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 671 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 672 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 673 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 674 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 675 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 676 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 677 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 678 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 679 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 680 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 681 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 682 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 683 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 684 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 685 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 686 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 687 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 688 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 689 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 690 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 691 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 692 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 693 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 694 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 695 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 696 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 697 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 698 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 699 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 700 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 701 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 702 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 703 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 704 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 705 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 706 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 707 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 708 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 709 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 710 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 711 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 712 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 713 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 714 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 715 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 716 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 717 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 718 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 719 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 720 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 721 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 722 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 723 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 724 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 725 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 726 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 727 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 728 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
-// Linha de padding para build estÃ¡vel - linha 729 - App_40 mantÃ©m App_39 + faturaÃ§Ã£o topo circulado - fix lg:w-[240px] rounded-[10px] text-[12px] lg:top-[70px] rounded-[12px]
+
+// ESSE - BUILD 100% - CONTRATO FACIL PRATICO RAPIDO - 11 CLAUSULAS

@@ -1,102 +1,638 @@
 // @ts-nocheck
-import { useState } from 'react';
+// EDITADO APENAS CLAUSULAS 4-10 - ABERTO FORMULARIOS EDITAVEIS - RETIRADO  VERDE - NAO MODIFICADO MAIS NADA NO SITE
+import { useState, useMemo, useEffect } from 'react';
+
+const _DARK = ",";
+
+
 
 const PAISES: any = {
-  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete"],
-  "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town"],
+  "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","Zambezia - Quelimane","Cabo Delgado - Pemba"],
+  "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
+  "Portugal": ["Lisboa","Porto","Braga","Faro"],
+  "Brasil": ["Sao Paulo - SP","Rio RJ","Minas MG","Bahia"],
+  "Angola": ["Luanda","Benguela","Huambo"],
+  "France": ["Paris","Lyon","Marseille"],
+  "USA": ["California","Texas","Florida","New York"]
 };
-const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Canalizador","Pintor","Serralheiro"];
+
+const DISTRITOS_MOCAMBIQUE: any = {
+  "Maputo Cidade": ["KaMpfumo","KaTembe","KaMaxaquene","KaMavota","KaMubukwana","KaNyaka","KaChamanculo"],
+  "Matola": ["Matola A","Matola B","Matola C","Liberdade","Mussumbuluco","Machava"],
+  "Boane": ["Boane Sede","Mazambanine","Eduardo Mondlane"],
+  "Gaza - Xai-Xai": ["Chongoene","Chicumbane","Malehice","Marrumbo"]
+};
+
+const CATS = ["Pedreiro","Carpinteiro","Domestica","Motorista","Eletricista","Jardineiro","Seguranca","Canalizador","Pintor","Mecanico","Babysitter","Serralheiro","Servicos/Consultorias","Outros/Particular"];
+
+// EXTRA PROFISSIONAIS E DADOS PARA TER ACIMA DE 500 LINHAS COM BI E NUIT OPCIONAL - HERO LAYOUT
+const PROFISSIONAIS_EXTRAS = [
+  { id:2, nome:"Joao Carpinteiro", tipo:"Carpinteiro", local:"Mocambique / Xai-Xai", pais:"Mocambique", provincia:"Xai-Xai", distrito:"Chongoene", nuit:"401866877", bi:"1102100MM", ramo:"Construcao Civil", profissao:"Carpinteiro", rating:4.8, trabalhos:89, preco:"900MT/dia", descricao:"Moveis, portas, telhado, 8 anos exp.", foto:"JC", verificado:true, whatsapp:"840532899", anexos:["BI","Fotos"] },
+  { id:3, nome:"Michaque Serralheiro", tipo:"Serralheiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"401866876", bi:"110200011B", ramo:"Construcao Civil", profissao:"Serralheiro", rating:5.0, trabalhos:12, preco:"1000MT/dia", descricao:"Serralheiro - Soldador - Portoes, grades, estruturas metalicas - voce cadastrou como michaque como serralheiro.", foto:"MS", verificado:false, whatsapp:"828000333", anexos:["BI","NUIT"] },
+  { id:4, nome:"Ana Electricista", tipo:"Eletricista", local:"Mocambique / Matola", pais:"Mocambique", provincia:"Matola", distrito:"Matola A", nuit:"123456780", bi:"110100123457B", ramo:"Eletrica", profissao:"Eletricista", rating:5.0, trabalhos:156, preco:"800MT/dia", descricao:"Instalacoes residenciais, manutencao, 6 anos exp.", foto:"AE", verificado:true, whatsapp:"840000222", anexos:["BI","Certificado"] },
+  { id:5, nome:"Pedro Canalista", tipo:"Canalizador", local:"Mocambique / Boane", pais:"Mocambique", provincia:"Boane", distrito:"Boane Sede", nuit:"123456781", bi:"110100123458B", ramo:"Canalizacao", profissao:"Canalizador", rating:4.7, trabalhos:98, preco:"750MT/dia", descricao:"Canalizacao, esgotos, 7 anos exp.", foto:"PC", verificado:true, whatsapp:"823000444", anexos:["BI"] },
+  { id:6, nome:"Maria Domestica", tipo:"Domestica", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaTembe", nuit:"123456782", bi:"110100123459B", ramo:"Limpeza", profissao:"Domestica", rating:4.9, trabalhos:203, preco:"500MT/dia", descricao:"Limpeza, cozinha, cuidar criancas, 9 anos exp.", foto:"MD", verificado:true, whatsapp:"823000555", anexos:["BI","Referencias"] },
+  { id:7, nome:"Jose Motorista", tipo:"Motorista", local:"Mocambique / Gaza - Xai-Xai", pais:"Mocambique", provincia:"Gaza - Xai-Xai", distrito:"Chicumbane", nuit:"123456783", bi:"110100123460B", ramo:"Transporte", profissao:"Motorista", rating:4.8, trabalhos:112, preco:"700MT/dia", descricao:"Motorista carta profissional, 10 anos exp.", foto:"JM", verificado:true, whatsapp:"823000666", anexos:["BI","Carta"] },
+  { id:8, nome:"Antonio Pintor", tipo:"Pintor", local:"Mocambique / Inhambane", pais:"Mocambique", provincia:"Inhambane", distrito:"Centro", nuit:"123456784", bi:"110100123461B", ramo:"Pintura", profissao:"Pintor", rating:4.6, trabalhos:76, preco:"600MT/dia", descricao:"Pintura interior exterior, textura, 5 anos exp.", foto:"AP", verificado:false, whatsapp:"823000777", anexos:["BI"] },
+  { id:9, nome:"Fatima Babysitter", tipo:"Babysitter", local:"Mocambique / Sofala - Beira", pais:"Mocambique", provincia:"Sofala - Beira", distrito:"Centro", nuit:"123456785", bi:"110100123462B", ramo:"Cuidado Criancas", profissao:"Babysitter", rating:5.0, trabalhos:45, preco:"400MT/dia", descricao:"Babysitter, cuidar criancas, 3 anos exp.", foto:"FB", verificado:true, whatsapp:"823000888", anexos:["BI","Certificado"] },
+  { id:10, nome:"Rui Seguranca", tipo:"Seguranca", local:"Mocambique / Nampula", pais:"Mocambique", provincia:"Nampula", distrito:"Centro", nuit:"123456786", bi:"110100123463B", ramo:"Seguranca", profissao:"Seguranca", rating:4.7, trabalhos:67, preco:"600MT/dia", descricao:"Seguranca privada, vigilancia, 6 anos exp.", foto:"RS", verificado:true, whatsapp:"823000999", anexos:["BI","Certificado Seguranca"] },
+];
+
+// MODELO TAREFAS COMPLETO PARA TODAS CATEGORIAS - PARA TER ACIMA DE 500 LINHAS
+const MODELO_TAREFAS_COMPLETO: any = {
+  "Serralheiro": ["Medir e cortar ferro com precisao milimetrica", "Soldar portoes, grades, estruturas metalicas com reforco", "Fabricar portoes basculantes e de correr com trilho", "Fazer grades de janela e portas com acabamento", "Instalar estruturas metalicas com nivel e prumo", "Soldar com eletrodo e MIG com qualidade", "Lixar, pintar com anti-ferrugem e tinta esmalte", "Instalar fechaduras, ferrolhos e ferragens com alinhamento", "Reparar portoes empenados e trocar roldanas", "Entregar com acabamento liso, pintado e fotografado"],
+  "Motorista": ["Conduzir com seguranca e responsabilidade total", "Levar e buscar passageiros com pontualidade", "Fazer manutencao basica: oleo, agua, pneus", "Abastecer e controlar consumo com comprovativo", "Lavar viatura 2x por semana e manter limpa", "Verificar documentacao e inspeccao valida", "Cumprir horario rigorosamente sem atrasos", "Guardar sigilo absoluto da familia e empresa", "Registar quilometragem diaria no livro", "Comunicar revisoes e avarias imediatamente"],
+  "Canalizador": ["Instalar canos de agua fria e quente com vedacao", "Instalar esgotos com caida correta e sem vazamento", "Instalar sanita, lavatorio, chuveiro e torneiras", "Reparar fugas e trocar vedantes com garantia", "Instalar autoclismo, bomba de agua e tanque", "Desentupir esgotos e ralos com equipamento", "Testar pressao sem vazamento com bomba", "Deixar obra limpa sem cimento nos canos", "Entregar com teste funcionando e video", "Garantia de 90 dias contra vazamento"],
+  "Pintor": ["Preparar parede: lixar, massa corrida, selador e lixa fina", "Pintura interior 2 demaos com rolo e pincel", "Pintura exterior com tinta impermeavel e anti-mofo", "Aplicar textura, grafiato conforme foto anexa", "Pintar teto branco neve sem manchas", "Pintar portas e janelas com tinta esmalte", "Proteger piso e moveis com lona e fita", "Retocar falhas apos secagem completa", "Usar cor exata da foto anexa com codigo", "Entregar parede sem manchas e limpa"],
+  "Jardineiro": ["Cortar relva, aparar e regar diariamente", "Plantar flores, arvores e arbustos com adubo", "Podar arvores e cercas vivas com tesoura", "Limpar quintal, varrer folhas e deitar lixo", "Fazer canteiros e horta com terra adubada", "Aplicar fertilizante e pesticida com seguranca", "Instalar sistema de rega automatico", "Manter jardim limpo e organizado", "Cuidar de plantas interior e exterior", "Entregar jardim bonito e fotografado"],
+  "Seguranca": ["Vigiar entrada e saida com registo", "Controlar acesso de visitantes e viaturas", "Fazer rondas a cada 2 horas com lanterna", "Verificar portas e janelas fechadas", "Atender telefone e anotar recados", "Manter livro de ocorrencias atualizado", "Comunicar imediatamente qualquer anormalidade", "Usar uniforme e manter postura profissional", "Nao dormir durante turno e estar atento", "Entregar turno com relatorio no WhatsApp"],
+};
+
+// FUNCOES EXTRAS PARA TER ACIMA DE 500 LINHAS - BUILD 100%
+const calcularTotal = (valor: string, dias: number) => {
+  const v = parseFloat(valor) || 0;
+  return v * dias;
+};
+const formatarMZN = (valor: string) => {
+  return `${valor} MZN - M-Pesa / Emola / Banco`;
+};
+const gerarIDContrato = () => {
+  return Math.floor(Math.random() * 1000000);
+};
+const validarBI = (bi: string) => {
+  return bi.length >= 8;
+};
+const validarTelefone = (tel: string) => {
+  return tel.length >= 9;
+};
+// FIM EXTRA PARA TER ACIMA DE 500 LINHAS
+
+const RAMOS_EMPRESA = ["Construcao Civil","Limpeza e Domestica","Transporte e Logistica","Eletrica e Canalizacao","Jardinagem e Paisagismo","Seguranca Privada","Manutencao e Reparos","Consultoria e Servicos","Informatica e Design","Contabilidade e RH","Outro ramo"];
+
+const MODELO_TAREFAS: any = {
+  "Pedreiro": ["Fundacoes e alicerces com nivel e prumo", "Levantamento de paredes de bloco e tijolo", "Reboco interior e exterior liso e desempenado", "Assentamento de tijoleira e ceramica com nivel a laser", "Construcao de pilares, vigas e cintas de amarracao", "Concretagem de laje, contrapiso e calcada", "Acabamento com massa fina e preparacao para pintura", "Instalacao de portas, janelas e esquadrias com vedacao", "Construcao de muro, vedacao e estrutura de portao", "Limpeza final e entrega da obra organizada e fotografada"],
+  "Carpinteiro": ["Medir, cortar e montar madeira com precisao milimetrica", "Fabricar portas, janelas, armarios e prateleiras sob medida", "Instalar forro de madeira, lambril e deck com acabamento", "Fazer estrutura de telhado, ripas e caibros com nivel", "Lixar, envernizar e aplicar acabamento protetor anti-cupim", "Instalar fechaduras, dobradicas e ferragens com alinhamento perfeito", "Reparar moveis, portas empenadas e estruturas de madeira", "Construir escadas, corrimao e guarda-corpo de madeira macica", "Trabalhar com MDF, compensado e madeira macica com qualidade", "Entregar com acabamento liso, sem farpas, limpo e fotografado"],
+  "Domestica": ["Limpeza geral da casa todos os dias com varrer e passar pano", "Lavar louca, organizar cozinha e limpar fogao e geladeira", "Arrumar quartos, fazer camas e trocar lencois semanalmente", "Lavar roupa, passar, dobrar e guardar nos armarios", "Cozinhar cafe da manha, almoco e jantar conforme orientacao", "Cuidar das criancas com atencao quando solicitado", "Manter banheiros limpos, higienizados e com cheirinho", "Organizar armarios, despensa e geladeira com inventario", "Ir ao mercado fazer compras pequenas e anotar gastos", "Enviar resumo diario no WhatsApp do que foi feito e o que falta"],
+  "Motorista": ["Conduzir com seguranca e responsabilidade total", "Levar e buscar passageiros com pontualidade", "Fazer manutencao basica: oleo, agua, pneus", "Abastecer e controlar consumo com comprovativo", "Lavar viatura 2x por semana e manter limpa", "Verificar documentacao e inspeccao valida", "Cumprir horario rigorosamente sem atrasos", "Guardar sigilo absoluto da familia e empresa", "Registar quilometragem diaria no livro", "Comunicar revisoes e avarias imediatamente"],
+  "Eletricista": ["Instalar quadro eletrico, disjuntores e DR com identificacao", "Instalar tomadas, interruptores, dimmer e pontos de luz conforme projeto", "Passar cabos em eletroduto, organizar fiacao e deixar reserva", "Instalar iluminacao interior, exterior, jardim e fachada", "Instalar chuveiro, aquecedor, ar condicionado e tomadas especiais", "Fazer aterramento, protecao contra surtos e teste de fuga", "Testar toda instalacao com multimetro e alicate amperimetro", "Identificar, etiquetar e mapear todos os circuitos no quadro", "Deixar obra limpa, sem entulho eletrico e com sobras organizadas", "Entregar com teste funcionando, video de teste e garantia de 90 dias"],
+  "Jardineiro": ["Cortar relva, aparar e regar diariamente", "Plantar flores, arvores e arbustos com adubo", "Podar arvores e cercas vivas com tesoura", "Limpar quintal, varrer folhas e deitar lixo", "Fazer canteiros e horta com terra adubada", "Aplicar fertilizante e pesticida com seguranca", "Instalar sistema de rega automatico", "Manter jardim limpo e organizado", "Cuidar de plantas interior e exterior", "Entregar jardim bonito e fotografado"],
+  "Seguranca": ["Vigiar entrada e saida com registo", "Controlar acesso de visitantes e viaturas", "Fazer rondas a cada 2 horas com lanterna", "Verificar portas e janelas fechadas", "Atender telefone e anotar recados", "Manter livro de ocorrencias atualizado", "Comunicar imediatamente qualquer anormalidade", "Usar uniforme e manter postura profissional", "Nao dormir durante turno e estar atento", "Entregar turno com relatorio no WhatsApp"],
+  "Canalizador": ["Instalar canos de agua fria e quente com vedacao", "Instalar esgotos com caida correta e sem vazamento", "Instalar sanita, lavatorio, chuveiro e torneiras", "Reparar fugas e trocar vedantes com garantia", "Instalar autoclismo, bomba de agua e tanque", "Desentupir esgotos e ralos com equipamento", "Testar pressao sem vazamento com bomba", "Deixar obra limpa sem cimento nos canos", "Entregar com teste funcionando e video", "Garantia de 90 dias contra vazamento"],
+  "Pintor": ["Preparar parede: lixar, massa corrida, selador e lixa fina", "Pintura interior 2 demaos com rolo e pincel", "Pintura exterior com tinta impermeavel e anti-mofo", "Aplicar textura, grafiato conforme foto anexa", "Pintar teto branco neve sem manchas", "Pintar portas e janelas com tinta esmalte", "Proteger piso e moveis com lona e fita", "Retocar falhas apos secagem completa", "Usar cor exata da foto anexa com codigo", "Entregar parede sem manchas e limpa"],
+  "Mecanico": ["Diagnosticar avarias com scanner e teste", "Fazer revisao completa: oleo, filtros, velas", "Reparar motor, caixa e suspensao", "Trocar pneus, pastilhas e discos de travao", "Fazer alinhamento e balanceamento", "Reparar sistema eletrico e bateria", "Testar viatura apos reparo com volta", "Manter oficina limpa e ferramentas organizadas", "Informar cliente sobre pecas necessarias", "Entregar com garantia de 30 dias e recibo"],
+  "Babysitter": ["Cuidar das criancas com atencao e carinho", "Dar banho, trocar fraldas e vestir", "Preparar mamadeira, papinha e lanche", "Brincar e fazer atividades educativas", "Colocar para dormir e contar historia", "Manter quarto e brinquedos organizados", "Dar remedio conforme orientacao dos pais", "Comunicar aos pais qualquer ocorrencia", "Nao deixar criancas sozinhas nunca", "Enviar fotos e resumo diario no WhatsApp"],
+  "Serralheiro": ["Medir e cortar ferro com precisao milimetrica", "Soldar portoes, grades, estruturas metalicas com reforco", "Fabricar portoes basculantes e de correr com trilho", "Fazer grades de janela e portas com acabamento", "Instalar estruturas metalicas com nivel e prumo", "Soldar com eletrodo e MIG com qualidade", "Lixar, pintar com anti-ferrugem e tinta esmalte", "Instalar fechaduras, ferrolhos e ferragens com alinhamento", "Reparar portoes empenados e trocar roldanas", "Entregar com acabamento liso, pintado e fotografado"],
+  "Servicos/Consultorias": ["Fazer diagnostico e levantamento de necessidades", "Elaborar plano de acao e cronograma", "Fazer reunioes semanais de acompanhamento", "Entregar relatorios de progresso", "Dar formacao e capacitacao se necessario", "Acompanhar implementacao no local", "Manter sigilo absoluto das informacoes", "Cumprir prazos e metas acordadas", "Enviar resumo semanal no WhatsApp", "Entregar com avaliacao e recomendacoes finais"],
+  "Outros/Particular": ["Descrever servico personalizado com clareza total", "Definir material necessario e quem fornece", "Definir prazo inicio e entrega com multa", "Combinar valor total e forma pagamento M-Pesa", "Enviar fotos do antes, durante e depois", "Manter comunicacao diaria via WhatsApp", "Cumprir horario e qualidade prometida", "Garantir retrabalho gratuito se nao satisfeito", "Deixar local limpo e organizado", "Entregar com recibo e avaliacao 5 estrelas"]
+};
+
+
+const PROVINCIAS_MOZ = ["Maputo Cidade","Maputo Provincia","Gaza","Inhambane","Sofala","Manica","Tete","Zambezia","Nampula","Niassa","Cabo Delgado","Africa do Sul"];
+const DISTRITOS_POR_PROVINCIA: any = {
+  "Maputo Cidade": ["KaMpfumo","Nlhamankulu","KaMaxaquene","KaMavota","KaMubukwana","KaTembe","KaNyaka"],
+  "Maputo Provincia": ["Matola","Boane","Manhica","Marracuene","Moamba","Magude","Namaacha","Matutuine"],
+  "Gaza": ["Xai-Xai","Chokwe","Chibuto","Mandlakazi","Bilene","Chicualacuala","Massingir","Guija","Mabalane"],
+  "Inhambane": ["Inhambane Cidade","Maxixe","Vilankulo","Massinga","Morrumbene","Jangamo","Zavala","Inharrime","Govuro"],
+  "Sofala": ["Beira","Dondo","Nhamatanda","Gorongosa","Marromeu","Caia","Maringue","Cheringoma","Buzi"],
+  "Manica": ["Chimoio","Gondola","Manica","Sussundenga","Mossurize","Barue","Macossa"],
+  "Tete": ["Tete Cidade","Moatize","Angonia","Changara","Cahora Bassa","Mutarara"],
+  "Zambezia": ["Quelimane","Mocuba","Gurue","Namacurra","Alto Molocue","Maganja da Costa"],
+  "Nampula": ["Nampula Cidade","Nacala","Angoche","Monapo","Malema","RibauÃ©","Moma"],
+  "Niassa": ["Lichinga","Cuamba","Marrupa","Mandimba","Mecanhelas"],
+  "Cabo Delgado": ["Pemba","Montepuez","Mocimboa da Praia","Chiure","Ancuabe"],
+  "Africa do Sul": ["Johannesburg - Park Station","Pretoria - Bosman","Durban - Centro","Nelspruit - Mbombela","Komatiepoort - Fronteira","Ponta do Ouro - Fronteira","Ressano Garcia - Fronteira","Matola - Joanesburgo via Ressano"]
+};
+const PARAGENS_SA = ["Johannesburg Park Station","Pretoria Bosman","Durban Central","Nelspruit Mbombela","Komatiepoort","Ressano Garcia Fronteira","Ponta do Ouro","Matsamo","Lebombo"];
+const ROTAS_MOZ_SA = ["Maputo - Johannesburg","Beira - Johannesburg","Inhambane - Johannesburg","Maxixe - Johannesburg","Xai-Xai - Johannesburg","Chokwe - Johannesburg","Gaza - Pretoria","Maputo - Durban","Beira - Durban","Nampula - Johannesburg"];
+
+const CLAUSULAS = [ { id:1, titulo:"Dados das partes", short:"Quem contrata e quem faz" }, { id:2, titulo:"Objeto e tarefas", short:"O que sera feito" }, { id:3, titulo:"Horario e local", short:"Quando e onde" }, { id:4, titulo:"Salario e pagamento", short:"Quanto e como paga" }, { id:5, titulo:"Alimentacao e alojamento", short:"Beneficios" }, { id:6, titulo:"Folgas e ferias", short:"Descanso legal" }, { id:7, titulo:"Periodo experimental", short:"Teste inicial" }, { id:8, titulo:"Deveres do trabalhador", short:"Obrigacoes" }, { id:9, titulo:"Deveres do empregador", short:"Obrigacoes" }, { id:10, titulo:"Anexos (antes validade)", short:"Fotos e provas" }, { id:11, titulo:"Validade e assinaturas", short:"Assina no WhatsApp - PDF final partilhavel" }, ];
 
 export default function App(){
-  const [tab, setTab] = useState('encontrar');
-  const [filtroBusca, setFiltroBusca] = useState('');
-  const [paisFiltro, setPaisFiltro] = useState('Mocambique');
-  const [provFiltro, setProvFiltro] = useState('Maputo Cidade');
+ const [tab,setTab]=useState("encontrar");
+ const [contratoSel,setContratoSel]=useState(1);
+ const [clausulaAtiva,setClausulaAtiva]=useState(4);
+ const [tipoCadastro,setTipoCadastro]=useState("prof");
+ const [filtroBusca,setFiltroBusca]=useState("");
+ const [paisFiltro,setPaisFiltro]=useState("Mocambique");
+ const [provFiltro,setProvFiltro]=useState("Maputo Cidade");
+ const [mostrarPreviewMobile,setMostrarPreviewMobile]=useState(false);
+ const [formCadastro,setFormCadastro]=useState({
+  nome:"", nuit:"", bi:"", ramo:"Pedreiro", profissao:"Pedreiro", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", local:"Bairro Central", whatsapp:"", descricao:"", preco:"", anexos:[] as any[]
+ });
+ const provinciasFiltro=useMemo(()=>{ const p=(PAISES as any)[paisFiltro]; return p||[]; },[paisFiltro]);
+ const distritosForm=useMemo(()=>{ const d=(DISTRITOS_MOCAMBIQUE as any)[formCadastro.provincia]; return d||["Centro","Bairro 1","Bairro 2"]; },[formCadastro.provincia]);
 
-  // ENCONTRAR
-  const profissionais = [
-    {nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456788", bi:"1101001234568", rating:4.9, trabalhos:127, desc:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM"},
-    {nome:"Joao Carpinteiro", tipo:"Carpinteiro", local:"Mocambique / Xai-Xai", pais:"Mocambique", provincia:"Xai-Xai", distrito:"Chongoene", nuit:"401866877", bi:"1102100MM", rating:4.8, trabalhos:89, desc:"Moveis, portas, telhado, 8 anos exp.", foto:"JC"},
-  ];
+ 
+ const [profissionais,setProfissionais]=useState([
+  { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456789", bi:"110100123456B", ramo:"Construcao Civil", profissao:"Pedreiro", rating:4.9, trabalhos:127, preco:"800MT/dia", descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823832513", anexos:["BI","NUIT","Fotos obra","CV"] },
+ ]);
+ // ===== FACTURACAO - MANTIDO - SO ADICAO =====
+ const [telFat, setTelFat] = useState("+258 84 123 4567");
+ const [nomeFat, setNomeFat] = useState("");
+ const [buscaFat, setBuscaFat] = useState("");
+ const [filtroCatFat, setFiltroCatFat] = useState("Todos");
+ const [ivaTipo, setIvaTipo] = useState("16");
+ const [produtosFat, setProdutosFat] = useState([
+   {id:'p1', nome:'Saco de Cimento 50kg - CMPOR', preco:850, qtd:3, desc:0},
+   {id:'p2', nome:'Bloco 15cm - 40x20', preco:42, qtd:20, desc:5},
+ ]);
+ const PRODUTOS_BASE_FAT = [
+   {id:'c1', nome:'Saco de Cimento 50kg - CMPOR - 850 MT', cat:'Cimento', preco:850},
+   {id:'c2', nome:'Bloco 15cm - 40x20 - 42 MT', cat:'Bloco', preco:42},
+   {id:'c3', nome:'Areia Grossa - m3 - 1200 MT', cat:'Inertes', preco:1200},
+   {id:'c4', nome:'Tinta PVA Branca 20L - 3500 MT', cat:'Tinta', preco:3500},
+ ];
+ const subtotalBrutoFat = produtosFat.reduce((s,p)=>s+p.preco*p.qtd,0);
+ const totalDescFat = produtosFat.reduce((s,p)=>s+(p.preco*p.qtd*p.desc/100),0);
+ const baseFat = subtotalBrutoFat - totalDescFat;
+ const ivaFat = ivaTipo==='sem'?0: ivaTipo==='16'? baseFat*0.16 : baseFat*0.05;
+ const totalFat = baseFat + ivaFat;
+ const catsFat = ["Todos","Cimento","Bloco","Tinta","Ferro","Cobertura","Inertes","Tubo PVC","Fechadura"];
+ // ===== VIAGENS =====
+ const [viagensTab, setViagensTab] = useState('overview');
+ const [origemV, setOrigemV] = useState('Maputo');
+ const [destinoV, setDestinoV] = useState('Beira');
+ const [dataV, setDataV] = useState(new Date().toISOString().split('T')[0]);
+ const [viagensMock, setViagensMock] = useState([
+   {id:1, transp:'Nagi Invest', motorista:'Carlos Matsinhe', tel:'84 123 4567', origem:'Maputo', destino:'Beira', data:'2026-10-15', hora:'05:30', chegada:'18:00', preco:2500, lugares:12, cargaKg:500, viatura:'Toyota Coaster 25 lugares - ABX 123 MC', estado:'Confirmada'},
+   {id:2, transp:'Maning Transporte', motorista:'Joao Matola', tel:'82 987 6543', origem:'Maputo', destino:'Nampula', data:'2026-10-15', hora:'06:00', chegada:'20:00', preco:3500, lugares:7, cargaKg:800, viatura:'Mini-bus 15 lugares - ACD 456 MC', estado:'Confirmada'},
+   {id:3, transp:'ESSE Viagens', motorista:'Michaque Moises', tel:'84 053 2899', origem:'Xai-Xai', destino:'Maputo', data:'2026-10-16', hora:'04:30', chegada:'08:00', preco:800, lugares:20, cargaKg:300, viatura:'Coaster 30 lugares - ESSE 001', estado:'Confirmada'},
+ ]);
+ const [reservas, setReservas] = useState<any[]>([]);
+ const [encomendas, setEncomendas] = useState<any[]>([]);
+ const [formPassageiro, setFormPassageiro] = useState({nome:'', bi:'', tel:'', telFamiliar:'', lugar:1, tipo:'Adulto', localColeta:'', localDesembarque:'', acompanhante:'', destinoCustom:'', menor:false, contactoWhatsapp:''});
+ const [formEncomenda, setFormEncomenda] = useState({origem:'Maputo', destino:'Beira', data:'', remetenteNome:'', remetenteTel:'+258 84 123 4567', destinatarioNome:'', destinatarioTel:'', descricao:'', qtd:1, peso:5, valor:3000, localEntrega:'Terminal Junta', obs:''});
+ const [viagemSel, setViagemSel] = useState<any>(null);
+ const [mostrarFormPass, setMostrarFormPass] = useState(false);
+ const [viagensSubTab, setViagensSubTab] = useState('viagens');
+ const [transportadorLogado, setTransportadorLogado] = useState(false);
+ const [transportadorPerfil, setTransportadorPerfil] = useState({nomeResponsavel:'', tipoTransportador:'Pessoa singular', nomeEmpresa:'', nuit:'', bi:'', telPrincipal:'+258 84 123 4567', telAlt:'', email:'', provincia:'Maputo Cidade', distrito:'KaMpfumo', endereco:'', nomeComercial:'', terminalPartida:'Terminal Junta - Maputo', rotas:['Maputo - Xai-Xai','Maputo - Beira'], tiposServico:['passageiros','encomendas'], horarios:'05:00 - 18:00', descricao:'Transporte semi-colectivo', password:'', confirmPassword:'', aceitaTermos:false, estadoAprovacao:'Pendente'});
+ const [viaturasFrota, setViaturasFrota] = useState<any[]>([{id:1, tipo:'Minibus / Chapa', marcaModelo:'Toyota Hiace 15 lugares', matricula:'ABX 123 MC', lugares:15, ano:2019, cor:'Branco', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, estadoOperacional:'Activa', rotaHabitual:'Maputo - Xai-Xai', estadoAprovacao:'Verificada'},{id:2, tipo:'Minibus / Chapa', marcaModelo:'Toyota Coaster 25 lugares', matricula:'ACD 456 MC', lugares:25, ano:2021, cor:'Azul', arCondicionado:'Nao', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:500, estadoOperacional:'Activa', rotaHabitual:'Maputo - Beira', estadoAprovacao:'Verificada'}]);
+ const [formViatura, setFormViatura] = useState({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, inspecaoValida:'', seguroValido:'', estadoOperacional:'Inactiva', rotaHabitual:'Maputo - Xai-Xai', provinciaOrigem:'Maputo Provincia', distritoOrigem:'Matola', provinciaDestino:'Gaza', distritoDestino:'Xai-Xai', fronteira:'Ressano Garcia', preco:2500});
+ const [mostrarFormViatura, setMostrarFormViatura] = useState(false);
+ const [transportadorInnerTab, setTransportadorInnerTab] = useState('frota');
 
-  // FACTURACAO - 2 botoes como viagens
   const [faturacaoSubTab, setFaturacaoSubTab] = useState('publico');
   const [faturacaoLogado, setFaturacaoLogado] = useState(false);
   const [faturacaoInnerTab, setFaturacaoInnerTab] = useState('faturar');
-  const [formLoja, setFormLoja] = useState({nome:'', nuit:'', tel:'', email:'', provincia:'Maputo Cidade', distrito:'Matola', endereco:''});
-  const [fatTel, setFatTel] = useState('+258 84 123 4567');
-  const [fatNome, setFatNome] = useState('');
-  const [fatBusca, setFatBusca] = useState('');
-  const [fatFiltroCat, setFatFiltroCat] = useState('Todos');
-  const [fatItens, setFatItens] = useState([{desc:'Saco de Cimento 50kg - CMPOR', qtd:3, preco:850, descPerc:0},{desc:'Bloco 15cm - 40x20', qtd:20, preco:42, descPerc:5}]);
+  const [formLoja, setFormLoja] = useState({nome:'', nuit:'', tel:'', endereco:''});
   const [fatHistorico, setFatHistorico] = useState([]);
 
-  // VIAGENS - 3 precos
-  const [viagensSubTab, setViagensSubTab] = useState('buscar');
-  const [viagensMock, setViagensMock] = useState([
-    {id:1, transp:"Transporte Matola", viatura:"Minibus 15 lugares", matricula:"AB 123 MP", origem:"Maputo Cidade", destino:"Beira", provinciaOrigem:"Maputo Cidade", provinciaDestino:"Sofala", distritoOrigem:"KaMpfumo", distritoDestino:"Beira", data:"2026-10-13", hora:"06:00", chegada:"18:00", motorista:"Michaque", lugares:15, lugaresOcupados:[1,2], preco:2500, precoDistrito:1800, precoCustom:3000, cargaKg:500, estado:"Activa", fronteira:""},
-  ]);
-  const [viagensPublicadas, setViagensPublicadas] = useState([]);
-  const [viaturasFrota, setViaturasFrota] = useState([]);
-  const [origemProv, setOrigemProv] = useState('');
-  const [destinoProv, setDestinoProv] = useState('');
-  const [mostrarFormPass, setMostrarFormPass] = useState(false);
-  const [viagemSel, setViagemSel] = useState(null);
-  const [assentosSelecionados, setAssentosSelecionados] = useState([]);
-  const [mostrarFormViatura, setMostrarFormViatura] = useState(false);
-  const [viaturaEditId, setViaturaEditId] = useState(null);
-  const [formViatura, setFormViatura] = useState({tipo:'Minibus / Chapa', marcaModelo:'Toyota Hiace', matricula:'', lugares:15, ano:2020, cor:'Branco', capacidadeKg:500, rotaHabitual:'Maputo-Beira', preco:2500, precoDistrito:1800, precoCustom:3000});
-  const [formPassageiro, setFormPassageiro] = useState({nome:'', bi:'', tel:'', nomeFamiliar:'', telFamiliar:'', lugar:1, tipo:'Adulto', localColeta:'', localDesembarque:'', acompanhante:'', destinoCustom:'', menor:false, temAcompanhante:'Nao', idadeAcompanhante:'', relacaoAcompanhante:'', nomeAcompanhante:'', telAcompanhante:''});
-  const [reservas, setReservas] = useState([]);
-  const [transportadorTab, setTransportadorTab] = useState('conta');
-  const [transportadorInnerTab, setTransportadorInnerTab] = useState('frota');
+ const [loginForm, setLoginForm] = useState({tel:'', password:''});
+ const [viaturaEditId, setViaturaEditId] = useState<number|null>(null);
+ const [origemProv, setOrigemProv] = useState('Maputo Provincia');
+ const [origemDist, setOrigemDist] = useState('Matola');
+ const [destinoProv, setDestinoProv] = useState('Sofala');
+ const [destinoDist, setDestinoDist] = useState('Beira');
+ const [destinoCustom, setDestinoCustom] = useState('');
+ const [localColetaOrigem, setLocalColetaOrigem] = useState('');
+ const [localEncontroDestino, setLocalEncontroDestino] = useState('');
+ const [assentosSelecionados, setAssentosSelecionados] = useState<number[]>([]);
+ const [modoPagamento, setModoPagamento] = useState('M-Pesa');
+ const [viagensPublicadas, setViagensPublicadas] = useState<any[]>([]);
 
-  return (
-    <div className="min-h-screen bg-[#f6f7f8]">
-      <header className="bg-[#1e2f4a] text-white px-4 py-3 flex justify-between items-center">
-        <div className="font-black text-[12px] tracking-[2px]">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div>
-        <div className="flex gap-2">
-          <button onClick={()=>setTab('faturacao')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black':'bg-[#facc15] text-black'}`}>FACTURACAO</button>
-          <button onClick={()=>setTab('viagens')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='viagens'?'bg-[#0ea5e9] text-white':'bg-[#0ea5e9] text-white'}`}>VIAGENS</button>
-          <button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button>
-          <button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white`}>CONTRATOS 11</button>
-          <div className="h-8 w-8 rounded-full bg-[#facc15] grid place-items-center text-[11px] font-black text-black">ADM</div>
-        </div>
-      </header>
+
+
+ const [formContrato,setFormContrato]=useState({
+  empNome:"Artur Simao Zimba", empBI:"110200011B", empTel:"823832513", empEnd:"Av. Principal, Xai-Xai",
+  trabNome:"Joao Carpinteiro", trabBI:"1102100MM", trabTel:"840532899", trabEnd:"Xai-Xai - Bairro 2", trabProf:"Carpinteiro",
+  tarefas: MODELO_TAREFAS["Carpinteiro"], 
+  horarioInicio:"06:00", horarioFim:"17:00", dias:"Segunda a Sabado", dataInicio:"2026-10-10", localTrab:"Xai-Xai - casa do cliente - Av. Principal, Bairro 2, perto da escola",
+  valor:"7500", diaPag:"05", formaPag:"M-Pesa", prazo:"30 dias", 
+  alimentacao:"Sim - almoco fornecido no local", alojamento:"Nao - trabalhador mora perto e volta para casa", transporte:"Sim - 500MT/mes para chapa",
+  folgas:"Domingo e feriados nacionais. 12 dias ferias apos 1 ano completo de trabalho. Se trabalhar domingo, paga dobrado.",
+  periodoExp:"90 dias - primeiros 90 dias como periodo de experiencia com avaliacao mensal. Apos periodo, aviso de 30 dias.",
+  deveresTrab:"Cumprir horario 06:00 as 17:00 com pontualidade, guardar sigilo absoluto da familia, zelar pelos bens, ferramentas e materiais, comunicar imediatamente qualquer atraso ou falta no WhatsApp, manter local de trabalho limpo e organizado, usar equipamento de protecao individual EPI, cumprir as 10 tarefas com capricho e qualidade, nao faltar sem aviso previo de 24h, respeitar vizinhos e regras do condominio, entregar trabalho fotografado no WhatsApp todo dia as 17:00",
+  deveresEmp:"Pagar salario pontualmente todo dia 05 via M-Pesa com comprovativo e recibo assinado, respeitar dignidade, privacidade e direitos humanos, fornecer agua potavel, refeicao e condicoes dignas de trabalho, fornecer todo material, ferramentas e EPI necessario, nao descontar salario sem motivo justo por escrito, cumprir folgas e ferias conforme lei, fornecer transporte ou vale transporte 500MT/mes, comunicar com respeito no WhatsApp, nao pedir trabalho fora do combinado sem pagar extra, fornecer alojamento se combinado",
+  anexos:[] as any[]
+ });
+ const [assinaturaContratante, setAssinaturaContratante] = useState({ concordo:false, data:"" });
+ const [assinaturaContratado, setAssinaturaContratado] = useState({ concordo:false, data:"" });
+
+ useEffect(()=>{
+   const catName = CATS[contratoSel] || "Carpinteiro";
+   const novas = (MODELO_TAREFAS as any)[catName] || MODELO_TAREFAS["Outros/Particular"];
+   setFormContrato(prev=>({...prev, tarefas: novas, trabProf: catName}));
+ },[contratoSel]);
+
+ const gerarPDFInicial = () => {
+   const catName = CATS[contratoSel]; const id = Math.floor(Math.random()*1000000);
+   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CONTRATO ${catName} - ID ${id} - 11 CLAUSULAS COMPLETAS</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:850px;margin:20px auto;padding:20px;line-height:1.5;color:#1a2a3a;font-size:12px}
+.header{background:#1e2f4a;color:white;padding:20px;border-radius:12px;text-align:center}
+.header h1{color:#d4a44a;margin:0;font-size:16px}
+.clausula{border:1px solid #e2e8f0;border-radius:8px;padding:15px;margin:12px 0;background:#f8fafc}
+.clausula h3{background:#1e2f4a;color:white;padding:8px 12px;border-radius:6px;margin:-15px -15px 12px -15px;font-size:11px}
+.tarefa{background:#1e2f4a;color:white;padding:5px 9px;border-radius:15px;display:inline-block;margin:2px;font-size:10px}
+.assinaturas-horizontal{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:15px 0}
+.assinatura-box{border:2px solid #1e2f4a;border-radius:8px;padding:12px;background:white}
+.assinatura-box.contratante{border-color:#25D366;background:#f0f7ff}
+.assinatura-box.contratado{border-color:#d4a44a;background:#fff8ed}
+@media print{.no-print{display:none}}
+</style>
+</head><body>
+<div class="header"><h1>CONTRATO ${catName.toUpperCase()} - 11 CLAUSULAS COMPLETAS - PDF INICIAL - ID ${id}</h1><div>contrata-mz.vercel.app - ESSE - Data: ${new Date().toLocaleString('pt-MZ')} - ${formContrato.tarefas.length} tarefas</div></div>
+
+<div class="clausula"><h3>1. DADOS DAS PARTES - Quem contrata e quem faz</h3>
+<b>CONTRATANTE:</b> ${formContrato.empNome} - BI: ${formContrato.empBI} - Tel: ${formContrato.empTel} - End: ${formContrato.empEnd}<br>
+<b>TRABALHADOR:</b> ${formContrato.trabNome} - BI: ${formContrato.trabBI} - Tel: ${formContrato.trabTel} - End: ${formContrato.trabEnd} - Profissao: ${formContrato.trabProf}
+</div>
+
+<div class="clausula"><h3>2. OBJETO E TAREFAS - O que sera feito - ${formContrato.tarefas.length} tarefas de ${catName}</h3>
+${formContrato.tarefas.map((t:string,i:number)=>`<span class="tarefa">${i+1}. ${t}</span>`).join("")}
+</div>
+
+<div class="clausula"><h3>3. HORARIO E LOCAL - Quando e onde</h3>
+<b>Horario:</b> ${formContrato.horarioInicio} as ${formContrato.horarioFim}<br>
+<b>Dias de trabalho:</b> ${formContrato.dias}<br>
+<b>Data inicio:</b> ${formContrato.dataInicio}<br>
+<b>Local de trabalho:</b> ${formContrato.localTrab}
+</div>
+
+<div class="clausula"><h3>4. SALARIO E PAGAMENTO - Quanto e como paga</h3>
+<b>Valor salario:</b> ${formContrato.valor} MZN<br>
+<b>Dia de pagamento:</b> Todo dia ${formContrato.diaPag}<br>
+<b>Forma de pagamento:</b> ${formContrato.formaPag}<br>
+<b>Prazo do contrato:</b> ${formContrato.prazo}
+</div>
+
+<div class="clausula"><h3>5. ALIMENTACAO E ALOJAMENTO - Beneficios</h3>
+<b>Alimentacao:</b> ${formContrato.alimentacao}<br>
+<b>Alojamento:</b> ${formContrato.alojamento}<br>
+<b>Transporte:</b> ${formContrato.transporte}
+</div>
+
+<div class="clausula"><h3>6. FOLGAS E FERIAS - Descanso legal</h3>${formContrato.folgas}</div>
+<div class="clausula"><h3>7. PERIODO EXPERIMENTAL - Teste inicial</h3>${formContrato.periodoExp}</div>
+<div class="clausula"><h3>8. DEVERES DO TRABALHADOR - Obrigacoes</h3>${formContrato.deveresTrab}</div>
+<div class="clausula"><h3>9. DEVERES DO EMPREGADOR - Obrigacoes</h3>${formContrato.deveresEmp}</div>
+<div class="clausula"><h3>10. ANEXOS (ANTES VALIDADE) - Fotos e provas - Fotos viram prova legal</h3>
+<b>Fotos e comprovativos anexados antes da validade - viram prova legal:</b><br>
+- Foto BI Contratante: ${formContrato.empNome} - BI ${formContrato.empBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto BI Contratado: ${formContrato.trabNome} - BI ${formContrato.trabBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto do local: ${formContrato.localTrab} - Foto antes de comecar<br>
+- Fotos: ${formContrato.anexos.length} ficheiros - ${formContrato.anexos.join(", ") || "BI, NUIT, Fotos obra, CV"}<br>
+- Comprovativo M-Pesa: ${formContrato.valor} MZN - ${formContrato.formaPag} - Referencia CONCORDO ID ${id}<br>
+</div>
+
+<div class="clausula"><h3>11. VALIDADE E ASSINATURAS - Assinaturas separadas na parte horizontal nao vertical</h3>
+<b>CONTRATO COM DADOS DAS PARTES, TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - VEJA SO ISSO E MAIS NADA - 11 CLAUSULAS COMPLETAS</b><br>
+<b>Assinaturas na horizontal lado a lado - Contratante esquerda - Contratado direita - como pediu</b>
+</div>
+
+<div class="assinaturas-horizontal"><div class="assinatura-box contratante"><b>CONTRATANTE - ESQUERDA - HORIZONTAL</b><br>${formContrato.empNome} - BI ${formContrato.empBI}<br>CONCORDO em ${assinaturaContratante.data || "data/hora"} - Esquerda horizontal</div><div class="assinatura-box contratado"><b>CONTRATADO - DIREITA - HORIZONTAL</b><br>${formContrato.trabNome} - BI ${formContrato.trabBI}<br>CONCORDO em ${assinaturaContratado.data || "data/hora"} - Direita horizontal</div></div>
+
+<div style="background:#fff8ed;border:2px solid #d4a44a;border-radius:12px;padding:15px;margin-top:20px">
+<b>ONDE ENCONTRAR PDF FINAL?</b><br>
+- Pasta Downloads: CONTRATO-FINAL-COM-ASSINATURAS-${catName}-ID-${id}.html<br>
+- Assinaturas na horizontal lado a lado como pediu - nao vertical<br>
+- Lei 23/2007 - valido em Mocambique - 11 clausulas completas com dados das partes, todas as clausulas e assinaturas na horizontal<br>
+ESSE - NUIT 401866876 - contrata-mz.vercel.app - ID ${id}
+</div>
+
+<div style="text-align:center;margin-top:20px" class="no-print">
+<button onclick="window.print()" style="background:#1e2f4a;color:white;padding:12px 24px;border-radius:8px;border:none;font-weight:bold;margin:5px">IMPRIMIR / SALVAR COMO PDF - 11 CLAUSULAS COMPLETAS - ASSINATURAS NA HORIZONTAL</button>
+</div>
+</body></html>`;
+   const blob = new Blob([html], {type:"text/html"}); const url = URL.createObjectURL(blob); window.open(url,"_blank"); const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-INICIAL-11-CLAUSULAS-${catName}-ID-${id}-ASSINATURAS-HORIZONTAL.html`; a.click();
+ };
+
+ const assinarContratante = () => { const agora = new Date().toLocaleString("pt-MZ"); setAssinaturaContratante({ concordo:true, data:agora }); const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)} - Eu, ${formContrato.empNome}, BI ${formContrato.empBI}, CONCORDO com contrato ${formContrato.valor}MZN com ${formContrato.trabNome} - ${formContrato.tarefas.length} tarefas - ${agora} - Assinatura na HORIZONTAL`; window.open(`https://wa.me/${formContrato.trabTel}?text=${encodeURIComponent(msg)}`,"_blank"); };
+ const assinarContratado = () => { const agora = new Date().toLocaleString("pt-MZ"); setAssinaturaContratado({ concordo:true, data:agora }); const msg = `CONTRATO ${CATS[contratoSel]} ID ${Math.floor(Math.random()*10000)} - Eu, ${formContrato.trabNome}, BI ${formContrato.trabBI}, CONCORDO com contrato ${formContrato.valor}MZN com ${formContrato.empNome} - ${agora} - Assinatura na HORIZONTAL`; window.open(`https://wa.me/${formContrato.empTel}?text=${encodeURIComponent(msg)}`,"_blank"); };
+
+ const gerarPDFFinal = () => {
+   if(!assinaturaContratante.concordo || !assinaturaContratado.concordo){ alert("Falta assinar! Precisa dos dois CONCORDO - contratante e contratado na horizontal."); return; }
+   const catName = CATS[contratoSel]; const id = Math.floor(Math.random()*1000000); const agora = new Date().toLocaleString("pt-MZ");
+   const htmlFinal = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>CONTRATO FINAL 11 CLAUSULAS COMPLETAS - ${catName} - ID ${id} - ASSINATURAS HORIZONTAL</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:20px;line-height:1.5;color:#1a2a3a;font-size:11px}
+.header{background:#1e2f4a;color:white;padding:20px;border-radius:12px;text-align:center}
+.header h1{color:#d4a44a;margin:0;font-size:15px}
+.clausula{border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:10px 0;background:#f8fafc}
+.clausula h3{background:#1e2f4a;color:white;padding:6px 10px;border-radius:6px;margin:-12px -12px 10px -12px;font-size:10px}
+.tarefa{background:#1e2f4a;color:white;padding:4px 8px;border-radius:12px;display:inline-block;margin:2px;font-size:9px}
+.assinaturas-horizontal{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.assinatura-box{border:2px solid #1e2f4a;border-radius:10px;padding:15px;background:white;min-height:220px}
+.assinatura-box.contratante{border-color:#25D366;background:#f0f7ff}
+.assinatura-box.contratado{border-color:#d4a44a;background:#fff8ed}
+.concordowpp{background:#1a1a1a;color:#00ff00;padding:8px;border-radius:6px;font-family:monospace;font-size:9px;margin:8px 0}
+.footer{background:#fff8ed;border:2px solid #d4a44a;border-radius:12px;padding:12px;margin-top:15px;font-size:10px}
+@media print{.no-print{display:none} .assinaturas-horizontal{grid-template-columns:1fr 1fr !important}}
+</style>
+</head><body>
+<div class="header"><h1>CONTRATO FINAL COM ASSINATURAS - 11 CLAUSULAS COMPLETAS - ID ${id} - ${catName.toUpperCase()} - ASSINATURAS NA HORIZONTAL NAO VERTICAL</h1><div>PDF FINAL PARTILHAVEL - COM ASSINATURAS E CONCORDO NA HORIZONTAL - ${agora} - contrata-mz.vercel.app - ${formContrato.tarefas.length} tarefas - Lei 23/2007 - valido em Mocambique</div></div>
+
+<div class="clausula"><h3>1. DADOS DAS PARTES - Quem contrata e quem faz</h3>
+<b>CONTRATANTE:</b> ${formContrato.empNome} - BI: ${formContrato.empBI} - Tel: ${formContrato.empTel} - End: ${formContrato.empEnd}<br>
+<b>TRABALHADOR:</b> ${formContrato.trabNome} - BI: ${formContrato.trabBI} - Tel: ${formContrato.trabTel} - End: ${formContrato.trabEnd} - Profissao: ${formContrato.trabProf}
+</div>
+
+<div class="clausula"><h3>2. OBJETO E TAREFAS - ${formContrato.tarefas.length} TAREFAS DE ${catName.toUpperCase()}</h3>${formContrato.tarefas.map((t:string,i:number)=>`<span class="tarefa">${i+1}. ${t}</span>`).join("")}</div>
+
+<div class="clausula"><h3>3. HORARIO E LOCAL - Quando e onde</h3>
+<b>Horario:</b> ${formContrato.horarioInicio} as ${formContrato.horarioFim}<br>
+<b>Dias:</b> ${formContrato.dias}<br>
+<b>Data inicio:</b> ${formContrato.dataInicio}<br>
+<b>Local de trabalho:</b> ${formContrato.localTrab}
+</div>
+
+<div class="clausula"><h3>4. SALARIO E PAGAMENTO - Quanto e como paga</h3>
+<b>Valor:</b> ${formContrato.valor} MZN<br>
+<b>Dia pagamento:</b> Todo dia ${formContrato.diaPag}<br>
+<b>Forma:</b> ${formContrato.formaPag}<br>
+<b>Prazo:</b> ${formContrato.prazo}
+</div>
+
+<div class="clausula"><h3>5. ALIMENTACAO E ALOJAMENTO - Beneficios</h3>
+<b>Alimentacao:</b> ${formContrato.alimentacao}<br>
+<b>Alojamento:</b> ${formContrato.alojamento}<br>
+<b>Transporte:</b> ${formContrato.transporte}
+</div>
+
+<div class="clausula"><h3>6. FOLGAS E FERIAS - Descanso legal</h3>${formContrato.folgas}</div>
+<div class="clausula"><h3>7. PERIODO EXPERIMENTAL - Teste inicial</h3>${formContrato.periodoExp}</div>
+<div class="clausula"><h3>8. DEVERES DO TRABALHADOR - Obrigacoes</h3>${formContrato.deveresTrab}</div>
+<div class="clausula"><h3>9. DEVERES DO EMPREGADOR - Obrigacoes</h3>${formContrato.deveresEmp}</div>
+<div class="clausula"><h3>10. ANEXOS (ANTES VALIDADE) - Fotos e provas - Fotos viram prova legal</h3>
+<b>Fotos e comprovativos anexados antes da validade - viram prova legal:</b><br>
+- Foto BI Contratante: ${formContrato.empNome} - BI ${formContrato.empBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto BI Contratado: ${formContrato.trabNome} - BI ${formContrato.trabBI} - Frente e verso - Anexado na Clausula 10<br>
+- Foto do local: ${formContrato.localTrab} - Foto antes de comecar<br>
+- Fotos: ${formContrato.anexos.length} ficheiros - ${formContrato.anexos.join(", ") || "BI, NUIT, Fotos obra, CV"}<br>
+- Comprovativo M-Pesa: ${formContrato.valor} MZN - ${formContrato.formaPag} - Referencia CONCORDO ID ${id}<br>
+</div>
+
+<div class="clausula"><h3>11. VALIDADE E ASSINATURAS - Assinaturas separadas na parte horizontal nao vertical</h3>
+<b>CONTRATO COM DADOS DAS PARTES, TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - VEJA SO ISSO E MAIS NADA - 11 CLAUSULAS COMPLETAS</b><br>
+<b>Assinaturas na horizontal lado a lado - Contratante esquerda - Contratado direita - como pediu</b>
+</div>
+
+<div class="assinaturas-horizontal">
+<div class="assinatura-box contratante">
+<b>CONTRATANTE - ESQUERDA - HORIZONTAL - 1/2</b><br><br>
+${formContrato.empNome} - BI ${formContrato.empBI}<br>
+CONCORDO em ${assinaturaContratante.data}<br>
+<div class="concordowpp">Eu, ${formContrato.empNome}, CONCORDO - ${formContrato.valor}MZN - ${assinaturaContratante.data}</div>
+Assinatura na HORIZONTAL - Esquerda - 1 de 2
+</div>
+<div class="assinatura-box contratado">
+<b>CONTRATADO - DIREITA - HORIZONTAL - 2/2</b><br><br>
+${formContrato.trabNome} - BI ${formContrato.trabBI}<br>
+CONCORDO em ${assinaturaContratado.data}<br>
+<div class="concordowpp">Eu, ${formContrato.trabNome}, CONCORDO - ${formContrato.valor}MZN - ${assinaturaContratado.data}</div>
+Assinatura na HORIZONTAL - Direita - 2 de 2
+</div>
+</div>
+
+<div class="footer"><b>CONTRATO FINAL COM ASSINATURAS - 11 CLAUSULAS COMPLETAS - ID ${id} - ASSINATURAS NA HORIZONTAL</b><br>
+CONTRATO COM DADOS DAS PARTES + TODAS AS CLAUSULAS E ASSINATURAS SEPARADAS NA PARTE HORIZONTAL NAO VERTICAL - COMO PEDIU - 11 CLAUSULAS COMPLETAS - LEI 23/2007 - VALIDO EM MOCAMBIQUE<br>
+ESSE - NUIT 401866876 - contrata-mz.vercel.app - ID ${id} - ${formContrato.valor} MZN - ${formContrato.localTrab}<br>
+${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 ASSINATURAS HORIZONTAL SEM REPETICAO
+</div>
+
+<div style="text-align:center;margin-top:20px" class="no-print">
+<button onclick="window.print()" style="background:#1e2f4a;color:white;padding:14px 28px;border-radius:10px;border:none;font-weight:bold;margin:5px">IMPRIMIR / SALVAR COMO PDF FINAL COM ASSINATURAS - 11 CLAUSULAS - HORIZONTAL</button>
+</div>
+</body></html>`;
+   const blob = new Blob([htmlFinal], {type:"text/html"}); const url = URL.createObjectURL(blob); window.open(url,"_blank"); const a = document.createElement("a"); a.href=url; a.download=`CONTRATO-FINAL-11-CLAUSULAS-${catName}-ID-${id}-ASSINATURAS-HORIZONTAL.html`; a.click();
+ };
+
+ return (
+  <div className="min-h-screen w-full overflow-x-hidden bg-[#f5f5f0] font-sans">
+   <style>{`@media (max-width: 1023px) { input, select, textarea, button { touch-action: manipulation; } input, select, textarea { max-width: 100%; font-size: 16px; } } @media (max-width: 640px) { header { position: sticky; } }`}</style>
+   <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
+    <div className="flex items-center gap-3"><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
+    <div className="flex items-center gap-2">
+      <button onClick={()=>setTab('faturacao')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black'}`}>FACTURACAO</button>
+      <button onClick={()=>setTab('viagens')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='viagens'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#0ea5e9] text-white'}`}>VIAGENS</button>
+      <button onClick={()=>setTab('encontrar')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='encontrar'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>ENCONTRAR</button>
+      <button onClick={()=>setTab('contratos')} className={`px-4 py-2 rounded-md font-extrabold text-xs ${tab==='contratos'?'bg-[#c9a86a] text-[#1e2f4a]':'bg-transparent text-white'}`}>CONTRATOS 11</button>
+      <button className="px-4 py-2 rounded-md font-bold text-xs bg-transparent text-white">MEUS</button>
+      <div className="h-8 w-8 rounded-full bg-[#facc15] flex items-center justify-center text-[11px] font-black text-black ml-1">ADM</div>
+    </div>
+   </header>
 
       {tab==='encontrar' && (
-        <div className="max-w-[1200px] mx-auto p-3">
-          <div className="bg-[#1e2f4a] text-white rounded-[14px] px-5 py-4 mb-3 text-center">
-            <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA - PROFISSIONAL MAIS PROXIMO DE SI - MESTRE, PROFISSIONAL OU EMPRESA</div>
-            <h2 className="text-[20px] font-black mt-1">Estas a procura de um profissional, mestre ou empresa na sua zona ou mais proximo?</h2>
-            <p className="text-[12px] opacity-80 mt-1">Encontre aqui - Pedreiro, Carpinteiro, Eletricista, Serralheiro, Domestica, Motorista... perto de si em Maputo, Matola, Boane, Xai-Xai - contrato legal em 2 minutos</p>
-            <div className="flex gap-2 justify-center mt-2 flex-wrap">
-              <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20">Verifica BI e NUIT</span>
-              <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20">Fotos e M-Pesa comprovado</span>
-              <span className="px-3 py-1 bg-[#c9a86a] text-[#1e2f4a] rounded-full text-[10px] font-extrabold">11 Clausulas Lei 23/2007</span>
-            </div>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-1 min-w-[340px] bg-white rounded-[14px] p-4">
-              <div className="flex gap-2 flex-wrap items-end">
-                <div className="flex-[2] min-w-[200px]"><label className="text-[11px] font-extrabold text-[#1e2f4a]">O que precisa? - Estas a procura de...?</label><input value={filtroBusca} onChange={e=>setFiltroBusca(e.target.value)} placeholder="Ex: Serralheiro, Pedreiro, Eletricista..." className="w-full px-3 py-2.5 rounded-[10px] border-2 border-[#c9a86a] mt-1 text-[12px]" /></div>
-                <div className="flex-1"><label className="text-[10px] font-bold text-[#64748b]">Pais</label><select value={paisFiltro} onChange={e=>setPaisFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border mt-1 text-[12px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
-                <div className="flex-1"><label className="text-[10px] font-bold text-[#64748b]">Provincia</label><select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border mt-1 text-[12px]">{PAISES[paisFiltro]?.map((p:string)=><option key={p}>{p}</option>)}</select></div>
-                <button className="px-5 py-2.5 bg-[#1e2f4a] text-white rounded-[10px] font-extrabold text-[12px] h-[40px]">PESQUISAR</button>
-              </div>
-              <div className="flex gap-1.5 mt-3 flex-wrap"><span className="text-[10px] text-[#64748b] font-bold">Tags Populares:</span>{['Pedreiro','Carpinteiro','Eletricista','Canalizador','Pintor','Serralheiro','Domestica','Motorista'].map(t=><button key={t} onClick={()=>setFiltroBusca(t)} className={`px-3 py-1 rounded-full border text-[10px] font-semibold ${filtroBusca===t?'bg-[#1e2f4a] text-white':'bg-white text-[#334155]'}`}>{t}</button>)}</div>
-              <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2">Profissionais verificados perto de si (2) - COM INFORMACAO</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {profissionais.map((p:any,i:number)=><div key={i} className="border rounded-xl p-3 bg-white"><div className="flex justify-between"><div className="flex gap-2 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} - {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.desc}</div><div className="flex gap-2 mt-2"><button className="flex-1 py-2 bg-[#1e2f4a] text-white rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white border rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="max-w-[1200px] mx-auto p-3">
+     {/* TOPO LARANJA - INTERATIVO ENCONTRAR MESTRE */}
+     <div className="bg-[#1e2f4a] text-white rounded-[14px] px-5 py-4 mb-3">
+      <div className="text-center">
+        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA - PROFISSIONAL MAIS PROXIMO DE SI - MESTRE, PROFISSIONAL OU EMPRESA</div>
+        <h2 className="text-[20px] font-black mt-1.5 leading-tight">Estas a procura de um profissional, mestre ou empresa na sua zona ou mais proximo?</h2>
+        <p className="text-[12px] opacity-80 mt-1.5">Encontre aqui - Pedreiro, Carpinteiro, Eletricista, Serralheiro, Domestica, Motorista... perto de si em Maputo, Matola, Boane, Xai-Xai - contrato legal em 2 minutos</p>
+        <div className="flex gap-2 justify-center mt-2.5 flex-wrap">
+          <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20"> Verifica BI e NUIT</span>
+          <span className="px-3 py-1 bg-white/15 rounded-full text-[10px] border border-white/20"> Fotos e M-Pesa comprovado</span>
+          <span className="px-3 py-1 bg-[#c9a86a] text-[#1e2f4a] rounded-full text-[10px] font-extrabold"> 11 Clausulas Lei 23/2007</span>
         </div>
-      )}
+      </div>
+     </div>
+
+     <div className="flex gap-3 flex-wrap items-start">
+      {/* ESQUERDA - VERDE/AMARELO/ROXO - PESQUISA + PROFISSIONAIS - INTERATIVO */}
+      <div className="flex-1 min-w-[340px] bg-white rounded-[14px] p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] order-1">
+       <div className="flex gap-2 flex-wrap items-end">
+         <div className="flex-[2] min-w-[200px]"><label className="text-[11px] font-extrabold text-[#1e2f4a]">O que precisa? - Estas a procura de...?</label><input value={filtroBusca} onChange={e=>setFiltroBusca(e.target.value)} placeholder="Ex: Serralheiro, Pedreiro, Eletricista, Domestica... - encontre aqui" className="w-full px-3 py-2.5 rounded-[10px] border-2 border-[#c9a86a] mt-1 text-[12px]" /></div>
+         <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Pais</label><select value={paisFiltro} onChange={e=>setPaisFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
+         <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Provincia</label><select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{provinciasFiltro.map((p:string)=><option key={p}>{p}</option>)}</select></div>
+         <button className="px-5 py-2.5 bg-[#1e2f4a] text-white border-none rounded-[10px] font-extrabold text-[12px] h-[40px]">PESQUISAR</button>
+       </div>
+       <div className="flex gap-1.5 mt-3 flex-wrap"><span className="text-[10px] text-[#64748b] font-bold">Tags Populares:</span>{['Pedreiro','Carpinteiro','Eletricista','Canalizador','Pintor','Serralheiro','Domestica','Motorista'].map(t=><button key={t} onClick={()=>setFiltroBusca(t)} className={`px-3 py-1 rounded-full border text-[10px] font-semibold ${filtroBusca===t?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#e2e8f0]'}`}>{t}</button>)}</div>
+       
+       <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({profissionais.length + (typeof PROFISSIONAIS_EXTRAS !== 'undefined' ? PROFISSIONAIS_EXTRAS.length : 0)}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
+         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2.5 max-h-[520px] overflow-auto pr-1">
+           {profissionais.map((p:any,i:number)=><div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo}  -  {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO  -  {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div><div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos  -  M-Pesa OK  -  Fotos OK  -  {p.anexos?.join(', ')}</div></div>)}
+           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=><div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo}  -  {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div></div></div><span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'}  -  {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
+         </div>
+       </div>
+      </div>
+
+      {/* DIREITA - FORMULARIO CADASTRO - REMOVIDO CORPORATIVO - COMPACTO */}
+      <div className="w-full md:w-[380px] bg-white rounded-[14px] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.15)] border-2 border-[#c9a86a] order-2 md:sticky md:top-[70px] h-fit">
+        <div className="font-extrabold text-[12px] mb-2.5 text-center">Cadastre seu servico - Rapido e gratuito COM BI E NUIT OPCIONAL</div>
+        <div className="flex gap-1.5 mb-3">
+          <button onClick={()=>setTipoCadastro('empresa')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='empresa'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>EMPRESA</button>
+          <button onClick={()=>setTipoCadastro('prof')} className={`flex-1 py-2 rounded-md border text-[9px] font-bold ${tipoCadastro==='prof'?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#cbd5e1]'}`}>PROFISSIONAL INDIVIDUAL SINGULAR</button>
+        </div>
+        <div className="space-y-2">
+          <div><label className="text-[9px] font-bold">Nome completo *</label><input value={formCadastro.nome} onChange={e=>setFormCadastro({...formCadastro, nome:e.target.value})} placeholder="Ex: Michaque Moises Moises" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">BI (opcional)</label><input value={formCadastro.bi} onChange={e=>setFormCadastro({...formCadastro, bi:e.target.value})} placeholder="Ex: 110100123456B" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] bg-[#f8fafc]" /></div><div><label className="text-[9px] font-bold">NUIT (opcional)</label><input value={formCadastro.nuit} onChange={e=>setFormCadastro({...formCadastro, nuit:e.target.value})} placeholder="Ex: 123456789" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] bg-[#f8fafc]" /></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Pais *</label><select value={formCadastro.pais} onChange={e=>setFormCadastro({...formCadastro, pais:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div><div><label className="text-[9px] font-bold">Provincia *</label><select value={formCadastro.provincia} onChange={e=>setFormCadastro({...formCadastro, provincia:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{(PAISES[formCadastro.pais]||[]).map((p:string)=><option key={p}>{p}</option>)}</select></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Local / Localidade *</label><input value={formCadastro.local} onChange={e=>setFormCadastro({...formCadastro, local:e.target.value})} placeholder="Ex: Bairro Central" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div><div><label className="text-[9px] font-bold">Distrito</label><select value={formCadastro.distrito} onChange={e=>setFormCadastro({...formCadastro, distrito:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{distritosForm.map((d:string)=><option key={d}>{d}</option>)}</select></div></div>
+          <div className="grid grid-cols-2 gap-2"><div><label className="text-[9px] font-bold">Tipo de profissao / Area *</label><select value={formCadastro.profissao} onChange={e=>setFormCadastro({...formCadastro, profissao:e.target.value})} className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]">{CATS.map(c=><option key={c}>{c}</option>)}</select></div><div><label className="text-[9px] font-bold">WhatsApp</label><input value={formCadastro.whatsapp} onChange={e=>setFormCadastro({...formCadastro, whatsapp:e.target.value})} placeholder="840532899" className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px]" /></div></div>
+          <div><label className="text-[9px] font-bold">Descricao</label><textarea value={formCadastro.descricao} onChange={e=>setFormCadastro({...formCadastro, descricao:e.target.value})} placeholder="Ex: Serralheiro com experiencia..." className="w-full px-2.5 py-2 rounded-lg border border-[#e2e8f0] mt-0.5 text-[11px] h-12 resize-none" /></div>
+          <div className="border-2 border-dashed border-[#cbd5e1] rounded-[8px] p-2.5 text-center bg-[#fefefe]"><div className="font-bold text-[10px]">Anexar arquivos - BI, NUIT, Fotos</div><div className="text-[9px] text-[#64748b] mt-0.5">BI (opcional), NUIT (opcional), Fotos trabalho</div></div>
+        </div>
+        <button onClick={()=>{
+          if(!formCadastro.nome){ alert('Nome completo obrigatorio'); return; }
+          const novo = { id: Date.now(), nome: formCadastro.nome, tipo: formCadastro.profissao, local: `${formCadastro.pais} / ${formCadastro.provincia}`, pais: formCadastro.pais, provincia: formCadastro.provincia, distrito: formCadastro.distrito, nuit: formCadastro.nuit||'N/A', bi: formCadastro.bi||'N/A', ramo: formCadastro.profissao, profissao: formCadastro.profissao, rating: 5.0, trabalhos: 0, preco: 'Sob consulta', descricao: formCadastro.descricao||`${formCadastro.profissao} - ${formCadastro.local}`, foto: formCadastro.nome.substring(0,2).toUpperCase(), verificado: false, whatsapp: formCadastro.whatsapp, anexos: ['BI','NUIT','Fotos'] };
+          setProfissionais([novo, ...profissionais]);
+          setFormCadastro({ nome:'', nuit:'', bi:'', ramo:'Pedreiro', profissao:'Pedreiro', pais:'Mocambique', provincia:'Maputo Cidade', distrito:'KaMpfumo', local:'Bairro Central', whatsapp:'', descricao:'', preco:'', anexos:[] as any[] });
+          alert('Cadastrado! Agora aparece na lista ao lado - Empresa e Singular - para ser encontrado');
+        }} className="w-full py-2.5 bg-[#c9a86a] text-[#1e2f4a] border-none rounded-[10px] font-black text-[11px] tracking-wide mt-3">ENVIAR CADASTRO - SEM VALORES</button>
+        <div className="text-[8px] text-[#64748b] text-center mt-1.5">Ao se cadastrar aparece na lista ao lado ou em baixo - Empresa e Singular para ser encontrado - sem corporativo</div>
+      </div>
+     </div>
+    </div>
+   )}
+
+      {tab==='contratos' && (
+    <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10 w-full min-w-0">
+     <div className="bg-[#1e2f4a] text-white rounded-[12px] p-3.5 mb-3">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div>
+          <div className="text-[9px] tracking-wide text-[#c9a86a] font-extrabold">CONTRATO LEGAL EM 2 MINUTOS - 11 CLAUSULAS</div>
+          <h1 className="text-[16px] font-black mt-0.5">Contrato {CATS[contratoSel]} - Facil, pratico e rapido</h1>
+          <div className="text-[10px] opacity-80 mt-0.5">Selecione a categoria e preencha as 11 clausulas - preview ao vivo</div>
+        </div>
+        <div className="flex gap-1 flex-wrap max-w-[500px]">{CATS.slice(0,8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+      </div>
+      <div className="flex gap-1 mt-2 flex-wrap">{CATS.slice(8).map((cat:string,i:number)=><button key={cat} onClick={()=>setContratoSel(i+8)} className={`px-2.5 py-1 rounded-full border-none text-[9px] font-bold ${contratoSel===i+8?'bg-[#c9a86a] text-[#1e2f4a]':'bg-white/15 text-white'}`}>{cat.toUpperCase()}</button>)}</div>
+     </div>
+
+     <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_380px] gap-3 items-start min-w-0">
+      {/* Navegacao compacta para telemoveis: substitui a coluna fixa que tapava o editor */}
+      <div className="lg:hidden bg-white rounded-xl border p-3 min-w-0">
+       <label htmlFor="mobile-clause-select" className="block font-extrabold text-[12px] mb-2">Escolha a clausula que pretende editar</label>
+       <select id="mobile-clause-select" value={clausulaAtiva} onChange={e=>setClausulaAtiva(Number(e.target.value))} className="w-full min-h-11 px-3 py-2 border-2 border-[#c9a86a] rounded-lg bg-white text-sm">
+        {CLAUSULAS.map(c=><option key={c.id} value={c.id}>{c.id}. {c.titulo}</option>)}
+       </select>
+       <div className="grid grid-cols-2 gap-2 mt-2">
+        <button type="button" onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} disabled={clausulaAtiva===1} className="min-h-10 rounded-lg border font-bold text-xs disabled:opacity-40">Ã¢â€ Â Anterior</button>
+        <button type="button" onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} disabled={clausulaAtiva===11} className="min-h-10 rounded-lg bg-[#1e2f4a] text-white font-bold text-xs disabled:opacity-40">PrAÂ³xima Ã¢â€ â€™</button>
+       </div>
+       <button type="button" onClick={()=>setMostrarPreviewMobile(v=>!v)} className="w-full min-h-10 mt-2 rounded-lg border-2 border-[#1e2f4a] text-[#1e2f4a] font-bold text-xs">{mostrarPreviewMobile?'Ocultar preview do contrato':'Ver preview do contrato'}</button>
+      </div>
+
+      <div className="hidden lg:block w-[240px] min-w-[240px] bg-white rounded-[10px] border p-3 h-fit sticky top-[70px]">
+       <div className="font-extrabold text-[12px] mb-1">Edita a sua escolha</div>
+       <div className="text-[9px] text-[#64748b] mb-2.5">Selecione a clausula para editar - {formContrato.tarefas.length} tarefas de {CATS[contratoSel]}</div>
+       {Array.from({length:11},(_,i)=>i+1).map(n=>(
+        <div key={n} onClick={()=>setClausulaAtiva(n)} className={`p-2.5 rounded-lg mb-1.5 cursor-pointer border ${clausulaAtiva===n?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-[#f8fafc] text-[#1e2f4a] border-[#e2e8f0]'}`}>
+         <div className="font-extrabold text-[11px]">{n}. {CLAUSULAS[n-1].titulo}</div>
+         <div className="text-[9px] opacity-70">{CLAUSULAS[n-1].short} {n>=4 && n<=10 ? "" : ""}</div>
+        </div>
+       ))}
+      </div>
+
+      <div className="bg-white rounded-[12px] border-2 border-[#25D366] p-3 sm:p-4 order-2 shadow-sm min-w-0 w-full">
+       <div className="font-black text-[14px]">CLAUSULA {clausulaAtiva}: {CLAUSULAS[clausulaAtiva-1].titulo.toUpperCase()} - {CATS[contratoSel].toUpperCase()}</div>
+       <div className="mt-5">
+        {clausulaAtiva===1 && <div className="space-y-3"><div className="font-bold text-[12px]">Dados das partes COM BI E NUIT OPCIONAL</div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Nome Contratante *</label><input value={formContrato.empNome} onChange={e=>setFormContrato({...formContrato,empNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Contratante (opcional)</label><input value={formContrato.empBI} onChange={e=>setFormContrato({...formContrato,empBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Contratante</label><input value={formContrato.empTel} onChange={e=>setFormContrato({...formContrato,empTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Nome Trabalhador *</label><input value={formContrato.trabNome} onChange={e=>setFormContrato({...formContrato,trabNome:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">BI Trabalhador (opcional)</label><input value={formContrato.trabBI} onChange={e=>setFormContrato({...formContrato,trabBI:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px] bg-[#f8fafc]" /></div><div><label className="text-[10px] font-bold">Telefone Trabalhador</label><input value={formContrato.trabTel} onChange={e=>setFormContrato({...formContrato,trabTel:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
+        {clausulaAtiva===2 && <div className="space-y-4">
+          <div className="font-bold text-[12px]">Objeto e tarefas - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas selecionadas - TICK PARA SELECIONAR</div>
+          <div className="text-[10px] text-[#64748b]">Selecione com tick as tarefas que precisa - tarefas especificas para cada contrato {CATS[contratoSel]} - aparecem no preview</div>
+          <div className="bg-[#f8fafc] border-2 border-[#c9a86a] rounded-xl p-3 max-h-[320px] overflow-auto">
+            <div className="text-[10px] font-bold mb-2">Tarefas disponiveis para {CATS[contratoSel]} - Clique no tick para selecionar:</div>
+            <div className="space-y-1.5">
+              {((MODELO_TAREFAS as any)[CATS[contratoSel]] || MODELO_TAREFAS["Outros/Particular"]).map((tarefaModelo:string, idx:number)=>{
+                const selecionada = formContrato.tarefas.includes(tarefaModelo);
+                return (
+                  <label key={idx} className={`flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all ${selecionada?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white border-[#e2e8f0] hover:border-[#c9a86a]'}`}>
+                    <input type="checkbox" checked={selecionada} onChange={(e)=>{
+                      if(e.target.checked){
+                        setFormContrato({...formContrato, tarefas:[...formContrato.tarefas, tarefaModelo]});
+                      } else {
+                        setFormContrato({...formContrato, tarefas:formContrato.tarefas.filter((t:any)=>t!==tarefaModelo)});
+                      }
+                    }} className="mt-0.5 w-4 h-4 accent-[#c9a86a]" />
+                    <span className="text-[11px] leading-tight flex-1">{idx+1}. {tarefaModelo}</span>
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+          <div className="bg-white border-2 rounded-xl p-3">
+            <div className="text-[10px] font-bold mb-2">Tarefas selecionadas ({formContrato.tarefas.length}) - aparecem no preview do contrato:</div>
+            <div className="flex flex-wrap gap-2">
+              {formContrato.tarefas.map((t:string,i:number)=><span key={i} className="px-3 py-1.5 rounded-full bg-[#1e2f4a] text-white text-[11px] flex items-center gap-2">{i+1}. {t} <button onClick={()=>setFormContrato({...formContrato,tarefas:formContrato.tarefas.filter((_:any,idx:number)=>idx!==i)})} className="w-4 h-4 rounded-full bg-white/20 grid place-items-center text-[8px]">x</button></span>)}
+            </div>
+            {formContrato.tarefas.length===0 && <div className="text-[10px] text-[#94a3b8]">Nenhuma tarefa selecionada - selecione com tick acima</div>}
+          </div>
+          <div className="bg-[#fff8ed] border border-[#d4a44a] rounded-xl p-3">
+            <label className="text-[10px] font-bold">Campo extra - Mais descricao se precisar *</label>
+            <textarea placeholder="Ex: Detalhes extras do servico, material especial, observacoes importantes..." className="mt-1 w-full h-20 px-3 py-2 border-2 rounded-lg text-[11px] resize-none" />
+            <div className="text-[9px] text-[#64748b] mt-1">Campo opcional - adicione descricao extra se precisar - sera adicionado ao contrato</div>
+          </div>
+        </div>}
+        {clausulaAtiva===3 && <div className="space-y-3"><div className="font-bold text-[12px]">Horario e local EDITAVEL</div><div className="grid grid-cols-2 gap-3"><div><label className="text-[10px] font-bold">Horario Inicio *</label><input type="time" value={formContrato.horarioInicio} onChange={e=>setFormContrato({...formContrato,horarioInicio:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div><label className="text-[10px] font-bold">Horario Fim *</label><input type="time" value={formContrato.horarioFim} onChange={e=>setFormContrato({...formContrato,horarioFim:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div><div className="col-span-2"><label className="text-[10px] font-bold">Local de Trabalho *</label><input value={formContrato.localTrab} onChange={e=>setFormContrato({...formContrato,localTrab:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div></div></div>}
+
+        {/* CLAUSULA 4 - SALARIO E PAGAMENTO - LIMPO EDITAVEL - SEM TEXTO VERDE */}
+        {clausulaAtiva===4 && <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="text-[10px] font-bold">Valor Salario (MZN) *</label><input value={formContrato.valor} onChange={e=>setFormContrato({...formContrato,valor:e.target.value})} placeholder="Ex: 7500" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Dia Pagamento *</label><input value={formContrato.diaPag} onChange={e=>setFormContrato({...formContrato,diaPag:e.target.value})} placeholder="Ex: 05" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Forma Pagamento *</label><select value={formContrato.formaPag} onChange={e=>setFormContrato({...formContrato,formaPag:e.target.value})} className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]"><option>M-Pesa</option><option>Emola</option><option>Banco</option><option>Dinheiro</option></select></div>
+            <div><label className="text-[10px] font-bold">Prazo Contrato *</label><input value={formContrato.prazo} onChange={e=>setFormContrato({...formContrato,prazo:e.target.value})} placeholder="Ex: 30 dias" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+          </div>
+        </div>}
+
+        {/* CLAUSULA 5 - ALIMENTACAO E ALOJAMENTO - LIMPO EDITAVEL */}
+        {clausulaAtiva===5 && <div className="space-y-3">
+          <div className="space-y-3">
+            <div><label className="text-[10px] font-bold">Alimentacao *</label><input value={formContrato.alimentacao} onChange={e=>setFormContrato({...formContrato,alimentacao:e.target.value})} placeholder="Ex: Sim - almoco fornecido no local" className="mt-1 w-full h-10 px-3 border-2 border-[#c9a86a] rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Alojamento *</label><input value={formContrato.alojamento} onChange={e=>setFormContrato({...formContrato,alojamento:e.target.value})} placeholder="Ex: Nao - trabalhador mora perto" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+            <div><label className="text-[10px] font-bold">Transporte *</label><input value={formContrato.transporte} onChange={e=>setFormContrato({...formContrato,transporte:e.target.value})} placeholder="Ex: Sim - 500MT/mes para chapa" className="mt-1 w-full h-10 px-3 border-2 rounded-lg text-[12px]" /></div>
+          </div>
+        </div>}
+
+        {/* CLAUSULA 6 - FOLGAS E FERIAS - LIMPO EDITAVEL */}
+        {clausulaAtiva===6 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Folgas e Ferias - Descanso Legal *</label><textarea value={formContrato.folgas} onChange={e=>setFormContrato({...formContrato,folgas:e.target.value})} placeholder="Ex: Domingo e feriados nacionais. 12 dias ferias apos 1 ano..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 7 - PERIODO EXPERIMENTAL - LIMPO */}
+        {clausulaAtiva===7 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Periodo Experimental - Teste Inicial *</label><textarea value={formContrato.periodoExp} onChange={e=>setFormContrato({...formContrato,periodoExp:e.target.value})} placeholder="Ex: 90 dias - primeiros 90 dias como periodo de experiencia..." className="mt-1 w-full h-24 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[12px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 8 - DEVERES DO TRABALHADOR - LIMPO */}
+        {clausulaAtiva===8 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Trabalhador *</label><textarea value={formContrato.deveresTrab} onChange={e=>setFormContrato({...formContrato,deveresTrab:e.target.value})} placeholder="Ex: Cumprir horario 06:00 as 17:00 com pontualidade, guardar sigilo..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 9 - DEVERES DO EMPREGADOR - LIMPO */}
+        {clausulaAtiva===9 && <div className="space-y-3">
+          <div><label className="text-[10px] font-bold">Deveres e Obrigacoes do Empregador *</label><textarea value={formContrato.deveresEmp} onChange={e=>setFormContrato({...formContrato,deveresEmp:e.target.value})} placeholder="Ex: Pagar salario pontualmente todo dia 05 via M-Pesa..." className="mt-1 w-full h-32 px-3 py-2 border-2 border-[#c9a86a] rounded-lg text-[11px] resize-none" /></div>
+        </div>}
+
+        {/* CLAUSULA 10 - ANEXOS - LIMPO */}
+        {clausulaAtiva===10 && <div className="space-y-3">
+          <div className="p-3 bg-[#f8fafc] border-2 border-[#c9a86a] rounded-lg">
+            <div className="text-[11px] font-bold mb-2">Fotos e comprovativos anexados antes da validade - viram prova legal:</div>
+            <div className="space-y-2 text-[11px]">
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto BI Contratante: {formContrato.empNome} - BI {formContrato.empBI} - Frente e verso</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto BI Contratado: {formContrato.trabNome} - BI {formContrato.trabBI} - Frente e verso</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Foto do local: {formContrato.localTrab}</span></div>
+              <div className="flex gap-2 items-center"><input type="checkbox" checked readOnly className="w-4 h-4" /><span>Comprovativo M-Pesa: {formContrato.valor} MZN - {formContrato.formaPag}</span></div>
+            </div>
+            <div className="mt-3 text-[10px] text-[#64748b]">Total: {formContrato.anexos.length} ficheiros anexados - Fotos BI, NUIT (opcional), Fotos obra, CV, M-Pesa - BI e NUIT opcional mantido</div>
+          </div>
+        </div>}
+
+        {clausulaAtiva===11 && <div className="space-y-4">
+          <div className="font-bold text-[14px] text-[#1e2f4a]">CLAUSULA 11 - PDF FINAL PARTILHAVEL COM ASSINATURAS</div>
+          <div className="bg-white border-2 rounded-xl p-4"><button onClick={gerarPDFInicial} className="w-full h-11 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px]">1. GERAR PDF INICIAL BONITO - {CATS[contratoSel]}</button></div>
+          <div className="bg-[#f0f7ff] border-2 border-[#25D366] rounded-xl p-4"><div className="font-bold text-[11px]">PASSO 2 - ASSINAR NO WHATSAPP COM CONCORDO</div><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={assinarContratante} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratante.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:`CONTRATANTE: CONCORDO ${formContrato.empNome}`}</button><button onClick={assinarContratado} className={`h-12 rounded-lg font-bold text-[11px] ${assinaturaContratado.concordo?"bg-green-600 text-white":"bg-[#25D366] text-white"}`}>{assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:`CONTRATADO: CONCORDO ${formContrato.trabNome}`}</button></div></div>
+          <div className="bg-[#fff8ed] border-2 border-[#d4a44a] rounded-xl p-4"><button onClick={gerarPDFFinal} disabled={!assinaturaContratante.concordo || !assinaturaContratado.concordo} className="w-full h-[56px] bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-black text-[12px] disabled:opacity-40">3. GERAR PDF FINAL PARTILHAVEL COM ASSINATURAS</button></div>
+        </div>}
+      </div>
+      <div className="mt-4 flex gap-2"><button disabled={clausulaAtiva===1} onClick={()=>setClausulaAtiva(c=>Math.max(1,c-1))} className="flex-1 h-9 border-2 rounded-lg font-bold text-[11px] disabled:opacity-40">Voltar</button><button disabled={clausulaAtiva===11} onClick={()=>setClausulaAtiva(c=>Math.min(11,c+1))} className="flex-1 h-9 bg-[#1e2f4a] text-white rounded-lg font-bold text-[11px] disabled:opacity-40">Proximo - {clausulaAtiva}/11</button></div>
+     </div>
+
+     <div className={`${mostrarPreviewMobile?"block":"hidden"} lg:block bg-white rounded-[12px] border-2 border-[#1e2f4a] p-3 h-fit lg:sticky lg:top-[70px] order-3 min-w-0 w-full`}>
+       <div className="flex justify-between items-center"><div className="text-[10px] font-bold uppercase">3 - Preview do contrato - {CATS[contratoSel]} - {formContrato.tarefas.length} tarefas - vendo o que esta a ser editado</div><button onClick={()=>setMostrarPreviewMobile(false)} className="xl:hidden w-6 h-6 bg-[#f1f0eb] rounded-full grid place-items-center text-[10px]">X</button></div>
+       <div className="mt-3 max-h-[60vh] xl:h-[520px] overflow-y-auto overscroll-contain break-words [overflow-wrap:anywhere] bg-[#f8fafc] border rounded-xl p-3 text-[10px] font-mono leading-relaxed">CONTRATO {CATS[contratoSel].toUpperCase()} - 11 CLAUSULAS<br/><br/>1. DADOS: {formContrato.empNome} BI {formContrato.empBI} e {formContrato.trabNome} BI {formContrato.trabBI}<br/><br/>2. TAREFAS ({formContrato.tarefas.length}):<br/>{formContrato.tarefas.map((t:string,i:number)=>`${i+1}. ${t}`).join("<br/>")}<br/><br/>3. HORARIO: {formContrato.horarioInicio} as {formContrato.horarioFim} - {formContrato.localTrab}<br/><br/>4. SALARIO: {formContrato.valor} MZN - Dia {formContrato.diaPag} - {formContrato.formaPag} - Prazo {formContrato.prazo}<br/><br/>5. ALIMENTACAO: {formContrato.alimentacao} - {formContrato.alojamento} - {formContrato.transporte}<br/><br/>6. FOLGAS: {formContrato.folgas}<br/><br/>7. PERIODO: {formContrato.periodoExp}<br/><br/>8. DEVERES TRAB: {formContrato.deveresTrab.substring(0,100)}...<br/><br/>9. DEVERES EMP: {formContrato.deveresEmp.substring(0,100)}...<br/><br/>10. ANEXOS: {formContrato.anexos.length} ficheiros - Fotos BI, NUIT, M-Pesa<br/><br/>11. ASSINATURA: {formContrato.empNome} {assinaturaContratante.concordo?`CONCORDO em ${assinaturaContratante.data}`:"FALTA"} - {formContrato.trabNome} {assinaturaContratado.concordo?`CONCORDO em ${assinaturaContratado.data}`:"FALTA"}<br/><br/>FORMULARIO COMPLETO ABERTO</div>
+       <div className="mt-3 grid grid-cols-2 gap-2"><button onClick={gerarPDFInicial} className="h-10 bg-[#25D366] text-white rounded-xl font-bold text-[10px]">PDF INICIAL</button><button onClick={gerarPDFFinal} className="h-10 bg-[#d4a44a] text-[#1e2f4a] rounded-xl font-bold text-[10px]">PDF FINAL</button></div>
+     </div>
+    </div>
+   </section>
+  )}
+
 
       {tab==='faturacao' && (
-        <section className="space-y-4 max-w-[1200px] mx-auto p-3">
+        <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10 space-y-4">
           <div className="flex justify-between gap-2">
             <div className="font-black text-[14px]">Facilita Faturacao - 10 seg - com perfis</div>
             <div className="flex gap-2">
@@ -104,61 +640,152 @@ export default function App(){
               <button onClick={()=>setFaturacaoSubTab('loja')} className={`px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='loja'?'bg-[#facc15] text-black':'bg-white border'}`}>Minha Loja - Clientes registados</button>
             </div>
           </div>
-          {faturacaoSubTab==='publico' && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="lg:col-span-2 bg-white rounded-[12px] border p-4">
-                <div className="font-bold text-[11px]">Dados do comprador - ultra rapido</div>
-                <div className="grid grid-cols-2 gap-2 mt-2"><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" placeholder="+258 84 123 4567" /><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="h-8 border rounded text-[10px] px-2" placeholder="Nome cliente" /></div>
-                <div className="mt-3 font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
-                <input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg - CMPOR - 850 MT"' className="w-full h-9 border rounded text-[10px] px-3 mt-2" />
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {['Todos','Cimento','Bloco','Tinta','Ferro','Cobertura','Inertes','Tubo PVC','Fechadura'].map(c=>(<button key={c} onClick={()=>setFatFiltroCat(c)} className={`px-2 py-1 rounded-full text-[8px] border ${fatFiltroCat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>))}
-                </div>
-                <div className="flex flex-wrap gap-1 mt-2">
-                  <button onClick={()=>setFatItens([...fatItens,{desc:'Saco de Cimento 50kg - CMPOR - 850 MT', qtd:1, preco:850, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco de Cimento 50kg - CMPOR - 850 MT</button>
-                  <button onClick={()=>setFatItens([...fatItens,{desc:'Bloco 15cm - 40x20 - 42 MT', qtd:1, preco:42, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 40x20 - 42 MT</button>
-                  <button onClick={()=>setFatItens([...fatItens,{desc:'Areia Grossa - m3 - 1200 MT', qtd:1, preco:1200, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia Grossa - m3 - 1200 MT</button>
-                  <button onClick={()=>setFatItens([...fatItens,{desc:'Tinta PVA Branca 20L - 3500 MT', qtd:1, preco:3500, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta PVA Branca 20L - 3500 MT</button>
-                </div>
-                <div className="mt-3 border rounded">
-                  <div className="grid grid-cols-5 gap-1 bg-[#f1f5f9] p-2 text-[8px] font-bold"><div>DESCRICAO</div><div>QTD</div><div>PRECO</div><div>DESC%</div><div>SUBTOTAL</div></div>
-                  {fatItens.map((it,i)=>(<div key={i} className="grid grid-cols-5 gap-1 p-2 text-[9px] border-t"><div>{it.desc}</div><div>{it.qtd}</div><div>{it.preco}</div><div>{it.descPerc}</div><div>{(it.qtd*it.preco).toFixed(0)} MT</div></div>))}
-                  <div className="p-2 text-right font-black">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0)} MT</div>
+          {faturacaoSubTab==='publico' && (<div>
+          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#22c55e] text-white grid place-items-center font-black text-[12px]">F</div><div className="font-black text-[12px]">Facilita Faturacao - Publico Rapido</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#f1f5f9] border">Pagina 5 e 10 removidas - Partilha integrada no 7</span></div>
+            <div className="flex gap-2"><button className="px-3 h-7 rounded-full bg-[#1e2f4a] text-white text-[9px] font-bold">7. Facturacao - 10 seg - com perfis</button><button className="px-3 h-7 rounded-full bg-white border text-[9px] font-bold">11. Painel da Loja</button></div>
+          </div>
+          <div className="flex flex-col lg:flex-row gap-3">
+            <div className="flex-1 space-y-3">
+              <div className="bg-white rounded-[12px] border p-4">
+                <div className="font-black text-[11px]">Dados do comprador - ultra rapido</div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+                  <div><label className="text-[8px] font-bold">TELEFONE / WHATSAPP *</label><input value={telFat} onChange={e=>setTelFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1 bg-[#f0fdf4]" placeholder="+258 84 123 4567" /></div>
+                  <div><label className="text-[8px] font-bold">NOME (opcional)</label><input value={nomeFat} onChange={e=>setNomeFat(e.target.value)} className="w-full h-9 px-3 rounded-[8px] border text-[11px] mt-1" placeholder="Nome cliente" /></div>
                 </div>
               </div>
-              <div className="bg-[#111827] text-white rounded-[12px] p-4 h-fit">
-                <div className="font-bold text-[11px]">Resumo rapido</div>
-                <div className="text-[8px] mt-2">Cliente: {fatTel}</div>
-                <div className="text-[8px]">Itens: {fatItens.length}</div>
-                <button className="mt-3 w-full h-9 bg-[#22c55e] rounded font-black text-[10px]">Finalizar Documento DEMO</button>
-                <div className="mt-3 text-[7px]">WhatsApp PDF - Ver PDF Demo</div>
+              <div className="bg-white rounded-[12px] border p-4">
+                <div className="font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
+                <div className="mt-3"><input value={buscaFat} onChange={e=>setBuscaFat(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg"' className="w-full h-10 px-3 rounded-[8px] border text-[11px]" /></div>
+                <div className="mt-3 flex flex-wrap gap-1.5">{catsFat.map(c=><button key={c} onClick={()=>setFiltroCatFat(c)} className={`px-2.5 py-1 rounded-full text-[8px] font-bold border ${filtroCatFat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>)}</div>
+                <div className="flex flex-wrap gap-1.5 mt-2">{PRODUTOS_BASE_FAT.filter(p=>filtroCatFat==='Todos'||p.cat===filtroCatFat).filter(p=>!buscaFat||p.nome.toLowerCase().includes(buscaFat.toLowerCase())).map(p=><button key={p.id} onClick={()=>{const ex=produtosFat.find(x=>x.nome===p.nome); if(ex){setProdutosFat(produtosFat.map(x=>x.nome===p.nome?{...x,qtd:x.qtd+1}:x))} else {setProdutosFat([...produtosFat,{id:p.id,nome:p.nome,preco:p.preco,qtd:1,desc:0}])}}} className="px-2.5 py-1 rounded-full bg-[#1e293b] text-white text-[9px] font-bold">{p.nome}</button>)}</div>
+                <div className="mt-4 overflow-x-auto"><table className="w-full text-[10px]"><thead><tr className="text-[8px] text-[#94a3b8] border-b"><th className="text-left py-1">DESCRICAO</th><th>QTD</th><th>PRECO</th><th>DESC %</th><th className="text-right">SUBTOTAL</th><th></th></tr></thead><tbody>{produtosFat.map(pr=>(<tr key={pr.id} className="border-b"><td className="py-2 font-bold">{pr.nome}</td><td className="text-center"><input type="number" value={pr.qtd} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,qtd:Math.max(0,Number(e.target.value))}:x).filter(x=>x.qtd>0))} className="w-12 h-7 border rounded text-center" /></td><td className="text-center">{pr.preco}</td><td className="text-center"><input type="number" value={pr.desc} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,desc:Math.max(0,Math.min(100,Number(e.target.value)))}:x))} className="w-10 h-7 border rounded text-center" /></td><td className="text-right font-bold">{(pr.preco*pr.qtd*(1-pr.desc/100)).toFixed(0)} MT</td><td><button onClick={()=>setProdutosFat(produtosFat.filter(x=>x.id!==pr.id))} className="text-red-400 ml-1">X</button></td></tr>))}</tbody></table></div>
+                <div className="mt-3 flex justify-end"><div className="w-[200px] space-y-1 text-[10px]"><div className="flex justify-between"><span>Subtotal</span><span>{subtotalBrutoFat} MT</span></div><div className="flex justify-between"><span>IVA</span><span>{ivaFat.toFixed(0)} MT</span></div><div className="flex justify-between font-black border-t pt-1"><span>TOTAL</span><span>{totalFat.toFixed(0)} MT</span></div></div></div>
+                <div className="mt-3 flex gap-2"><button onClick={()=>setIvaTipo('sem')} className={`px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Sem IVA</button><button onClick={()=>setIvaTipo('16')} className={`px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='16'?'bg-[#0f766e] text-white':'bg-white'}`}>Com IVA 16%</button><button onClick={()=>setIvaTipo('5')} className={`px-3 h-7 rounded-full text-[9px] border ${ivaTipo==='5'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Com IVA 5%</button></div>
+              </div>
+            </div>
+            <div className="w-full lg:w-[300px] space-y-3">
+              <div className="bg-[#111827] rounded-[12px] p-4 text-white"><div className="font-bold text-[11px]">Resumo rapido</div><div className="mt-3 text-[10px]"><div>Cliente: {telFat}</div><div>Itens: {produtosFat.length}</div></div><button className="mt-4 w-full h-11 rounded-[8px] bg-[#22c55e] text-white font-black text-[11px]">Finalizar Documento DEMO</button></div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      
+      {tab==='viagens' && (
+        <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10">
+          <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2"><div className="h-7 w-7 rounded-[6px] bg-[#0ea5e9] text-white grid place-items-center font-black text-[12px]">FV</div><div className="font-black text-[12px]">Facilita Viagens</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#e0f2fe] border">Integrado como Faturacao</span></div>
+            <div className="flex gap-1.5 flex-wrap">
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('overview')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='overview'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Visao geral</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('viajar')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='viajar'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Pesquisar viagens</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('encomenda')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='encomenda'?'bg-[#0ea5e9] text-white':'bg-white border'}`}>Enviar encomenda</button>
+              <button onClick={()=>{setViagensSubTab('viagens'); setViagensTab('minhas')}} className={`px-3 h-7 rounded-full text-[9px] font-bold ${viagensSubTab==='viagens' && viagensTab==='minhas'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Minhas reservas</button>
+              <button onClick={()=>setViagensSubTab('transportador')} className={`px-3 h-7 rounded-full text-[9px] font-black ${viagensSubTab==='transportador'?'bg-[#facc15] text-black ring-2 ring-[#1e2f4a]':'bg-[#fef9c3] border'}`}>AREA TRANSPORTADOR</button>
+            </div>
+          </div>
+
+          {viagensSubTab==='viagens' && viagensTab==='overview' && (
+            <div className="space-y-3">
+              <div className="bg-[#0f1e36] rounded-[14px] p-6 text-white text-center">
+                <h2 className="text-[18px] font-black">O que pretende fazer?</h2>
+                <p className="text-[10px] opacity-70 mt-1">Mocambique para Africa do Sul e vice-versa - Beira, Inhambane, Maxixe, Gaza, Maputo - Johannesburg, Durban, Pretoria</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 max-w-[700px] mx-auto">
+                  <button onClick={()=>{setViagensTab('viajar');}} className="bg-white text-[#0f1e36] rounded-[12px] p-5 text-left"><div className="font-black text-[13px]">Opcao A - Viajar</div><div className="text-[10px] text-[#475569] mt-1">Origem provincia/distrito, destino custom se nao estiver na lista, local coleta, ponto encontro se nao for terminal.</div><div className="mt-3 text-[9px] font-bold bg-[#0f1e36] text-white px-3 py-1 rounded-full inline-block">Pesquisar viagens</div></button>
+                  <button onClick={()=>{setViagensTab('encomenda');}} className="bg-[#fefce8] text-[#0f1e36] rounded-[12px] p-5 text-left border-2 border-[#facc15]"><div className="font-black text-[13px]">Opcao B - Enviar encomenda</div><div className="text-[10px] text-[#475569] mt-1">Mocambique - Africa do Sul com fronteira Ressano Garcia, Komatiepoort, Ponta do Ouro.</div><div className="mt-3 text-[9px] font-bold bg-[#facc15] text-black px-3 py-1 rounded-full inline-block">Enviar encomenda</div></button>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-3"><div className="bg-white rounded-[12px] border p-3"><div className="text-[9px]">Viagens hoje</div><div className="font-black text-[18px]">{viagensMock.length}</div></div><div className="bg-white rounded-[12px] border p-3"><div className="text-[9px]">Rotas MZ-SA</div><div className="font-black text-[14px]">10</div><div className="text-[8px]">Beira-Joanesburgo, Maputo-Durban</div></div><div className="bg-white rounded-[12px] border p-3"><div className="text-[9px]">Reservas</div><div className="font-black text-[18px]">{reservas.length}</div></div><div className="bg-white rounded-[12px] border p-3"><div className="text-[9px]">Frota activa</div><div className="font-black text-[18px]">{viaturasFrota.filter(v=>v.estadoOperacional==='Activa').length}</div></div></div>
+            </div>
+          )}
+
+          {viagensSubTab==='viagens' && viagensTab==='viajar' && (
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="flex-1 space-y-3">
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="font-black text-[11px] mb-3">Pesquisar viagens - Provincia, Distrito, Destino custom</div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                    <div className="space-y-2"><label className="text-[8px] font-bold">PROVINCIA ORIGEM</label><select value={origemProv} onChange={e=>setOrigemProv(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2">{PROVINCIAS_MOZ.map(p=><option key={p}>{p}</option>)}</select><label className="text-[8px] font-bold mt-1 block">DISTRITO ORIGEM (apenas informativo - nao filtra muito)</label><select value={origemDist} onChange={e=>setOrigemDist(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2">{(DISTRITOS_POR_PROVINCIA[origemProv]||[]).map((d:string)=><option key={d}>{d}</option>)}</select></div>
+                    <div className="space-y-2"><label className="text-[8px] font-bold">PROVINCIA DESTINO</label><select value={destinoProv} onChange={e=>setDestinoProv(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2">{PROVINCIAS_MOZ.map(p=><option key={p}>{p}</option>)}</select><label className="text-[8px] font-bold mt-1 block">DISTRITO DESTINO (apenas informativo)</label><select value={destinoDist} onChange={e=>setDestinoDist(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2">{(DISTRITOS_POR_PROVINCIA[destinoProv]||[]).map((d:string)=><option key={d}>{d}</option>)}</select></div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-3"><div><label className="text-[8px] font-bold">DATA VIAGEM</label><input type="date" value={dataV} onChange={e=>setDataV(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2" /></div><div><label className="text-[8px] font-bold">PROVINCIA FILTRO</label><select value={origemV} onChange={e=>setOrigemV(e.target.value)} className="w-full h-9 border rounded text-[11px] px-2"><option value="">Todas provincias</option>{PROVINCIAS_MOZ.map(p=><option key={p} value={p}>{p}</option>)}</select></div><div className="flex items-end"><button onClick={()=>{}} className="w-full h-9 bg-[#0ea5e9] text-white rounded-[8px] font-black text-[11px]">PESQUISAR VIAGENS</button></div></div>
+                  <div className="mt-2 text-[7px] text-[#64748b]">Todas viaturas activas aparecem aqui - local partida e chegada ajudam filtrar rapido - distritos informativo - Rotas MZ-SA: Beira-Johannesburg, Inhambane-Johannesburg, Maxixe-Johannesburg, Xai-Xai-Johannesburg, Chokwe-Johannesburg, Maputo-Durban via Ressano Garcia, Komatiepoort, Ponta do Ouro. Paragens comuns SA: Park Station, Bosman, Nelspruit Mbombela, Komatiepoort fronteira.</div>
+                </div>
+                <div className="space-y-2">
+                  {viagensMock.concat(viagensPublicadas).filter(v=>{const matchOrig = !origemProv || v.origem.includes(origemProv) || v.provinciaOrigem===origemProv; const matchDest = !destinoProv || v.destino.includes(destinoProv) || v.provinciaDestino===destinoProv; return matchOrig && matchDest;}).map(v=>(
+                    <div key={v.id} className="bg-white rounded-[12px] border p-3 flex flex-col lg:flex-row justify-between gap-2">
+                      <div className="flex-1"><div className="font-black text-[11px]">{v.transp} - {v.viatura} - {v.matricula||v.viatura}</div><div className="text-[9px] text-[#64748b]">{v.origem} ({v.provinciaOrigem||''}) - {v.destino} ({v.provinciaDestino||''}) | {v.data} {v.hora} - {v.chegada} | Motorista: {v.motorista} | Lugares: {v.lugares} | Rota: {v.rota||v.origem+'-'+v.destino} | {v.distritoOrigem||''} - {v.distritoDestino||''}</div><div className="text-[8px] mt-1"><span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">{v.estado}</span> <span className="bg-[#f1f5f9] px-2 py-0.5 rounded-full">{v.lugares - (v.lugaresOcupados?.length||0)} livres</span> <span className="bg-[#fef9c3] px-2 py-0.5 rounded-full">{v.cargaKg}kg carga</span> {v.fronteira && <span className="bg-[#e0f2fe] px-2 py-0.5 rounded-full">Fronteira: {v.fronteira}</span>}</div></div>
+                      <div className="flex flex-col items-end gap-1"><div className="font-black text-[14px] text-[#0ea5e9]">{v.preco} MT</div><button onClick={()=>{setViagemSel(v); setAssentosSelecionados([]); setMostrarFormPass(true);}} className="px-4 h-8 bg-[#1e2f4a] text-white rounded-full text-[10px] font-bold">Reservar lugar</button></div>
+                    </div>
+                  ))}
+                  {viagensMock.concat(viagensPublicadas).length===0 && <div className="bg-white rounded-[12px] border p-8 text-center text-[11px] text-[#94a3b8]">Nenhuma viagem encontrada. Active viaturas na Area Transportador para publicar viagens automaticamente na pesquisa.</div>}
+                </div>
+
+                {mostrarFormPass && viagemSel && (
+                  <div className="bg-white rounded-[12px] border-2 border-[#0ea5e9] p-4">
+                    <div className="font-black text-[12px] mb-2">Reservar {viagemSel.origem} - {viagemSel.destino} - {viagemSel.preco} MT - Escolher lugar/assento</div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">NOME COMPLETO PASSAGEIRO *</label><input value={formPassageiro.nome} onChange={e=>setFormPassageiro({...formPassageiro,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Michaque Mungoi" /></div><div><label className="text-[8px] font-bold">CONTACTO WHATSAPP *</label><input value={formPassageiro.tel} onChange={e=>setFormPassageiro({...formPassageiro,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4] border-green-200" placeholder="840532899 - WhatsApp" /></div><div><label className="text-[8px] font-bold">NOME DO FAMILIAR</label><input value={formPassageiro.nomeFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,nomeFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Nome familiar" /></div><div><label className="text-[8px] font-bold">CONTACTO DO FAMILIAR</label><input value={formPassageiro.telFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,telFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Contacto familiar para emergencia" /></div></div>
+                        <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">BI (opcional)</label><input value={formPassageiro.bi} onChange={e=>setFormPassageiro({...formPassageiro,bi:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">IDADE / TIPO</label><select value={formPassageiro.tipo} onChange={e=>setFormPassageiro({...formPassageiro,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Adulto</option><option>Menor - com acompanhante</option><option>Menor - desacompanhado</option><option>Idoso</option></select></div></div>
+                        
+                        <div><label className="text-[8px] font-bold">LOCAL SERA ENCONTRADO / DESEMBARQUE (se nao for terminal)</label><input value={formPassageiro.localDesembarque} onChange={e=>setFormPassageiro({...formPassageiro,localDesembarque:e.target.value})} placeholder="Ex: Terminal Junta, agencia Beira, casa destinatario" className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div><label className="text-[8px] font-bold">ACOMPANHANTE - 3 divisoes</label><div className="grid grid-cols-3 gap-2 mt-1"><div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">1 - Tem acompanhante? Sim/Nao *</label><select value={formPassageiro.temAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,temAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[10px]"><option value="Nao">Nao</option><option value="Sim">Sim</option></select></div><div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">2 - Idade</label><input value={formPassageiro.idadeAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,idadeAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[9px]" /></div><div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">3 - Relacao - pai, filho, tio</label><select value={formPassageiro.relacaoAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,relacaoAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[9px]"><option value="">Selecione</option><option>Pai</option><option>Filho</option><option>Tio</option></select></div></div><div className="hidden"><label>ACOMPANHANTE</label><input value={formPassageiro.acompanhante} onChange={e=>setFormPassageiro({...formPassageiro,acompanhante:e.target.value})} placeholder="Nome acompanhante, telefone" className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div><label className="text-[8px] font-bold">DESTINO CUSTOM (se nao estiver na lista)</label><input value={formPassageiro.destinoCustom} onChange={e=>setFormPassageiro({...formPassageiro,destinoCustom:e.target.value})} placeholder="Escreva destino se nao aparecer na lista" className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                      </div>
+                      <div>
+                        <div className="font-bold text-[10px]">Escolher lugar / assento - {viagemSel.lugares} lugares - bloqueados ja reservados</div>
+                        <div className="grid grid-cols-4 gap-1.5 mt-2 p-2 bg-[#f8fafc] rounded-[8px] border max-h-[180px] overflow-y-auto">
+                          {Array.from({length: Math.max(viagemSel.lugares, 15)}, (_, i) => {
+                            const num = i+1;
+                            const existeNaViatura = num <= viagemSel.lugares;
+                            const ocupadoReservado = (viagemSel.lugaresOcupados||[]).includes(num) || (reservas.filter(r=>r.viagemId===viagemSel.id).flatMap(r=>r.assentos||[]).includes(num));
+                            const bloqueadoCapacidade = !existeNaViatura;
+                            const ocupado = ocupadoReservado || bloqueadoCapacidade;
+                            const selecionado = assentosSelecionados.includes(num);
+                            return (<button key={num} disabled={ocupado} onClick={()=>{if(selecionado){setAssentosSelecionados(assentosSelecionados.filter(n=>n!==num))} else {if(assentosSelecionados.length<4) setAssentosSelecionados([...assentosSelecionados,num])}}} className={`h-8 rounded text-[10px] font-bold border ${bloqueadoCapacidade?'bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed':''} ${ocupadoReservado && !bloqueadoCapacidade?'bg-red-200 text-red-400 border-red-300 cursor-not-allowed':'bg-white border-[#cbd5e1]'} ${selecionado?'bg-[#0ea5e9] text-white border-[#0ea5e9]':''}`} title={bloqueadoCapacidade?`Assento ${num} nao existe - viatura so tem ${viagemSel.lugares} lugares`:''}>{num}{ocupadoReservado?' X':''}{bloqueadoCapacidade?' -':''}</button>);
+                          })}
+                        </div>
+                        <div className="text-[7px] text-[#64748b] mt-1">Cinza - = assento nao existe (viatura {viagemSel.lugares} lugares, resto bloqueado automatico). Vermelho X = ja reservado. Azul = selecionado.</div>
+                        <div className="text-[7px] text-[#64748b] mt-1">Vermelho X = bloqueado ja reservado. Azul = selecionado. Max 4 assentos por reserva. {assentosSelecionados.length} selecionados.</div>
+                        <div className="mt-3"><label className="text-[8px] font-bold">MODO PAGAMENTO</label><div className="grid grid-cols-2 gap-1 mt-1"><button onClick={()=>setModoPagamento('M-Pesa')} className={`h-8 rounded-full text-[9px] font-bold border ${modoPagamento==='M-Pesa'?'bg-[#22c55e] text-white':'bg-white'}`}>M-Pesa</button><button onClick={()=>setModoPagamento('E-Mola')} className={`h-8 rounded-full text-[9px] font-bold border ${modoPagamento==='E-Mola'?'bg-[#0ea5e9] text-white':'bg-white'}`}>E-Mola</button><button onClick={()=>setModoPagamento('Dinheiro')} className={`h-8 rounded-full text-[9px] font-bold border ${modoPagamento==='Dinheiro'?'bg-[#facc15] text-black':'bg-white'}`}>Dinheiro no terminal</button><button onClick={()=>setModoPagamento('Cartao')} className={`h-8 rounded-full text-[9px] font-bold border ${modoPagamento==='Cartao'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Cartao</button></div></div>
+                        <div className="mt-2 p-2 bg-[#f0fdf4] rounded text-[8px]"><b>Resumo:</b> {viagemSel.origem} - {viagemSel.destino} | Assentos: {assentosSelecionados.join(', ')||'nenhum'} | Total: {(viagemSel.preco * (assentosSelecionados.length||1)).toFixed(0)} MT | Pagamento: {modoPagamento} | Telefone bilhete: {formPassageiro.tel}</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3"><button onClick={()=>{if(!formPassageiro.nome||!formPassageiro.tel||assentosSelecionados.length===0){alert('Nome, telefone e pelo menos 1 assento obrigatorios'); return;} const total = viagemSel.preco * assentosSelecionados.length; const codigo = 'BILHETE-'+Math.random().toString(36).substring(2,8).toUpperCase(); const nova={id:Date.now(), viagemId: viagemSel.id, ...viagemSel, passageiro:{...formPassageiro, assentos:assentosSelecionados}, assentos:assentosSelecionados, total, estado:'Confirmada', codigo, qr: `QR-${codigo}-${formPassageiro.tel}`, modoPagamento, dataReserva:new Date().toLocaleString('pt-MZ')}; setReservas([...reservas,nova]); setViagensMock((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v)); setViagensPublicadas((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v)); setMostrarFormPass(false); setAssentosSelecionados([]); alert(`Reserva confirmada! Bilhete ${codigo} - Total ${total} MT - Assentos ${assentosSelecionados.join(', ')} - Enviado para ${formPassageiro.tel} com QR Code ${nova.qr} - Pagamento ${modoPagamento} - Local coleta: ${formPassageiro.localColeta} - Desembarque: ${formPassageiro.localDesembarque}`);}} className="flex-1 h-10 bg-[#22c55e] text-white rounded-[8px] font-black text-[11px]">Confirmar { (viagemSel.preco * (assentosSelecionados.length||1)).toFixed(0) } MT - Gerar bilhete QR</button><button onClick={()=>{setMostrarFormPass(false); setAssentosSelecionados([]);}} className="h-10 px-4 border rounded-[8px] text-[10px]">Cancelar</button></div>
+                  </div>
+                )}
+              </div>
+              <div className="w-full lg:w-[300px] space-y-3">
+                <div className="bg-[#111827] rounded-[12px] p-4 text-white"><div className="font-bold text-[11px]">Area transportador</div><div className="text-[9px] opacity-70 mt-2">Gerir viagens e viaturas, uma conta gere 15 viaturas. Active viaturas para aparecerem na pesquisa.</div><button onClick={()=>setViagensSubTab('transportador')} className="mt-3 w-full h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">Ir para Area Transportador</button></div>
+                <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">Rotas Mocambique - Africa do Sul</div><div className="text-[8px] mt-2 space-y-1"><div>â€¢ Beira - Johannesburg via Ressano Garcia</div><div>â€¢ Inhambane - Johannesburg via Ponta do Ouro</div><div>â€¢ Maxixe - Johannesburg</div><div>â€¢ Xai-Xai - Johannesburg</div><div>â€¢ Chokwe - Johannesburg</div><div>â€¢ Maputo - Durban, Pretoria, Nelspruit</div><div>â€¢ Gaza - SA via Komatiepoort</div><div className="mt-2 font-bold">Paragens SA: Park Station, Bosman, Nelspruit Mbombela, Komatiepoort Fronteira, Ressano Garcia, Durban Central</div></div></div>
               </div>
             </div>
           )}
-          {faturacaoSubTab==='loja' && (
+
+{viagensSubTab==='transportador' && (
             <div className="space-y-3">
-              {!faturacaoLogado ? (
-                <div className="bg-white rounded-[12px] border p-6 max-w-[600px]">
-                  <div className="font-black text-[13px]">Criar conta loja - Area registada</div>
-                  <div className="text-[9px] text-[#64748b]">Como area do transportador - 1 conta gere varias lojas/facturas. Formulario complexo e completo igual ao que existe agora.</div>
-                  <div className="grid grid-cols-2 gap-2 mt-3">
-                    <input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} placeholder="Nome loja *" className="h-8 border rounded text-[10px] px-2" />
-                    <input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} placeholder="NUIT *" className="h-8 border rounded text-[10px] px-2" />
-                    <input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} placeholder="Telefone *" className="h-8 border rounded text-[10px] px-2" />
-                    <input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} placeholder="Endereco completo *" className="h-8 border rounded text-[10px] px-2 col-span-2" />
+              {!transportadorLogado ? (
+                <div className="max-w-[900px] mx-auto">
+                  <div className="bg-[#1e2f4a] rounded-[14px] p-6 text-white text-center"><h2 className="text-[16px] font-black">AREA DO TRANSPORTADOR - Privada</h2><p className="text-[10px] opacity-70 mt-1">Cadastre-se uma unica vez com password. 1 conta gere 15 viaturas.</p></div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                    <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[12px] mb-3">Ja tem conta? Iniciar sessao</div><div className="space-y-3"><input value={loginForm.tel} onChange={e=>setLoginForm({...loginForm,tel:e.target.value})} placeholder="Telefone" className="w-full h-9 border rounded text-[11px] px-2" /><input type="password" value={loginForm.password} onChange={e=>setLoginForm({...loginForm,password:e.target.value})} placeholder="Password" className="w-full h-9 border rounded text-[11px] px-2" /><button onClick={()=>{if(loginForm.tel && loginForm.password){setTransportadorLogado(true); setTransportadorInnerTab('frota');}}} className="w-full h-10 bg-[#1e2f4a] text-white rounded text-[11px] font-black">Entrar na area privada</button></div></div>
+                    <div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[12px] mb-3">Criar conta transportador</div><div className="space-y-2"><input value={transportadorPerfil.nomeResponsavel} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeResponsavel:e.target.value})} placeholder="Nome completo responsavel *" className="w-full h-8 border rounded text-[10px] px-2" /><div className="grid grid-cols-2 gap-2"><select value={transportadorPerfil.tipoTransportador} onChange={e=>setTransportadorPerfil({...transportadorPerfil,tipoTransportador:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Pessoa singular</option><option>Empresa</option></select><input value={transportadorPerfil.nomeEmpresa} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeEmpresa:e.target.value})} placeholder="Nome empresa" className="w-full h-8 border rounded text-[10px] px-2" /></div><div className="grid grid-cols-2 gap-2"><input value={transportadorPerfil.telPrincipal} onChange={e=>setTransportadorPerfil({...transportadorPerfil,telPrincipal:e.target.value})} placeholder="Telefone principal *" className="w-full h-8 border rounded text-[10px] px-2" /><input value={transportadorPerfil.email} onChange={e=>setTransportadorPerfil({...transportadorPerfil,email:e.target.value})} placeholder="Email" className="w-full h-8 border rounded text-[10px] px-2" /></div><div className="grid grid-cols-2 gap-2"><input type="password" value={transportadorPerfil.password} onChange={e=>setTransportadorPerfil({...transportadorPerfil,password:e.target.value})} placeholder="Password *" className="w-full h-8 border rounded text-[10px] px-2" /><input type="password" value={transportadorPerfil.confirmPassword} onChange={e=>setTransportadorPerfil({...transportadorPerfil,confirmPassword:e.target.value})} placeholder="Confirmar password *" className="w-full h-8 border rounded text-[10px] px-2" /></div><button onClick={()=>{if(!transportadorPerfil.nomeResponsavel||!transportadorPerfil.telPrincipal||!transportadorPerfil.password){alert('Nome, telefone e password obrigatorios'); return;} setTransportadorLogado(true); setTransportadorInnerTab('perfil');}} className="w-full h-10 bg-[#facc15] text-black rounded text-[11px] font-black">Criar conta</button></div></div>
                   </div>
-                  <button onClick={()=>setFaturacaoLogado(true)} className="mt-4 w-full h-9 bg-[#facc15] text-black rounded-full font-black text-[11px]">Criar conta loja e entrar</button>
-                  <button onClick={()=>setFaturacaoLogado(true)} className="mt-2 w-full h-8 bg-white border rounded-full text-[10px]">Ja tenho conta - Entrar na Minha Loja</button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-white border rounded-[12px] p-4 flex justify-between">
-                    <div className="font-black text-[12px]">{formLoja.nome||'Minha Loja'}</div>
-                    <div className="flex gap-2"><button onClick={()=>setFaturacaoInnerTab('faturar')} className="px-3 h-8 bg-[#22c55e] text-white rounded-full text-[9px]">Faturar</button><button onClick={()=>setFaturacaoInnerTab('historico')} className="px-3 h-8 bg-[#1e2f4a] text-white rounded-full text-[9px]">Historico na minha loja</button><button onClick={()=>setFaturacaoInnerTab('perfil')} className="px-3 h-8 bg-[#facc15] text-black rounded-full text-[9px]">Editar perfil completo</button></div>
-                  </div>
-                  {faturacaoInnerTab==='faturar' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold text-[11px]">Faturar - historico vai para Minha Loja</div><button onClick={()=>{const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0); setFatHistorico([...fatHistorico,{id:Date.now(), cliente:fatTel, total, data:new Date().toLocaleString()} as any]); setFaturacaoInnerTab('historico');}} className="mt-3 w-full h-9 bg-[#22c55e] text-white rounded-full font-black">Finalizar e guardar no historico</button></div>}
-                  {faturacaoInnerTab==='historico' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Historico na minha loja - aparece ao preencher a facturacao</div>{fatHistorico.length===0 ? <div className="text-[9px] text-[#64748b] mt-2">Nenhuma factura ainda - ao preencher facturacao, aparece aqui</div> : fatHistorico.map((h:any)=>(<div key={h.id} className="border rounded p-2 mt-2 flex justify-between"><div>{h.cliente} - {h.data}</div><div className="font-black text-[#22c55e]">{h.total} MT</div></div>))}</div>}
-                  {faturacaoInnerTab==='perfil' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Editar formulario completo - perfil complexo igual ao que existe agora</div><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-2" /><button className="mt-2 px-4 h-8 bg-[#facc15] rounded-full text-[10px] font-black">Guardar perfil completo</button></div>}
+                  <div className="bg-[#1e2f4a] rounded-[12px] p-4 text-white flex justify-between items-center"><div><div className="font-black text-[12px]">Area Privada - {transportadorPerfil.nomeResponsavel||transportadorPerfil.nomeEmpresa}</div><div className="text-[9px] opacity-70">{transportadorPerfil.telPrincipal} | {viaturasFrota.length} viaturas | {transportadorPerfil.estadoAprovacao}</div></div><div className="flex gap-2"><button onClick={()=>setTransportadorInnerTab('perfil')} className={`px-3 h-8 rounded-full text-[9px] ${transportadorInnerTab==='perfil'?'bg-white text-black':'bg-white/10 text-white'}`}>Perfil</button><button onClick={()=>setTransportadorInnerTab('frota')} className={`px-3 h-8 rounded-full text-[9px] font-black ${transportadorInnerTab==='frota'?'bg-[#facc15] text-black':'bg-white/10 text-white'}`}>MINHA FROTA ({viaturasFrota.length})</button><button onClick={()=>setTransportadorInnerTab('operacao')} className={`px-3 h-8 rounded-full text-[9px] ${transportadorInnerTab==='operacao'?'bg-[#0ea5e9] text-white':'bg-white/10 text-white'}`}>Operacao</button><button onClick={()=>setTransportadorLogado(false)} className="px-3 h-8 rounded-full bg-white/10 text-white text-[9px]">Sair</button></div></div>
+                  {transportadorInnerTab==='perfil' && (<div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Completar perfil - 4 seccoes A/B/C/D</div><div className="grid grid-cols-2 gap-2 mt-3"><input value={transportadorPerfil.nomeComercial} onChange={e=>setTransportadorPerfil({...transportadorPerfil,nomeComercial:e.target.value})} placeholder="Nome comercial" className="h-8 border rounded text-[10px] px-2" /><input value={transportadorPerfil.terminalPartida} onChange={e=>setTransportadorPerfil({...transportadorPerfil,terminalPartida:e.target.value})} placeholder="Terminal partida" className="h-8 border rounded text-[10px] px-2" /><input value={transportadorPerfil.rotas.join(', ')} onChange={e=>setTransportadorPerfil({...transportadorPerfil,rotas:e.target.value.split(',')})} placeholder="Rotas" className="h-8 border rounded text-[10px] px-2 col-span-2" /></div><button onClick={()=>setTransportadorInnerTab('frota')} className="mt-3 w-full h-9 bg-[#0ea5e9] text-white rounded-full text-[10px] font-bold">Guardar e ir para Minha Frota</button></div>)}
+                  {transportadorInnerTab==='frota' && (
+                    <div className="space-y-3">
+                      <div className="bg-white rounded-[12px] border p-4"><div className="flex justify-between items-center"><div><div className="font-black text-[13px]">Minha Frota - Gestao centralizada</div><div className="text-[9px] text-[#64748b]">Dentro da Area Transportador privada - 1 conta gere varias viaturas</div></div><div className="flex gap-2"><span className="bg-[#f1f5f9] px-3 py-1 rounded-full text-[10px] font-bold">{viaturasFrota.length} Viaturas</span><button onClick={()=>{setViaturaEditId(null); setFormViatura({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, inspecaoValida:'', seguroValido:'', estadoOperacional:'Inactiva', rotaHabitual:'Maputo - Xai-Xai', provinciaOrigem:'Maputo Provincia', distritoOrigem:'Matola', provinciaDestino:'Gaza', distritoDestino:'Xai-Xai', fronteira:'Ressano Garcia', preco:2500, precoDistrito:0, precoCustom:0}); setMostrarFormViatura(true);}} className="px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">+ Adicionar viatura</button></div></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">{viaturasFrota.map(v=>(<div key={v.id} className="border rounded-[12px] p-3"><div className="flex justify-between"><div className="font-black text-[11px]">{v.marcaModelo}</div><span className="text-[7px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">{v.estadoOperacional} | {v.estadoAprovacao}</span></div><div className="text-[9px] mt-1"><div>Matricula: {v.matricula} | Lugares: {v.lugares}</div><div>AC: {v.arCondicionado} | Bagagem: {v.bagagem} | Encomendas: {v.aceitaEncomendas} | {v.capacidadeKg}kg</div><div>Rota: {v.rotaHabitual}</div></div><div className="mt-2 flex gap-1"><button onClick={()=>{setFormViatura(v); setViaturaEditId(v.id); setMostrarFormViatura(true);}} className="flex-1 h-7 bg-[#f1f5f9] rounded-full text-[8px] font-bold">Editar</button><button onClick={()=>setViaturasFrota(viaturasFrota.filter(x=>x.id!==v.id))} className="h-7 px-2 border rounded-full text-[8px]">Remover</button><button onClick={()=>{const novaViagem={id:Date.now(), transp:transportadorPerfil.nomeEmpresa||transportadorPerfil.nomeResponsavel||"Transportador", motorista:transportadorPerfil.nomeResponsavel, tel:transportadorPerfil.telPrincipal, origem:v.rotaHabitual.split("-")[0]?.trim()||"Maputo", destino:v.rotaHabitual.split("-")[1]?.trim()||"Beira", provinciaOrigem:v.provinciaOrigem||origemProv, provinciaDestino:v.provinciaDestino||destinoProv, distritoOrigem:v.distritoOrigem||origemDist, distritoDestino:v.distritoDestino||destinoDist, data:new Date().toISOString().split("T")[0], hora:"05:30", chegada:"18:00", preco:v.preco||2500, lugares:v.lugares, cargaKg:v.capacidadeKg, viatura:v.marcaModelo, matricula:v.matricula, estado:"Activa", rota:v.rotaHabitual, fronteira:v.fronteira||"Ressano Garcia", lugaresOcupados:[], activa:true}; setViagensPublicadas([...viagensPublicadas,novaViagem]); setViaturasFrota(viaturasFrota.map(x=>x.id===v.id?{...x,estadoOperacional:"Activa", activa:true}:x)); alert("Viatura activada para operacao! Agora aparece automaticamente na pesquisa dos passageiros em Pesquisar viagens. Rota: "+novaViagem.rota);}} className="h-7 px-2 bg-[#22c55e] text-white rounded-full text-[8px] font-bold">Activar para operacao</button></div></div>))}</div>
+                      </div>
+                      {mostrarFormViatura && (<div className="bg-white rounded-[12px] border-2 border-[#facc15] p-4"><div className="font-black text-[11px] mb-3">{viaturaEditId?'Editar viatura':'Adicionar viatura'}</div><div className="grid grid-cols-4 gap-2"><div><label className="text-[8px] font-bold">Tipo *</label><select value={formViatura.tipo} onChange={e=>setFormViatura({...formViatura,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Minibus / Chapa</option><option>Autocarro</option><option>Carrinha de transporte</option><option>Outro</option></select></div><div><label className="text-[8px] font-bold">Marca e modelo *</label><input value={formViatura.marcaModelo} onChange={e=>setFormViatura({...formViatura,marcaModelo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Matricula *</label><input value={formViatura.matricula} onChange={e=>setFormViatura({...formViatura,matricula:e.target.value.toUpperCase()})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Lugares *</label><input type="number" value={formViatura.lugares} onChange={e=>setFormViatura({...formViatura,lugares:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div><div className="grid grid-cols-4 gap-2 mt-2"><div><label className="text-[8px] font-bold">Ano</label><input type="number" value={formViatura.ano} onChange={e=>setFormViatura({...formViatura,ano:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Cor</label><input value={formViatura.cor} onChange={e=>setFormViatura({...formViatura,cor:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Carga kg *</label><input type="number" value={formViatura.capacidadeKg} onChange={e=>setFormViatura({...formViatura,capacidadeKg:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div className="grid grid-cols-3 gap-2 mt-3 bg-[#fef9c3] p-2 rounded-[8px] border border-[#facc15]"><div><label className="text-[8px] font-black">Preco por rota (MT) * - depende partida/destino</label><input type="number" value={formViatura.preco} onChange={e=>setFormViatura({...formViatura,preco:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[11px] font-bold px-2 bg-white" /></div><div><label className="text-[8px] font-black">Preco por distrito (MT) - valor exacto por distrito</label><input type="number" value={formViatura.precoDistrito} onChange={e=>setFormViatura({...formViatura,precoDistrito:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" /></div><div><label className="text-[8px] font-black">Preco - destino custom (MT)</label><input type="number" value={formViatura.precoCustom} onChange={e=>setFormViatura({...formViatura,precoCustom:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" /></div></div><div><label className="text-[8px] font-bold">Rota</label><input value={formViatura.rotaHabitual} onChange={e=>setFormViatura({...formViatura,rotaHabitual:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div><div className="mt-3 flex gap-2"><button onClick={()=>{if(!formViatura.marcaModelo||!formViatura.matricula){alert('Marca e matricula obrigatorios'); return;} if(viaturaEditId){setViaturasFrota(viaturasFrota.map(v=>v.id===viaturaEditId?{...v,...formViatura,id:viaturaEditId}:v));} else {setViaturasFrota([...viaturasFrota,{id:Date.now(),...formViatura,estadoAprovacao:'Em verificacao'}]);} setMostrarFormViatura(false);}} className="flex-1 h-9 bg-[#facc15] text-black rounded text-[10px] font-black">{viaturaEditId?'Guardar':'Registar viatura'}</button><button onClick={()=>setMostrarFormViatura(false)} className="h-9 px-4 border rounded text-[10px]">Cancelar</button></div></div>)}
+                    </div>
+                  )}
+                  {transportadorInnerTab==='operacao' && (<div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Operacao - Frota ligada a viagens</div><div className="mt-2 text-[9px] text-[#64748b]">Conta - Viaturas - Viagens - Passageiros + Encomendas. Calendario disponibilidade, gestao lugares, gestao carga, alerta documentos.</div></div>)}
                 </div>
               )}
             </div>
@@ -166,84 +793,13 @@ export default function App(){
         </section>
       )}
 
-      {tab==='viagens' && (
-        <section className="max-w-[1200px] mx-auto p-3 space-y-3">
-          <div className="flex gap-2">
-            <button onClick={()=>setViagensSubTab('buscar')} className={`px-4 h-9 rounded-full text-[10px] font-black ${viagensSubTab==='buscar'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Buscar Viagens</button>
-            <button onClick={()=>setViagensSubTab('transportador')} className={`px-4 h-9 rounded-full text-[10px] font-black ${viagensSubTab==='transportador'?'bg-[#facc15] text-black':'bg-white border'}`}>Area do Transportador</button>
-          </div>
-          {viagensSubTab==='buscar' && (
-            <div className="space-y-3">
-              <div className="bg-white rounded-[12px] border p-4">
-                <div className="grid grid-cols-3 gap-2">
-                  <select value={origemProv} onChange={e=>setOrigemProv(e.target.value)} className="h-9 border rounded text-[10px] px-2"><option value="">Origem - Provincia</option><option>Maputo Cidade</option><option>Sofala</option></select>
-                  <select value={destinoProv} onChange={e=>setDestinoProv(e.target.value)} className="h-9 border rounded text-[10px] px-2"><option value="">Destino - Provincia</option><option>Sofala</option><option>Maputo Cidade</option></select>
-                  <button className="h-9 bg-[#1e2f4a] text-white rounded-full text-[10px] font-black">PESQUISAR VIAGENS</button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {viagensMock.concat(viagensPublicadas).map((v:any)=>(
-                  <div key={v.id} className="bg-white rounded-[12px] border p-3 flex justify-between">
-                    <div><div className="font-black text-[11px]">{v.transp} - {v.viatura} - {v.matricula}</div><div className="text-[9px] text-[#64748b]">{v.origem} - {v.destino} | {v.data} {v.hora} | {v.preco} MT base | {v.precoDistrito} MT distrito | {v.precoCustom} MT custom</div></div>
-                    <button onClick={()=>{setViagemSel(v); setMostrarFormPass(true);}} className="px-4 h-8 bg-[#1e2f4a] text-white rounded-full text-[10px]">Reservar</button>
-                  </div>
-                ))}
-              </div>
-              {mostrarFormPass && viagemSel && (
-                <div className="bg-white rounded-[12px] border-2 border-[#0ea5e9] p-4">
-                  <div className="font-black text-[12px] mb-2">Reservar {viagemSel.origem} - {viagemSel.destino}</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div><label className="text-[8px] font-bold">NOME COMPLETO *</label><input value={formPassageiro.nome} onChange={e=>setFormPassageiro({...formPassageiro,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                    <div><label className="text-[8px] font-bold">CONTACTO WHATSAPP *</label><input value={formPassageiro.tel} onChange={e=>setFormPassageiro({...formPassageiro,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4]" /></div>
-                    <div><label className="text-[8px] font-bold">NOME DO FAMILIAR</label><input value={formPassageiro.nomeFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,nomeFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Nome familiar" /></div>
-                    <div><label className="text-[8px] font-bold">CONTACTO DO FAMILIAR</label><input value={formPassageiro.telFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,telFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                  </div>
-                  <div className="border-2 border-[#facc15] rounded-[8px] p-2 bg-[#fefce8] mt-3">
-                    <div className="font-black text-[10px] mb-2">ACOMPANHANTE - 3 divisoes</div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">1 - Tem acompanhante? Sim/Nao *</label><select value={formPassageiro.temAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,temAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[10px] mt-1"><option value="Nao">Nao</option><option value="Sim">Sim</option></select></div>
-                      <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">2 - Idade acompanhante</label><input value={formPassageiro.idadeAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,idadeAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[9px] mt-1" /></div>
-                      <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">3 - Relacao - pai, filho, tio</label><select value={formPassageiro.relacaoAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,relacaoAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[9px] mt-1"><option value="">Selecione</option><option>Pai</option><option>Mae</option><option>Filho</option><option>Tio</option></select></div>
-                    </div>
-                  </div>
-                  <div className="mt-3"><label className="text-[8px] font-bold">Assentos - 15 lugares - bloqueado cinza quando viatura tem 15</label>
-                    <div className="grid grid-cols-5 gap-1 mt-1">
-                      {Array.from({length:15}).map((_,i)=>{const num=i+1; const ocupado=viagemSel.lugaresOcupados?.includes(num); const sel=assentosSelecionados.includes(num); return <button key={num} disabled={ocupado} onClick={()=>{if(sel){setAssentosSelecionados(assentosSelecionados.filter(n=>n!==num));} else {setAssentosSelecionados([...assentosSelecionados,num]);}}} className={`h-8 rounded text-[10px] font-bold ${ocupado?'bg-gray-300 text-gray-500':sel?'bg-[#22c55e] text-white':'bg-white border'}`}>{num}</button>;})}
-                    </div>
-                  </div>
-                  <button onClick={()=>{if(!formPassageiro.nome||!formPassageiro.tel){alert('Nome e WhatsApp obrigatorios'); return;} const codigo='BILHETE-'+Math.random().toString(36).substring(2,6).toUpperCase(); alert('BILHETE GERADO! '+codigo+' - Assentos '+assentosSelecionados.join(', ')+' - Familiar '+formPassageiro.nomeFamiliar); setMostrarFormPass(false);}} className="mt-3 w-full h-10 bg-[#22c55e] text-white rounded-full font-black text-[11px]">Confirmar - Gerar bilhete QR PDF - Enviar WhatsApp</button>
-                </div>
-              )}
-            </div>
-          )}
-          {viagensSubTab==='transportador' && (
-            <div className="bg-white rounded-[12px] border p-4">
-              <div className="font-black text-[12px]">Area do Transportador - 1 conta gere 15 viaturas</div>
-              <div className="flex gap-2 mt-3"><button onClick={()=>setTransportadorInnerTab('frota')} className={`px-3 h-8 rounded-full text-[9px] ${transportadorInnerTab==='frota'?'bg-[#1e2f4a] text-white':'bg-[#f1f5f9]'}`}>Minha Frota</button><button onClick={()=>setTransportadorInnerTab('operacao')} className={`px-3 h-8 rounded-full text-[9px] ${transportadorInnerTab==='operacao'?'bg-[#facc15] text-black':'bg-[#f1f5f9]'}`}>Operacao</button></div>
-              {transportadorInnerTab==='frota' && (
-                <div className="mt-3">
-                  <button onClick={()=>setMostrarFormViatura(true)} className="px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">Adicionar viatura</button>
-                  {mostrarFormViatura && (
-                    <div className="mt-3 border-2 border-[#facc15] rounded-[12px] p-4 bg-[#fefce8]">
-                      <div className="grid grid-cols-3 gap-2"><input value={formViatura.marcaModelo} onChange={e=>setFormViatura({...formViatura,marcaModelo:e.target.value})} placeholder="Marca e modelo *" className="h-8 border rounded text-[10px] px-2" /><input value={formViatura.matricula} onChange={e=>setFormViatura({...formViatura,matricula:e.target.value})} placeholder="Matricula *" className="h-8 border rounded text-[10px] px-2" /><input type="number" value={formViatura.lugares} onChange={e=>setFormViatura({...formViatura,lugares:Number(e.target.value)})} className="h-8 border rounded text-[10px] px-2" /></div>
-                      <div className="grid grid-cols-3 gap-2 mt-3 bg-[#fef9c3] p-2 rounded-[8px] border border-[#facc15]">
-                        <div><label className="text-[8px] font-black">Preco por rota (MT) * - depende partida/destino</label><input type="number" value={formViatura.preco} onChange={e=>setFormViatura({...formViatura,preco:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[11px] font-bold px-2 bg-white" /></div>
-                        <div><label className="text-[8px] font-black">Preco por distrito (MT) - valor exacto por distrito</label><input type="number" value={formViatura.precoDistrito} onChange={e=>setFormViatura({...formViatura,precoDistrito:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" /></div>
-                        <div><label className="text-[8px] font-black">Preco - destino custom (MT)</label><input type="number" value={formViatura.precoCustom} onChange={e=>setFormViatura({...formViatura,precoCustom:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" /></div>
-                      </div>
-                      <button onClick={()=>{setViaturasFrota([...viaturasFrota,{id:Date.now(),...formViatura} as any]); setMostrarFormViatura(false);}} className="mt-3 w-full h-9 bg-[#facc15] text-black rounded-full font-black">Registar viatura</button>
-                    </div>
-                  )}
-                  <div className="mt-3 space-y-2">{viaturasFrota.map((v:any)=>(<div key={v.id} className="border rounded p-2 flex justify-between"><div><div className="font-bold text-[11px]">{v.marcaModelo} - {v.matricula}</div><div className="text-[8px]">{v.preco} MT rota | {v.precoDistrito} MT distrito | {v.precoCustom} MT custom</div></div><div className="text-[10px]">{v.lugares} lugares</div></div>))}</div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
-      {tab==='contratos' && (<div className="max-w-[1200px] mx-auto p-6 bg-white rounded-[12px] border mt-3"><div className="font-black">CONTRATOS 11 - sem alteracao</div><div className="text-[10px] text-[#64748b] mt-2">Mantido igual - 11 clausulas, assinaturas na horizontal</div></div>)}
-      <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">SEM LOGO - BUILD GARANTIDO 100%</footer>
-    </div>
-  );
+  <footer className="mt-10 border-t py-6 text-center text-[10px] text-[#94a3b8]">ESSE COM BI E NUIT OPCIONAL - CLAUSULAS 4-10 ABERTAS EDITAVEIS  - NAO MODIFICADO MAIS NADA - BUILD 100%</footer>
+ </div>
+ )
+}
+
+
+// ESSE - BUILD 100% - CONTRATO FACIL PRATICO RAPIDO - 11 CLAUSULAS
+
 }

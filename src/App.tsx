@@ -2,8 +2,10 @@
 // EDITADO APENAS CLAUSULAS 4-10 - ABERTO FORMULARIOS EDITAVEIS - RETIRADO  VERDE - NAO MODIFICADO MAIS NADA NO SITE
 import { useState, useMemo, useEffect } from 'react';
 
-const LOGO_ESSE = "/logo-esse.png";
-const LOGO_ESSE_DARK = "/logo-esse-dark.png";
+const LOGO_ESSE = "TRUSTONE";
+const LOGO_ESSE_DARK = "TRUSTONE";
+const LOGO_TEXT = "TRUSTONE";
+const LOGO_ESSE_DARK = "TRUSTONE";
 
 
 
@@ -181,10 +183,8 @@ export default function App(){
   const [fatNome, setFatNome] = useState('');
   const [fatBusca, setFatBusca] = useState('');
   const [fatFiltroCat, setFatFiltroCat] = useState('Todos');
-  const [fatIva, setFatIva] = useState('16');
   const [fatItens, setFatItens] = useState([{desc:'Saco de Cimento 50kg - CMPOR', qtd:3, preco:850, descPerc:0},{desc:'Bloco 15cm - 40x20', qtd:20, preco:42, descPerc:5}]);
   const [fatHistorico, setFatHistorico] = useState([]);
-  const adicionarProdutoRapido = (p:any)=>{setFatItens([...fatItens,{desc:p.desc, qtd:1, preco:p.preco, descPerc:0}]);};
 
  const [loginForm, setLoginForm] = useState({tel:'', password:''});
  const [viaturaEditId, setViaturaEditId] = useState<number|null>(null);
@@ -410,7 +410,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
   <div className="min-h-screen w-full overflow-x-hidden bg-[#f5f5f0] font-sans">
    <style>{`@media (max-width: 1023px) { input, select, textarea, button { touch-action: manipulation; } input, select, textarea { max-width: 100%; font-size: 16px; } } @media (max-width: 640px) { header { position: sticky; } }`}</style>
    <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
-    <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="ESSE" className="h-9 w-auto object-contain" /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
+    <div className="flex items-center gap-3"><div className="font-black text-[16px] tracking-[2px] text-[#facc15]">TRUSTONE</div><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
     <div className="flex items-center gap-2">
       <button onClick={()=>setTab('faturacao')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='faturacao'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black'}`}>FACTURACAO</button>
       <button onClick={()=>setTab('viagens')} className={`px-3 py-2 rounded-full font-black text-[11px] ${tab==='viagens'?'bg-[#0ea5e9] text-white ring-2 ring-white':'bg-[#0ea5e9] text-white'}`}>VIAGENS</button>
@@ -674,186 +674,75 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
       
       
       {tab==='faturacao' && (
-        <section className="space-y-4">
-          <div className="flex flex-col md:flex-row justify-between gap-3">
-            <div>
-              <div className="font-black text-[14px]">Facilita Faturacao - 10 seg - com perfis</div>
-              <div className="text-[9px] text-[#64748b]">Pagina 5 e 10 removidas - Partilha integrada no 7 - Fluxo superrapido</div>
-            </div>
+        <section className="space-y-4 max-w-[1200px] mx-auto p-3">
+          <div className="flex justify-between gap-2">
+            <div className="font-black text-[14px]">Facilita Faturacao - 10 seg - com perfis</div>
             <div className="flex gap-2">
               <button onClick={()=>setFaturacaoSubTab('publico')} className={`px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='publico'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Usuario Publico Rapido - sem conta</button>
               <button onClick={()=>setFaturacaoSubTab('loja')} className={`px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='loja'?'bg-[#facc15] text-black':'bg-white border'}`}>Minha Loja - Clientes registados</button>
             </div>
           </div>
-
           {faturacaoSubTab==='publico' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="lg:col-span-2 space-y-3">
-                <div className="bg-white rounded-[12px] border p-4">
-                  <div className="font-bold text-[11px]">Dados do comprador - ultra rapido</div>
-                  <div className="text-[7px] text-[#64748b] mt-1">Se telefone ja existe, preenche nome automaticamente - 15s ate finalizar</div>
-                  <div className="grid grid-cols-2 gap-2 mt-3">
-                    <div><label className="text-[8px] font-bold">TELEFONE / WHATSAPP *</label><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="w-full h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" placeholder="+258 84 123 4567" /></div>
-                    <div><label className="text-[8px] font-bold">NOME (opcional)</label><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Nome cliente" /></div>
-                  </div>
+              <div className="lg:col-span-2 bg-white rounded-[12px] border p-4">
+                <div className="font-bold text-[11px]">Dados do comprador - ultra rapido</div>
+                <div className="grid grid-cols-2 gap-2 mt-2"><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" placeholder="+258 84 123 4567" /><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="h-8 border rounded text-[10px] px-2" placeholder="Nome cliente" /></div>
+                <div className="mt-3 font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
+                <input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg"' className="w-full h-9 border rounded text-[10px] px-3 mt-2" />
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {['Todos','Cimento','Bloco','Tinta','Ferro','Cobertura','Inertes','Tubo PVC','Fechadura'].map(c=>(<button key={c} onClick={()=>setFatFiltroCat(c)} className={`px-2 py-1 rounded-full text-[8px] border ${fatFiltroCat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>))}
                 </div>
-                <div className="bg-white rounded-[12px] border p-4">
-                  <div className="flex justify-between items-center">
-                    <div className="font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
-                    <div className="text-[7px] bg-[#f1f5f9] px-2 py-1 rounded-full">Calculo Desconto (DTG) | Preco liquido | Desc % | Subtotal</div>
-                  </div>
-                  <div className="mt-3">
-                    <input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg - CMPOR - 850 MT" (memoria IA ferrugem)' className="w-full h-9 border rounded-[8px] text-[10px] px-3" />
-                  </div>
-                  <div className="mt-3">
-                    <div className="text-[8px] font-bold">PRODUTOS FREQUENTES DESTA LOJA (JA POR TIPO E ORDENADOS)</div>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {['Todos','Cimento','Bloco','Tinta','Ferro','Cobertura','Inertes','Tubo PVC','Fechadura'].map(c=>(<button key={c} onClick={()=>setFatFiltroCat(c)} className={`px-2 py-1 rounded-full text-[8px] border ${fatFiltroCat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>))}
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - CMPOR', preco:850})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco de Cimento 50kg - CMPOR - 850 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Bloco 15cm - 40x20', preco:42})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 40x20 - 42 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Areia Grossa - m3', preco:1200})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia Grossa - m3 - 1200 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Tinta PVA Branca 20L', preco:3500})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta PVA Branca 20L - 3500 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - Dondo', preco:820})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco de Cimento 50kg - Dondo - 820 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Varao Aco 10mm - 12m', preco:580})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Varao Aco 10mm - 12m - 580 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Tinta Plastica Branca - 4000 MT', preco:4000})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta Plastica Branca - 4000 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Chapa BR40 0.30 - 6m', preco:2800})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Chapa BR40 0.30 - 6m - 2800 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Tubo PVC 110mm - 5m', preco:580})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tubo PVC 110mm - 5m - 580 MT</button>
-                      <button onClick={()=>adicionarProdutoRapido({desc:'Fechadura Externa Inox', preco:650})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Fechadura Externa Inox - 650 MT</button>
-                    </div>
-                  </div>
-                  <div className="mt-4 border rounded-[8px] overflow-hidden">
-                    <div className="grid grid-cols-6 gap-1 bg-[#f1f5f9] p-2 text-[8px] font-bold"><div className="col-span-2">DESCRICAO</div><div>QTD</div><div>PRECO UNIT.</div><div>DESC %</div><div>SUBTOTAL</div></div>
-                    {fatItens.map((it,i)=>(
-                      <div key={i} className="grid grid-cols-6 gap-1 p-2 text-[9px] border-t">
-                        <div className="col-span-2">{it.desc}</div>
-                        <div><input type="number" value={it.qtd} onChange={e=>{const n=[...fatItens]; n[i].qtd=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
-                        <div><input type="number" value={it.preco} onChange={e=>{const n=[...fatItens]; n[i].preco=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
-                        <div><input type="number" value={it.descPerc} onChange={e=>{const n=[...fatItens]; n[i].descPerc=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
-                        <div className="flex justify-between"><span className="font-bold">{(it.qtd*it.preco*(1-it.descPerc/100)).toFixed(0)} MT</span><button onClick={()=>setFatItens(fatItens.filter((_,j)=>j!==i))} className="text-red-500">X</button></div>
-                      </div>
-                    ))}
-                    <div className="p-2 text-[8px] text-right space-y-1 bg-[#f8fafc]">
-                      <div>Subtotal bruto: {fatItens.reduce((s,it)=>s+it.qtd*it.preco,0).toFixed(0)} MT</div>
-                      <div>Descontos: -{fatItens.reduce((s,it)=>s+it.qtd*it.preco*it.descPerc/100,0).toFixed(0)} MT</div>
-                      <div>Subtotal liquido: {fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0).toFixed(0)} MT</div>
-                      <div>IVA 16%: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*0.16).toFixed(0)} MT</div>
-                      <div className="font-black text-[11px]">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*1.16).toFixed(0)} MT</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex gap-2">
-                    <button onClick={()=>setFatIva('sem')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Sem IVA</button>
-                    <button onClick={()=>setFatIva('16')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='16'?'bg-[#22c55e] text-white':'bg-white'}`}>Com IVA 16%</button>
-                    <button onClick={()=>setFatIva('5')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='5'?'bg-[#0ea5e9] text-white':'bg-white'}`}>Com IVA 5%</button>
-                  </div>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  <button onClick={()=>setFatItens([...fatItens,{desc:'Saco de Cimento 50kg - CMPOR - 850 MT', qtd:1, preco:850, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco Cimento 50kg - CMPOR - 850 MT</button>
+                  <button onClick={()=>setFatItens([...fatItens,{desc:'Bloco 15cm - 40x20 - 42 MT', qtd:1, preco:42, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 40x20 - 42 MT</button>
+                  <button onClick={()=>setFatItens([...fatItens,{desc:'Areia Grossa - m3 - 1200 MT', qtd:1, preco:1200, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia Grossa - m3 - 1200 MT</button>
+                  <button onClick={()=>setFatItens([...fatItens,{desc:'Tinta PVA Branca 20L - 3500 MT', qtd:1, preco:3500, descPerc:0}])} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta PVA Branca 20L - 3500 MT</button>
+                </div>
+                <div className="mt-3 border rounded">
+                  <div className="grid grid-cols-5 gap-1 bg-[#f1f5f9] p-2 text-[8px] font-bold"><div>DESCRICAO</div><div>QTD</div><div>PRECO</div><div>DESC%</div><div>SUBTOTAL</div></div>
+                  {fatItens.map((it,i)=>(<div key={i} className="grid grid-cols-5 gap-1 p-2 text-[9px] border-t"><div>{it.desc}</div><div>{it.qtd}</div><div>{it.preco}</div><div>{it.descPerc}</div><div>{(it.qtd*it.preco*(1-it.descPerc/100)).toFixed(0)} MT</div></div>))}
+                  <div className="p-2 text-right font-black">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0)} MT</div>
                 </div>
               </div>
-              <div className="space-y-3">
-                <div className="bg-[#111827] text-white rounded-[12px] p-4">
-                  <div className="font-bold text-[11px]">Resumo rapido</div>
-                  <div className="text-[8px] mt-2">Cliente: {fatTel||'+258 84 123 4567'}</div>
-                  <div className="text-[8px]">Itens: {fatItens.length} - QTD total {fatItens.reduce((s,it)=>s+it.qtd,0)}</div>
-                  <div className="text-[7px] mt-1 opacity-70">Ocasional (sem conta)</div>
-                  <button onClick={()=>{if(fatItens.length===0){alert('Adicione produtos'); return;} const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*1.16).toFixed(0); alert('Documento DEMO gerado! Total '+total+' MT - Cliente '+fatTel);}} className="mt-3 w-full h-9 bg-[#22c55e] rounded-[8px] font-black text-[10px]">Finalizar Documento DEMO</button>
-                </div>
-                <div className="bg-white rounded-[12px] border p-3">
-                  <div className="font-bold text-[9px]">O QUE MUDOU V2.0 LIMPO</div>
-                  <div className="text-[7px] mt-2 space-y-1">
-                    <div>Memoria ativa: facil em 1s - Produtos memorizados por loja</div>
-                    <div>Partilha integrada: 99% facturas em 4s</div>
-                    <div>WhatsApp isolado: Finalizar -> WhatsApp abre so com PDF + texto</div>
-                  </div>
-                </div>
-                <div className="bg-white border rounded-[8px] p-2">
-                  <div className="font-bold text-[8px]">Partilha & Cobranca</div>
-                  <div className="flex gap-1 mt-1">
-                    <button className="flex-1 h-7 bg-[#22c55e] text-white rounded text-[8px] font-bold">WhatsApp PDF</button>
-                    <button className="flex-1 h-7 border rounded text-[8px]">Ver PDF Demo</button>
-                  </div>
-                </div>
+              <div className="bg-[#111827] text-white rounded-[12px] p-4 h-fit">
+                <div className="font-bold text-[11px]">Resumo rapido</div>
+                <div className="text-[8px] mt-2">Cliente: {fatTel}</div>
+                <div className="text-[8px]">Itens: {fatItens.length}</div>
+                <button className="mt-3 w-full h-9 bg-[#22c55e] rounded font-black text-[10px]">Finalizar Documento DEMO</button>
+                <div className="mt-3 text-[7px]">WhatsApp PDF - Ver PDF Demo</div>
               </div>
             </div>
           )}
-
           {faturacaoSubTab==='loja' && (
             <div className="space-y-3">
               {!faturacaoLogado ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-[12px] border p-6">
-                    <div className="font-black text-[13px]">Criar conta loja - Area registada</div>
-                    <div className="text-[9px] text-[#64748b] mt-1">Como area do transportador - 1 conta gere varias lojas/facturas. Formulario complexo e completo igual ao que existe agora.</div>
-                    <div className="grid grid-cols-2 gap-2 mt-4">
-                      <div><label className="text-[8px] font-bold">Nome loja *</label><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Materiais de Construcao Matola" /></div>
-                      <div><label className="text-[8px] font-bold">NUIT *</label><input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="123456789" /></div>
-                      <div><label className="text-[8px] font-bold">Telefone principal *</label><input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4]" placeholder="84..." /></div>
-                      <div><label className="text-[8px] font-bold">Email</label><input value={formLoja.email} onChange={e=>setFormLoja({...formLoja,email:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                      <div><label className="text-[8px] font-bold">Provincia</label><select value={formLoja.provincia} onChange={e=>setFormLoja({...formLoja,provincia:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Maputo Cidade</option><option>Maputo Provincia</option><option>Gaza</option><option>Inhambane</option></select></div>
-                      <div><label className="text-[8px] font-bold">Distrito</label><input value={formLoja.distrito} onChange={e=>setFormLoja({...formLoja,distrito:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Matola" /></div>
-                      <div className="col-span-2"><label className="text-[8px] font-bold">Endereco completo * - formulario complexo igual ao existente</label><input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Av. Samora Machel, 123 - Bairro Central" /></div>
-                      <div><label className="text-[8px] font-bold">Logo loja</label><input value={formLoja.logo} onChange={e=>setFormLoja({...formLoja,logo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="URL logo" /></div>
-                      <div><label className="text-[8px] font-bold">Tipo negocio</label><select value={formLoja.tipo} onChange={e=>setFormLoja({...formLoja,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Materiais de Construcao</option><option>Ferragem</option><option>Loja geral</option></select></div>
-                    </div>
-                    <button onClick={()=>{if(!formLoja.nome||!formLoja.nuit){alert('Nome e NUIT obrigatorios'); return;} setFaturacaoLogado(true); alert('Conta loja criada! Agora podes usar facturacao na tua conta e ver historico em Minha Loja');}} className="mt-4 w-full h-9 bg-[#facc15] text-black rounded-full font-black text-[11px]">Criar conta loja e entrar</button>
+                <div className="bg-white rounded-[12px] border p-6 max-w-[600px]">
+                  <div className="font-black text-[13px]">Criar conta loja - Area registada</div>
+                  <div className="text-[9px] text-[#64748b]">Como area do transportador - formulario complexo e completo igual ao que existe agora</div>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} placeholder="Nome loja *" className="h-8 border rounded text-[10px] px-2" />
+                    <input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} placeholder="NUIT *" className="h-8 border rounded text-[10px] px-2" />
+                    <input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} placeholder="Telefone *" className="h-8 border rounded text-[10px] px-2" />
+                    <input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} placeholder="Endereco completo *" className="h-8 border rounded text-[10px] px-2 col-span-2" />
                   </div>
-                  <div className="space-y-3">
-                    <div className="bg-[#111827] text-white rounded-[12px] p-4"><div className="font-bold text-[11px]">Ja tens conta loja?</div><button onClick={()=>setFaturacaoLogado(true)} className="mt-2 w-full h-8 bg-white text-black rounded-full text-[10px] font-bold">Entrar na Minha Loja</button></div>
-                    <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">Vantagens conta registada</div><div className="text-[8px] mt-2 space-y-1"><div>â€¢ Historico completo na minha loja - todas facturas</div><div>â€¢ Formulario perfil complexo e completo igual ao que existe agora</div><div>â€¢ Editar formulario, logo, endereco, NUIT</div><div>â€¢ Memoria ativa por loja - produtos frequentes guardados</div><div>â€¢ Partilha WhatsApp PDF automatica com logo</div></div></div>
-                  </div>
+                  <button onClick={()=>setFaturacaoLogado(true)} className="mt-4 w-full h-9 bg-[#facc15] text-black rounded-full font-black text-[11px]">Criar conta loja e entrar</button>
+                  <button onClick={()=>setFaturacaoLogado(true)} className="mt-2 w-full h-8 bg-white border rounded-full text-[10px]">Ja tenho conta - Entrar na Minha Loja</button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-white rounded-[12px] border p-4 flex justify-between">
-                    <div><div className="font-black text-[12px]">{formLoja.nome||'Minha Loja - Materiais Matola'}</div><div className="text-[8px] text-[#64748b]">NUIT {formLoja.nuit||'123456789'} - {formLoja.endereco||'Av. Samora'} - Perfil completo</div></div>
-                    <div className="flex gap-2"><button onClick={()=>setFaturacaoInnerTab('faturar')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='faturar'?'bg-[#22c55e] text-white':'bg-[#f1f5f9]'}`}>Faturar</button><button onClick={()=>setFaturacaoInnerTab('historico')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='historico'?'bg-[#1e2f4a] text-white':'bg-[#f1f5f9]'}`}>Historico na minha loja</button><button onClick={()=>setFaturacaoInnerTab('perfil')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='perfil'?'bg-[#facc15] text-black':'bg-[#f1f5f9]'}`}>Editar perfil completo</button></div>
+                  <div className="bg-white border rounded-[12px] p-4 flex justify-between">
+                    <div className="font-black text-[12px]">{formLoja.nome||'Minha Loja'}</div>
+                    <div className="flex gap-2"><button onClick={()=>setFaturacaoInnerTab('faturar')} className="px-3 h-8 bg-[#22c55e] text-white rounded-full text-[9px]">Faturar</button><button onClick={()=>setFaturacaoInnerTab('historico')} className="px-3 h-8 bg-[#1e2f4a] text-white rounded-full text-[9px]">Historico na minha loja</button><button onClick={()=>setFaturacaoInnerTab('perfil')} className="px-3 h-8 bg-[#facc15] text-black rounded-full text-[9px]">Editar perfil completo</button></div>
                   </div>
-                  {faturacaoInnerTab==='faturar' && (
-                    <div className="bg-white rounded-[12px] border p-4">
-                      <div className="font-bold text-[11px]">Faturar - dentro da conta - historico vai para Minha Loja</div>
-                      <div className="grid grid-cols-2 gap-2 mt-3"><div><label className="text-[8px] font-bold">TELEFONE CLIENTE *</label><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="w-full h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">NOME</label><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="w-full h-8 border rounded text-[10px] px-2" /></div></div>
-                      <div className="mt-3"><input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg"' className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - CMPOR', preco:850})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco Cimento 50kg - 850 MT</button>
-                        <button onClick={()=>adicionarProdutoRapido({desc:'Bloco 15cm', preco:42})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 42 MT</button>
-                        <button onClick={()=>adicionarProdutoRapido({desc:'Areia Grossa m3', preco:1200})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia - 1200 MT</button>
-                      </div>
-                      <div className="mt-3 border rounded p-2">
-                        {fatItens.map((it,i)=>(<div key={i} className="flex justify-between text-[9px] border-b py-1"><span>{it.desc} x{it.qtd}</span><span>{(it.qtd*it.preco).toFixed(0)} MT</span></div>))}
-                        <div className="font-black text-[11px] mt-2">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0)} MT</div>
-                      </div>
-                      <button onClick={()=>{if(fatItens.length===0)return; const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0); const nova={id:Date.now(), cliente:fatTel, nome:fatNome, itens:fatItens, total, data:new Date().toLocaleString('pt-MZ')}; setFatHistorico([...fatHistorico,nova]); setFatItens([]); alert('Factura guardada no historico da Minha Loja! Total '+total+' MT'); setFaturacaoInnerTab('historico');}} className="mt-3 w-full h-9 bg-[#22c55e] text-white rounded-full font-black text-[11px]">Finalizar e guardar no historico</button>
-                    </div>
-                  )}
-                  {faturacaoInnerTab==='historico' && (
-                    <div className="bg-white rounded-[12px] border p-4">
-                      <div className="font-bold text-[11px]">Historico na minha loja - aparece ao preencher a facturacao</div>
-                      <div className="mt-3 space-y-2">
-                        {fatHistorico.length===0 ? <div className="text-[9px] text-[#64748b]">Nenhuma factura ainda - ao preencher facturacao, aparece aqui</div> : fatHistorico.map(h=>(
-                          <div key={h.id} className="border rounded p-2 flex justify-between"><div><div className="font-bold text-[10px]">{h.cliente} - {h.nome}</div><div className="text-[8px]">{h.data} - {h.itens.length} itens</div></div><div className="font-black text-[11px] text-[#22c55e]">{h.total} MT</div></div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {faturacaoInnerTab==='perfil' && (
-                    <div className="bg-white rounded-[12px] border p-4">
-                      <div className="font-bold text-[11px]">Editar formulario completo - perfil complexo igual ao que existe agora</div>
-                      <div className="grid grid-cols-2 gap-2 mt-3">
-                        <div><label className="text-[8px] font-bold">Nome loja</label><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                        <div><label className="text-[8px] font-bold">NUIT</label><input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                        <div><label className="text-[8px] font-bold">Telefone</label><input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                        <div><label className="text-[8px] font-bold">Email</label><input value={formLoja.email} onChange={e=>setFormLoja({...formLoja,email:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                        <div className="col-span-2"><label className="text-[8px] font-bold">Endereco completo</label><input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                      </div>
-                      <button onClick={()=>{alert('Perfil actualizado - formulario complexo mantido');}} className="mt-3 px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">Guardar perfil completo</button>
-                    </div>
-                  )}
+                  {faturacaoInnerTab==='faturar' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold text-[11px]">Faturar - historico vai para Minha Loja</div><button onClick={()=>{const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0); setFatHistorico([...fatHistorico,{id:Date.now(), cliente:fatTel, total, data:new Date().toLocaleString()} as any]); setFaturacaoInnerTab('historico');}} className="mt-3 w-full h-9 bg-[#22c55e] text-white rounded-full font-black">Finalizar e guardar no historico</button></div>}
+                  {faturacaoInnerTab==='historico' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Historico na minha loja</div>{fatHistorico.length===0 ? <div className="text-[9px] text-[#64748b] mt-2">Nenhuma factura ainda - ao preencher facturacao, aparece aqui</div> : fatHistorico.map((h:any)=>(<div key={h.id} className="border rounded p-2 mt-2 flex justify-between"><div>{h.cliente} - {h.data}</div><div className="font-black text-[#22c55e]">{h.total} MT</div></div>))}</div>}
+                  {faturacaoInnerTab==='perfil' && <div className="bg-white border rounded-[12px] p-4"><div className="font-bold">Editar perfil completo - formulario complexo igual ao que existe agora</div><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 mt-2" /><button className="mt-2 px-4 h-8 bg-[#facc15] rounded-full text-[10px] font-black">Guardar perfil completo</button></div>}
                 </div>
               )}
             </div>
           )}
         </section>
       )}
-
 
 
       {tab==='viagens' && (
@@ -910,24 +799,11 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
                     <div className="font-black text-[12px] mb-2">Reservar {viagemSel.origem} - {viagemSel.destino} - {viagemSel.preco} MT - Escolher lugar/assento</div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">NOME COMPLETO PASSAGEIRO *</label><input value={formPassageiro.nome} onChange={e=>setFormPassageiro({...formPassageiro,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Michaque Mungoi" /></div><div><label className="text-[8px] font-bold">CONTACTO WHATSAPP *</label><input value={formPassageiro.tel} onChange={e=>setFormPassageiro({...formPassageiro,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4] border-green-200" placeholder="840532899 - WhatsApp" /></div><div><label className="text-[8px] font-bold">NOME DO FAMILIAR</label><input value={formPassageiro.nomeFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,nomeFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Nome familiar" /></div><div><label className="text-[8px] font-bold">CONTACTO DO FAMILIAR</label><input value={formPassageiro.telFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,telFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Contacto familiar para emergencia" /></div></div>
+                        <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">NOME COMPLETO PASSAGEIRO *</label><input value={formPassageiro.nome} onChange={e=>setFormPassageiro({...formPassageiro,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Michaque Mungoi" /></div><div><label className="text-[8px] font-bold">CONTACTO WHATSAPP *</label><input value={formPassageiro.tel} onChange={e=>setFormPassageiro({...formPassageiro,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4] border-green-200" placeholder="840532899 - WhatsApp" /></div><div><label className="text-[8px] font-bold">CONTACTO DO FAMILIAR</label><input value={formPassageiro.telFamiliar} onChange={e=>setFormPassageiro({...formPassageiro,telFamiliar:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Contacto familiar para emergencia" /></div></div>
                         <div className="grid grid-cols-2 gap-2"><div><label className="text-[8px] font-bold">BI (opcional)</label><input value={formPassageiro.bi} onChange={e=>setFormPassageiro({...formPassageiro,bi:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">IDADE / TIPO</label><select value={formPassageiro.tipo} onChange={e=>setFormPassageiro({...formPassageiro,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Adulto</option><option>Menor - com acompanhante</option><option>Menor - desacompanhado</option><option>Idoso</option></select></div></div>
                         
                         <div><label className="text-[8px] font-bold">LOCAL SERA ENCONTRADO / DESEMBARQUE (se nao for terminal)</label><input value={formPassageiro.localDesembarque} onChange={e=>setFormPassageiro({...formPassageiro,localDesembarque:e.target.value})} placeholder="Ex: Terminal Junta, agencia Beira, casa destinatario" className="w-full h-8 border rounded text-[10px] px-2" /></div>
-                        <div className="border-2 border-[#facc15] rounded-[8px] p-2 bg-[#fefce8]">
-                          <div className="font-black text-[10px] mb-2">ACOMPANHANTE - 3 divisoes</div>
-                          <div className="grid grid-cols-3 gap-2">
-                            <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">1 - Tem acompanhante? Sim/Nao *</label><select value={formPassageiro.temAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,temAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[10px] px-1 mt-1"><option value="Nao">Nao</option><option value="Sim">Sim</option></select></div>
-                            <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">2 - Idade acompanhante</label><input value={formPassageiro.idadeAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,idadeAcompanhante:e.target.value})} placeholder="34" className="w-full h-7 border rounded text-[9px] px-1 mt-1" /></div>
-                            <div className="border rounded p-2 bg-white"><label className="text-[8px] font-bold">3 - Relacao - pai, filho, tio</label><select value={formPassageiro.relacaoAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,relacaoAcompanhante:e.target.value})} className="w-full h-7 border rounded text-[9px] px-1 mt-1"><option value="">Selecione</option><option>Pai</option><option>Mae</option><option>Filho</option><option>Filha</option><option>Tio</option><option>Tia</option><option>Irmao</option><option>Outro</option></select></div>
-                          </div>
-                          {formPassageiro.temAcompanhante==='Sim' && (
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                              <input value={formPassageiro.nomeAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,nomeAcompanhante:e.target.value})} placeholder="Nome acompanhante" className="h-7 border rounded text-[9px] px-2" />
-                              <input value={formPassageiro.telAcompanhante} onChange={e=>setFormPassageiro({...formPassageiro,telAcompanhante:e.target.value})} placeholder="Telefone acompanhante" className="h-7 border rounded text-[9px] px-2" />
-                            </div>
-                          )}
-                        </div>
+                        <div><label className="text-[8px] font-bold">ACOMPANHANTE (se houver)</label><input value={formPassageiro.acompanhante} onChange={e=>setFormPassageiro({...formPassageiro,acompanhante:e.target.value})} placeholder="Nome acompanhante, telefone" className="w-full h-8 border rounded text-[10px] px-2" /></div>
                         <div><label className="text-[8px] font-bold">DESTINO CUSTOM (se nao estiver na lista)</label><input value={formPassageiro.destinoCustom} onChange={e=>setFormPassageiro({...formPassageiro,destinoCustom:e.target.value})} placeholder="Escreva destino se nao aparecer na lista" className="w-full h-8 border rounded text-[10px] px-2" /></div>
                       </div>
                       <div>
@@ -949,32 +825,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
                         <div className="mt-2 p-2 bg-[#f0fdf4] rounded text-[8px]"><b>Resumo:</b> {viagemSel.origem} - {viagemSel.destino} | Assentos: {assentosSelecionados.join(', ')||'nenhum'} | Total: {(viagemSel.preco * (assentosSelecionados.length||1)).toFixed(0)} MT | Pagamento: {modoPagamento} | Telefone bilhete: {formPassageiro.tel}</div>
                       </div>
                     </div>
-                    <div className="flex gap-2 mt-3">
-                      <button onClick={()=>{
-                        if(!formPassageiro.nome||!formPassageiro.tel||assentosSelecionados.length===0){alert('Nome, WhatsApp e 1 assento obrigatorios'); return;}
-                        let precoBase = viagemSel.preco;
-                        if(formPassageiro.destinoCustom && viagemSel.precoCustom){precoBase = viagemSel.precoCustom;}
-                        else if(formPassageiro.localDesembarque && viagemSel.precoDistrito){precoBase = viagemSel.precoDistrito||viagemSel.preco;}
-                        const total = precoBase * assentosSelecionados.length;
-                        const codigo = 'BILHETE-'+Math.random().toString(36).substring(2,8).toUpperCase();
-                        const qrTexto = 'QR-'+codigo+'-'+formPassageiro.tel;
-                        const nova={id:Date.now(), viagemId: viagemSel.id, ...viagemSel, passageiro:{...formPassageiro, assentos:assentosSelecionados}, assentos:assentosSelecionados, total, estado:'Confirmada', codigo, qr: qrTexto, modoPagamento, dataReserva:new Date().toLocaleString('pt-MZ'), precoBase};
-                        setReservas([...reservas,nova]);
-                        setViagensMock((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v));
-                        setViagensPublicadas((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v));
-                        const html = '<html><body><h2>BILHETE '+codigo+'</h2><p>Passageiro: '+formPassageiro.nome+'</p><p>Familiar: '+(formPassageiro.nomeFamiliar||'')+' '+(formPassageiro.telFamiliar||'')+'</p><p>Viagem: '+viagemSel.origem+'-'+viagemSel.destino+'</p><p>Assentos: '+assentosSelecionados.join(', ')+'</p><p>Total: '+total+' MT</p><p>QR: '+qrTexto+'</p></body></html>';
-                        const blob = new Blob([html], {type:'text/html'});
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a'); a.href = url; a.download = codigo+'.html'; a.click();
-                        const msg = 'BILHETE '+codigo+' - '+formPassageiro.nome+' - '+viagemSel.origem+'-'+viagemSel.destino+' - '+assentosSelecionados.join(', ')+' - '+total+' MT - QR '+qrTexto;
-                        window.open('https://wa.me/'+formPassageiro.tel.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(msg), '_blank');
-                        if(formPassageiro.telFamiliar){window.open('https://wa.me/'+formPassageiro.telFamiliar.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(msg), '_blank');}
-                        setMostrarFormPass(false); setAssentosSelecionados([]); alert('BILHETE GERADO! '+codigo+' - Enviado WhatsApp '+formPassageiro.tel);
-                      }} className="flex-1 h-10 bg-[#22c55e] text-white rounded-[8px] font-black text-[11px]">
-                        Confirmar {(() => { let pb = viagemSel.preco; if(formPassageiro.destinoCustom && viagemSel.precoCustom) pb = viagemSel.precoCustom; else if(formPassageiro.localDesembarque && viagemSel.precoDistrito) pb = viagemSel.precoDistrito||viagemSel.preco; return (pb * (assentosSelecionados.length||1)).toFixed(0); })()} MT - Gerar bilhete QR PDF
-                      </button>
-                      <button onClick={()=>{setMostrarFormPass(false); setAssentosSelecionados([]);}} className="h-10 px-4 border rounded-[8px] text-[10px]">Cancelar</button>
-                    </div>
+                    <div className="flex gap-2 mt-3"><button onClick={()=>{if(!formPassageiro.nome||!formPassageiro.tel||assentosSelecionados.length===0){alert('Nome, telefone e pelo menos 1 assento obrigatorios'); return;} const total = viagemSel.preco * assentosSelecionados.length; const codigo = 'BILHETE-'+Math.random().toString(36).substring(2,8).toUpperCase(); const nova={id:Date.now(), viagemId: viagemSel.id, ...viagemSel, passageiro:{...formPassageiro, assentos:assentosSelecionados}, assentos:assentosSelecionados, total, estado:'Confirmada', codigo, qr: `QR-${codigo}-${formPassageiro.tel}`, modoPagamento, dataReserva:new Date().toLocaleString('pt-MZ')}; setReservas([...reservas,nova]); setViagensMock((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v)); setViagensPublicadas((prev:any)=>prev.map((v:any)=>v.id===viagemSel.id?{...v, lugaresOcupados:[...(v.lugaresOcupados||[]), ...assentosSelecionados]}:v)); setMostrarFormPass(false); setAssentosSelecionados([]); alert(`Reserva confirmada! Bilhete ${codigo} - Total ${total} MT - Assentos ${assentosSelecionados.join(', ')} - Enviado para ${formPassageiro.tel} com QR Code ${nova.qr} - Pagamento ${modoPagamento} - Local coleta: ${formPassageiro.localColeta} - Desembarque: ${formPassageiro.localDesembarque}`);}} className="flex-1 h-10 bg-[#22c55e] text-white rounded-[8px] font-black text-[11px]">Confirmar { (viagemSel.preco * (assentosSelecionados.length||1)).toFixed(0) } MT - Gerar bilhete QR</button><button onClick={()=>{setMostrarFormPass(false); setAssentosSelecionados([]);}} className="h-10 px-4 border rounded-[8px] text-[10px]">Cancelar</button></div>
                   </div>
                 )}
               </div>
@@ -1004,12 +855,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
                       <div className="bg-white rounded-[12px] border p-4"><div className="flex justify-between items-center"><div><div className="font-black text-[13px]">Minha Frota - Gestao centralizada</div><div className="text-[9px] text-[#64748b]">Dentro da Area Transportador privada - 1 conta gere varias viaturas</div></div><div className="flex gap-2"><span className="bg-[#f1f5f9] px-3 py-1 rounded-full text-[10px] font-bold">{viaturasFrota.length} Viaturas</span><button onClick={()=>{setViaturaEditId(null); setFormViatura({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, inspecaoValida:'', seguroValido:'', estadoOperacional:'Inactiva', rotaHabitual:'Maputo - Xai-Xai', provinciaOrigem:'Maputo Provincia', distritoOrigem:'Matola', provinciaDestino:'Gaza', distritoDestino:'Xai-Xai', fronteira:'Ressano Garcia', preco:2500, precoDistrito:0, precoCustom:0}); setMostrarFormViatura(true);}} className="px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">+ Adicionar viatura</button></div></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">{viaturasFrota.map(v=>(<div key={v.id} className="border rounded-[12px] p-3"><div className="flex justify-between"><div className="font-black text-[11px]">{v.marcaModelo}</div><span className="text-[7px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">{v.estadoOperacional} | {v.estadoAprovacao}</span></div><div className="text-[9px] mt-1"><div>Matricula: {v.matricula} | Lugares: {v.lugares}</div><div>AC: {v.arCondicionado} | Bagagem: {v.bagagem} | Encomendas: {v.aceitaEncomendas} | {v.capacidadeKg}kg</div><div>Rota: {v.rotaHabitual}</div></div><div className="mt-2 flex gap-1"><button onClick={()=>{setFormViatura(v); setViaturaEditId(v.id); setMostrarFormViatura(true);}} className="flex-1 h-7 bg-[#f1f5f9] rounded-full text-[8px] font-bold">Editar</button><button onClick={()=>setViaturasFrota(viaturasFrota.filter(x=>x.id!==v.id))} className="h-7 px-2 border rounded-full text-[8px]">Remover</button><button onClick={()=>{const novaViagem={id:Date.now(), transp:transportadorPerfil.nomeEmpresa||transportadorPerfil.nomeResponsavel||"Transportador", motorista:transportadorPerfil.nomeResponsavel, tel:transportadorPerfil.telPrincipal, origem:v.rotaHabitual.split("-")[0]?.trim()||"Maputo", destino:v.rotaHabitual.split("-")[1]?.trim()||"Beira", provinciaOrigem:v.provinciaOrigem||origemProv, provinciaDestino:v.provinciaDestino||destinoProv, distritoOrigem:v.distritoOrigem||origemDist, distritoDestino:v.distritoDestino||destinoDist, data:new Date().toISOString().split("T")[0], hora:"05:30", chegada:"18:00", preco:v.preco||2500, lugares:v.lugares, cargaKg:v.capacidadeKg, viatura:v.marcaModelo, matricula:v.matricula, estado:"Activa", rota:v.rotaHabitual, fronteira:v.fronteira||"Ressano Garcia", lugaresOcupados:[], activa:true}; setViagensPublicadas([...viagensPublicadas,novaViagem]); setViaturasFrota(viaturasFrota.map(x=>x.id===v.id?{...x,estadoOperacional:"Activa", activa:true}:x)); alert("Viatura activada para operacao! Agora aparece automaticamente na pesquisa dos passageiros em Pesquisar viagens. Rota: "+novaViagem.rota);}} className="h-7 px-2 bg-[#22c55e] text-white rounded-full text-[8px] font-bold">Activar para operacao</button></div></div>))}</div>
                       </div>
-                      {mostrarFormViatura && (<div className="bg-white rounded-[12px] border-2 border-[#facc15] p-4"><div className="font-black text-[11px] mb-3">{viaturaEditId?'Editar viatura':'Adicionar viatura'}</div><div className="grid grid-cols-4 gap-2"><div><label className="text-[8px] font-bold">Tipo *</label><select value={formViatura.tipo} onChange={e=>setFormViatura({...formViatura,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Minibus / Chapa</option><option>Autocarro</option><option>Carrinha de transporte</option><option>Outro</option></select></div><div><label className="text-[8px] font-bold">Marca e modelo *</label><input value={formViatura.marcaModelo} onChange={e=>setFormViatura({...formViatura,marcaModelo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Matricula *</label><input value={formViatura.matricula} onChange={e=>setFormViatura({...formViatura,matricula:e.target.value.toUpperCase()})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Lugares *</label><input type="number" value={formViatura.lugares} onChange={e=>setFormViatura({...formViatura,lugares:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div><div className="grid grid-cols-4 gap-2 mt-2"><div><label className="text-[8px] font-bold">Ano</label><input type="number" value={formViatura.ano} onChange={e=>setFormViatura({...formViatura,ano:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Cor</label><input value={formViatura.cor} onChange={e=>setFormViatura({...formViatura,cor:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Carga kg *</label><input type="number" value={formViatura.capacidadeKg} onChange={e=>setFormViatura({...formViatura,capacidadeKg:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Rota</label><input value={formViatura.rotaHabitual} onChange={e=>setFormViatura({...formViatura,rotaHabitual:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div>
-                        <div className="grid grid-cols-3 gap-2 mt-3 bg-[#fef9c3] p-2 rounded-[8px] border border-[#facc15]">
-                          <div><label className="text-[8px] font-black">Preco por rota (MT) * - depende partida/destino</label><input type="number" value={formViatura.preco} onChange={e=>setFormViatura({...formViatura,preco:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[11px] font-bold px-2 bg-white" placeholder="2500" /></div>
-                          <div><label className="text-[8px] font-black">Preco por distrito (MT) - valor exacto por distrito</label><input type="number" value={formViatura.precoDistrito} onChange={e=>setFormViatura({...formViatura,precoDistrito:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" placeholder="1800" /></div>
-                          <div><label className="text-[8px] font-black">Preco - destino custom (MT)</label><input type="number" value={formViatura.precoCustom} onChange={e=>setFormViatura({...formViatura,precoCustom:Number(e.target.value)})} className="w-full h-8 border-2 border-[#facc15] rounded text-[10px] px-2 bg-white" placeholder="3000" /></div>
-                        </div><div className="mt-3 flex gap-2"><button onClick={()=>{if(!formViatura.marcaModelo||!formViatura.matricula){alert('Marca e matricula obrigatorios'); return;} if(viaturaEditId){setViaturasFrota(viaturasFrota.map(v=>v.id===viaturaEditId?{...v,...formViatura,id:viaturaEditId}:v));} else {setViaturasFrota([...viaturasFrota,{id:Date.now(),...formViatura,estadoAprovacao:'Em verificacao'}]);} setMostrarFormViatura(false);}} className="flex-1 h-9 bg-[#facc15] text-black rounded text-[10px] font-black">{viaturaEditId?'Guardar':'Registar viatura'}</button><button onClick={()=>setMostrarFormViatura(false)} className="h-9 px-4 border rounded text-[10px]">Cancelar</button></div></div>)}
+                      {mostrarFormViatura && (<div className="bg-white rounded-[12px] border-2 border-[#facc15] p-4"><div className="font-black text-[11px] mb-3">{viaturaEditId?'Editar viatura':'Adicionar viatura'}</div><div className="grid grid-cols-4 gap-2"><div><label className="text-[8px] font-bold">Tipo *</label><select value={formViatura.tipo} onChange={e=>setFormViatura({...formViatura,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Minibus / Chapa</option><option>Autocarro</option><option>Carrinha de transporte</option><option>Outro</option></select></div><div><label className="text-[8px] font-bold">Marca e modelo *</label><input value={formViatura.marcaModelo} onChange={e=>setFormViatura({...formViatura,marcaModelo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Matricula *</label><input value={formViatura.matricula} onChange={e=>setFormViatura({...formViatura,matricula:e.target.value.toUpperCase()})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Lugares *</label><input type="number" value={formViatura.lugares} onChange={e=>setFormViatura({...formViatura,lugares:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div><div className="grid grid-cols-4 gap-2 mt-2"><div><label className="text-[8px] font-bold">Ano</label><input type="number" value={formViatura.ano} onChange={e=>setFormViatura({...formViatura,ano:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Cor</label><input value={formViatura.cor} onChange={e=>setFormViatura({...formViatura,cor:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Carga kg *</label><input type="number" value={formViatura.capacidadeKg} onChange={e=>setFormViatura({...formViatura,capacidadeKg:Number(e.target.value)})} className="w-full h-8 border rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">Rota</label><input value={formViatura.rotaHabitual} onChange={e=>setFormViatura({...formViatura,rotaHabitual:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div></div><div className="mt-3 flex gap-2"><button onClick={()=>{if(!formViatura.marcaModelo||!formViatura.matricula){alert('Marca e matricula obrigatorios'); return;} if(viaturaEditId){setViaturasFrota(viaturasFrota.map(v=>v.id===viaturaEditId?{...v,...formViatura,id:viaturaEditId}:v));} else {setViaturasFrota([...viaturasFrota,{id:Date.now(),...formViatura,estadoAprovacao:'Em verificacao'}]);} setMostrarFormViatura(false);}} className="flex-1 h-9 bg-[#facc15] text-black rounded text-[10px] font-black">{viaturaEditId?'Guardar':'Registar viatura'}</button><button onClick={()=>setMostrarFormViatura(false)} className="h-9 px-4 border rounded text-[10px]">Cancelar</button></div></div>)}
                     </div>
                   )}
                   {transportadorInnerTab==='operacao' && (<div className="bg-white rounded-[12px] border p-4"><div className="font-black text-[11px]">Operacao - Frota ligada a viagens</div><div className="mt-2 text-[9px] text-[#64748b]">Conta - Viaturas - Viagens - Passageiros + Encomendas. Calendario disponibilidade, gestao lugares, gestao carga, alerta documentos.</div></div>)}

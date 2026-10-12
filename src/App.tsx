@@ -172,6 +172,20 @@ export default function App(){
  const [formViatura, setFormViatura] = useState({tipo:'Minibus / Chapa', marcaModelo:'', matricula:'', lugares:15, ano:2020, cor:'', chassis:'', arCondicionado:'Sim', bagagem:'Sim', aceitaEncomendas:'Sim', capacidadeKg:300, inspecaoValida:'', seguroValido:'', estadoOperacional:'Inactiva', rotaHabitual:'Maputo - Xai-Xai', provinciaOrigem:'Maputo Provincia', distritoOrigem:'Matola', provinciaDestino:'Gaza', distritoDestino:'Xai-Xai', fronteira:'Ressano Garcia', preco:2500});
  const [mostrarFormViatura, setMostrarFormViatura] = useState(false);
  const [transportadorInnerTab, setTransportadorInnerTab] = useState('frota');
+
+  const [faturacaoSubTab, setFaturacaoSubTab] = useState('publico');
+  const [faturacaoLogado, setFaturacaoLogado] = useState(false);
+  const [faturacaoInnerTab, setFaturacaoInnerTab] = useState('faturar');
+  const [formLoja, setFormLoja] = useState({nome:'', nuit:'', tel:'', email:'', provincia:'Maputo Cidade', distrito:'Matola', endereco:'', logo:'', tipo:'Materiais de Construcao'});
+  const [fatTel, setFatTel] = useState('+258 84 123 4567');
+  const [fatNome, setFatNome] = useState('');
+  const [fatBusca, setFatBusca] = useState('');
+  const [fatFiltroCat, setFatFiltroCat] = useState('Todos');
+  const [fatIva, setFatIva] = useState('16');
+  const [fatItens, setFatItens] = useState([{desc:'Saco de Cimento 50kg - CMPOR', qtd:3, preco:850, descPerc:0},{desc:'Bloco 15cm - 40x20', qtd:20, preco:42, descPerc:5}]);
+  const [fatHistorico, setFatHistorico] = useState([]);
+  const adicionarProdutoRapido = (p:any)=>{setFatItens([...fatItens,{desc:p.desc, qtd:1, preco:p.preco, descPerc:0}]);};
+
  const [loginForm, setLoginForm] = useState({tel:'', password:''});
  const [viaturaEditId, setViaturaEditId] = useState<number|null>(null);
  const [origemProv, setOrigemProv] = useState('Maputo Provincia');
@@ -412,7 +426,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
      {/* TOPO LARANJA - INTERATIVO ENCONTRAR MESTRE */}
      <div className="bg-[#1e2f4a] text-white rounded-[14px] px-5 py-4 mb-3">
       <div className="text-center">
-        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ MAIS PROXIMO DE SI AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ MESTRE, PROFISSIONAL OU EMPRESA</div>
+        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA - PROFISSIONAL MAIS PROXIMO DE SI - MESTRE, PROFISSIONAL OU EMPRESA</div>
         <h2 className="text-[20px] font-black mt-1.5 leading-tight">Estas a procura de um profissional, mestre ou empresa na sua zona ou mais proximo?</h2>
         <p className="text-[12px] opacity-80 mt-1.5">Encontre aqui - Pedreiro, Carpinteiro, Eletricista, Serralheiro, Domestica, Motorista... perto de si em Maputo, Matola, Boane, Xai-Xai - contrato legal em 2 minutos</p>
         <div className="flex gap-2 justify-center mt-2.5 flex-wrap">
@@ -436,8 +450,8 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
        
        <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({profissionais.length + (typeof PROFISSIONAIS_EXTRAS !== 'undefined' ? PROFISSIONAIS_EXTRAS.length : 0)}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2.5 max-h-[520px] overflow-auto pr-1">
-           {profissionais.map((p:any,i:number)=><div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div><div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ M-Pesa OK AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ Fotos OK AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ {p.anexos?.join(', ')}</div></div>)}
-           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=><div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div></div></div><span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'} AÆ’Â¢AÂ¢Ã¢â‚¬Å¡Â¬Aâ€šÂ¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
+           {profissionais.map((p:any,i:number)=><div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo}  -  {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO  -  {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div><div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos  -  M-Pesa OK  -  Fotos OK  -  {p.anexos?.join(', ')}</div></div>)}
+           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=><div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo}  -  {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div></div></div><span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'}  -  {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
          </div>
        </div>
       </div>
@@ -658,6 +672,190 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
       )}
 
       
+      
+      {tab==='faturacao' && (
+        <section className="space-y-4">
+          <div className="flex flex-col md:flex-row justify-between gap-3">
+            <div>
+              <div className="font-black text-[14px]">Facilita Faturacao - 10 seg - com perfis</div>
+              <div className="text-[9px] text-[#64748b]">Pagina 5 e 10 removidas - Partilha integrada no 7 - Fluxo superrapido</div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={()=>setFaturacaoSubTab('publico')} className={`px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='publico'?'bg-[#1e2f4a] text-white':'bg-white border'}`}>Usuario Publico Rapido - sem conta</button>
+              <button onClick={()=>setFaturacaoSubTab('loja')} className={`px-4 h-9 rounded-full text-[10px] font-black ${faturacaoSubTab==='loja'?'bg-[#facc15] text-black':'bg-white border'}`}>Minha Loja - Clientes registados</button>
+            </div>
+          </div>
+
+          {faturacaoSubTab==='publico' && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 space-y-3">
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="font-bold text-[11px]">Dados do comprador - ultra rapido</div>
+                  <div className="text-[7px] text-[#64748b] mt-1">Se telefone ja existe, preenche nome automaticamente - 15s ate finalizar</div>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <div><label className="text-[8px] font-bold">TELEFONE / WHATSAPP *</label><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="w-full h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" placeholder="+258 84 123 4567" /></div>
+                    <div><label className="text-[8px] font-bold">NOME (opcional)</label><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Nome cliente" /></div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-[12px] border p-4">
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-[11px]">Produtos e Servicos - IVA no fim - Memoria ativa</div>
+                    <div className="text-[7px] bg-[#f1f5f9] px-2 py-1 rounded-full">Calculo Desconto (DTG) | Preco liquido | Desc % | Subtotal</div>
+                  </div>
+                  <div className="mt-3">
+                    <input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg - CMPOR - 850 MT" (memoria IA ferrugem)' className="w-full h-9 border rounded-[8px] text-[10px] px-3" />
+                  </div>
+                  <div className="mt-3">
+                    <div className="text-[8px] font-bold">PRODUTOS FREQUENTES DESTA LOJA (JA POR TIPO E ORDENADOS)</div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {['Todos','Cimento','Bloco','Tinta','Ferro','Cobertura','Inertes','Tubo PVC','Fechadura'].map(c=>(<button key={c} onClick={()=>setFatFiltroCat(c)} className={`px-2 py-1 rounded-full text-[8px] border ${fatFiltroCat===c?'bg-[#1e2f4a] text-white':'bg-white'}`}>{c}</button>))}
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - CMPOR', preco:850})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco de Cimento 50kg - CMPOR - 850 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Bloco 15cm - 40x20', preco:42})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 40x20 - 42 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Areia Grossa - m3', preco:1200})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia Grossa - m3 - 1200 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Tinta PVA Branca 20L', preco:3500})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta PVA Branca 20L - 3500 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - Dondo', preco:820})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco de Cimento 50kg - Dondo - 820 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Varao Aco 10mm - 12m', preco:580})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Varao Aco 10mm - 12m - 580 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Tinta Plastica Branca - 4000 MT', preco:4000})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tinta Plastica Branca - 4000 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Chapa BR40 0.30 - 6m', preco:2800})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Chapa BR40 0.30 - 6m - 2800 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Tubo PVC 110mm - 5m', preco:580})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Tubo PVC 110mm - 5m - 580 MT</button>
+                      <button onClick={()=>adicionarProdutoRapido({desc:'Fechadura Externa Inox', preco:650})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Fechadura Externa Inox - 650 MT</button>
+                    </div>
+                  </div>
+                  <div className="mt-4 border rounded-[8px] overflow-hidden">
+                    <div className="grid grid-cols-6 gap-1 bg-[#f1f5f9] p-2 text-[8px] font-bold"><div className="col-span-2">DESCRICAO</div><div>QTD</div><div>PRECO UNIT.</div><div>DESC %</div><div>SUBTOTAL</div></div>
+                    {fatItens.map((it,i)=>(
+                      <div key={i} className="grid grid-cols-6 gap-1 p-2 text-[9px] border-t">
+                        <div className="col-span-2">{it.desc}</div>
+                        <div><input type="number" value={it.qtd} onChange={e=>{const n=[...fatItens]; n[i].qtd=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
+                        <div><input type="number" value={it.preco} onChange={e=>{const n=[...fatItens]; n[i].preco=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
+                        <div><input type="number" value={it.descPerc} onChange={e=>{const n=[...fatItens]; n[i].descPerc=Number(e.target.value); setFatItens(n);}} className="w-full h-6 border rounded text-[9px] px-1" /></div>
+                        <div className="flex justify-between"><span className="font-bold">{(it.qtd*it.preco*(1-it.descPerc/100)).toFixed(0)} MT</span><button onClick={()=>setFatItens(fatItens.filter((_,j)=>j!==i))} className="text-red-500">X</button></div>
+                      </div>
+                    ))}
+                    <div className="p-2 text-[8px] text-right space-y-1 bg-[#f8fafc]">
+                      <div>Subtotal bruto: {fatItens.reduce((s,it)=>s+it.qtd*it.preco,0).toFixed(0)} MT</div>
+                      <div>Descontos: -{fatItens.reduce((s,it)=>s+it.qtd*it.preco*it.descPerc/100,0).toFixed(0)} MT</div>
+                      <div>Subtotal liquido: {fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0).toFixed(0)} MT</div>
+                      <div>IVA 16%: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*0.16).toFixed(0)} MT</div>
+                      <div className="font-black text-[11px]">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*1.16).toFixed(0)} MT</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button onClick={()=>setFatIva('sem')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Sem IVA</button>
+                    <button onClick={()=>setFatIva('16')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='16'?'bg-[#22c55e] text-white':'bg-white'}`}>Com IVA 16%</button>
+                    <button onClick={()=>setFatIva('5')} className={`px-3 py-1 rounded-full text-[8px] border ${fatIva==='5'?'bg-[#0ea5e9] text-white':'bg-white'}`}>Com IVA 5%</button>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-[#111827] text-white rounded-[12px] p-4">
+                  <div className="font-bold text-[11px]">Resumo rapido</div>
+                  <div className="text-[8px] mt-2">Cliente: {fatTel||'+258 84 123 4567'}</div>
+                  <div className="text-[8px]">Itens: {fatItens.length} - QTD total {fatItens.reduce((s,it)=>s+it.qtd,0)}</div>
+                  <div className="text-[7px] mt-1 opacity-70">Ocasional (sem conta)</div>
+                  <button onClick={()=>{if(fatItens.length===0){alert('Adicione produtos'); return;} const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco*(1-it.descPerc/100),0)*1.16).toFixed(0); alert('Documento DEMO gerado! Total '+total+' MT - Cliente '+fatTel);}} className="mt-3 w-full h-9 bg-[#22c55e] rounded-[8px] font-black text-[10px]">Finalizar Documento DEMO</button>
+                </div>
+                <div className="bg-white rounded-[12px] border p-3">
+                  <div className="font-bold text-[9px]">O QUE MUDOU V2.0 LIMPO</div>
+                  <div className="text-[7px] mt-2 space-y-1">
+                    <div>Memoria ativa: facil em 1s - Produtos memorizados por loja</div>
+                    <div>Partilha integrada: 99% facturas em 4s</div>
+                    <div>WhatsApp isolado: Finalizar -> WhatsApp abre so com PDF + texto</div>
+                  </div>
+                </div>
+                <div className="bg-white border rounded-[8px] p-2">
+                  <div className="font-bold text-[8px]">Partilha & Cobranca</div>
+                  <div className="flex gap-1 mt-1">
+                    <button className="flex-1 h-7 bg-[#22c55e] text-white rounded text-[8px] font-bold">WhatsApp PDF</button>
+                    <button className="flex-1 h-7 border rounded text-[8px]">Ver PDF Demo</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {faturacaoSubTab==='loja' && (
+            <div className="space-y-3">
+              {!faturacaoLogado ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-[12px] border p-6">
+                    <div className="font-black text-[13px]">Criar conta loja - Area registada</div>
+                    <div className="text-[9px] text-[#64748b] mt-1">Como area do transportador - 1 conta gere varias lojas/facturas. Formulario complexo e completo igual ao que existe agora.</div>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      <div><label className="text-[8px] font-bold">Nome loja *</label><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Materiais de Construcao Matola" /></div>
+                      <div><label className="text-[8px] font-bold">NUIT *</label><input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="123456789" /></div>
+                      <div><label className="text-[8px] font-bold">Telefone principal *</label><input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2 bg-[#f0fdf4]" placeholder="84..." /></div>
+                      <div><label className="text-[8px] font-bold">Email</label><input value={formLoja.email} onChange={e=>setFormLoja({...formLoja,email:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                      <div><label className="text-[8px] font-bold">Provincia</label><select value={formLoja.provincia} onChange={e=>setFormLoja({...formLoja,provincia:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Maputo Cidade</option><option>Maputo Provincia</option><option>Gaza</option><option>Inhambane</option></select></div>
+                      <div><label className="text-[8px] font-bold">Distrito</label><input value={formLoja.distrito} onChange={e=>setFormLoja({...formLoja,distrito:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Matola" /></div>
+                      <div className="col-span-2"><label className="text-[8px] font-bold">Endereco completo * - formulario complexo igual ao existente</label><input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="Av. Samora Machel, 123 - Bairro Central" /></div>
+                      <div><label className="text-[8px] font-bold">Logo loja</label><input value={formLoja.logo} onChange={e=>setFormLoja({...formLoja,logo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" placeholder="URL logo" /></div>
+                      <div><label className="text-[8px] font-bold">Tipo negocio</label><select value={formLoja.tipo} onChange={e=>setFormLoja({...formLoja,tipo:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2"><option>Materiais de Construcao</option><option>Ferragem</option><option>Loja geral</option></select></div>
+                    </div>
+                    <button onClick={()=>{if(!formLoja.nome||!formLoja.nuit){alert('Nome e NUIT obrigatorios'); return;} setFaturacaoLogado(true); alert('Conta loja criada! Agora podes usar facturacao na tua conta e ver historico em Minha Loja');}} className="mt-4 w-full h-9 bg-[#facc15] text-black rounded-full font-black text-[11px]">Criar conta loja e entrar</button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-[#111827] text-white rounded-[12px] p-4"><div className="font-bold text-[11px]">Ja tens conta loja?</div><button onClick={()=>setFaturacaoLogado(true)} className="mt-2 w-full h-8 bg-white text-black rounded-full text-[10px] font-bold">Entrar na Minha Loja</button></div>
+                    <div className="bg-white rounded-[12px] border p-3"><div className="font-bold text-[10px]">Vantagens conta registada</div><div className="text-[8px] mt-2 space-y-1"><div>â€¢ Historico completo na minha loja - todas facturas</div><div>â€¢ Formulario perfil complexo e completo igual ao que existe agora</div><div>â€¢ Editar formulario, logo, endereco, NUIT</div><div>â€¢ Memoria ativa por loja - produtos frequentes guardados</div><div>â€¢ Partilha WhatsApp PDF automatica com logo</div></div></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-white rounded-[12px] border p-4 flex justify-between">
+                    <div><div className="font-black text-[12px]">{formLoja.nome||'Minha Loja - Materiais Matola'}</div><div className="text-[8px] text-[#64748b]">NUIT {formLoja.nuit||'123456789'} - {formLoja.endereco||'Av. Samora'} - Perfil completo</div></div>
+                    <div className="flex gap-2"><button onClick={()=>setFaturacaoInnerTab('faturar')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='faturar'?'bg-[#22c55e] text-white':'bg-[#f1f5f9]'}`}>Faturar</button><button onClick={()=>setFaturacaoInnerTab('historico')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='historico'?'bg-[#1e2f4a] text-white':'bg-[#f1f5f9]'}`}>Historico na minha loja</button><button onClick={()=>setFaturacaoInnerTab('perfil')} className={`px-3 h-8 rounded-full text-[9px] font-bold ${faturacaoInnerTab==='perfil'?'bg-[#facc15] text-black':'bg-[#f1f5f9]'}`}>Editar perfil completo</button></div>
+                  </div>
+                  {faturacaoInnerTab==='faturar' && (
+                    <div className="bg-white rounded-[12px] border p-4">
+                      <div className="font-bold text-[11px]">Faturar - dentro da conta - historico vai para Minha Loja</div>
+                      <div className="grid grid-cols-2 gap-2 mt-3"><div><label className="text-[8px] font-bold">TELEFONE CLIENTE *</label><input value={fatTel} onChange={e=>setFatTel(e.target.value)} className="w-full h-8 border-2 border-green-200 bg-[#f0fdf4] rounded text-[10px] px-2" /></div><div><label className="text-[8px] font-bold">NOME</label><input value={fatNome} onChange={e=>setFatNome(e.target.value)} className="w-full h-8 border rounded text-[10px] px-2" /></div></div>
+                      <div className="mt-3"><input value={fatBusca} onChange={e=>setFatBusca(e.target.value)} placeholder='Digite "Saco" - sugere "Saco de Cimento 50kg"' className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                      <div className="mt-3 flex flex-wrap gap-1">
+                        <button onClick={()=>adicionarProdutoRapido({desc:'Saco de Cimento 50kg - CMPOR', preco:850})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Saco Cimento 50kg - 850 MT</button>
+                        <button onClick={()=>adicionarProdutoRapido({desc:'Bloco 15cm', preco:42})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Bloco 15cm - 42 MT</button>
+                        <button onClick={()=>adicionarProdutoRapido({desc:'Areia Grossa m3', preco:1200})} className="px-2 py-1 bg-[#1e2f4a] text-white rounded-full text-[8px]">Areia - 1200 MT</button>
+                      </div>
+                      <div className="mt-3 border rounded p-2">
+                        {fatItens.map((it,i)=>(<div key={i} className="flex justify-between text-[9px] border-b py-1"><span>{it.desc} x{it.qtd}</span><span>{(it.qtd*it.preco).toFixed(0)} MT</span></div>))}
+                        <div className="font-black text-[11px] mt-2">TOTAL: {(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0)} MT</div>
+                      </div>
+                      <button onClick={()=>{if(fatItens.length===0)return; const total=(fatItens.reduce((s,it)=>s+it.qtd*it.preco,0)*1.16).toFixed(0); const nova={id:Date.now(), cliente:fatTel, nome:fatNome, itens:fatItens, total, data:new Date().toLocaleString('pt-MZ')}; setFatHistorico([...fatHistorico,nova]); setFatItens([]); alert('Factura guardada no historico da Minha Loja! Total '+total+' MT'); setFaturacaoInnerTab('historico');}} className="mt-3 w-full h-9 bg-[#22c55e] text-white rounded-full font-black text-[11px]">Finalizar e guardar no historico</button>
+                    </div>
+                  )}
+                  {faturacaoInnerTab==='historico' && (
+                    <div className="bg-white rounded-[12px] border p-4">
+                      <div className="font-bold text-[11px]">Historico na minha loja - aparece ao preencher a facturacao</div>
+                      <div className="mt-3 space-y-2">
+                        {fatHistorico.length===0 ? <div className="text-[9px] text-[#64748b]">Nenhuma factura ainda - ao preencher facturacao, aparece aqui</div> : fatHistorico.map(h=>(
+                          <div key={h.id} className="border rounded p-2 flex justify-between"><div><div className="font-bold text-[10px]">{h.cliente} - {h.nome}</div><div className="text-[8px]">{h.data} - {h.itens.length} itens</div></div><div className="font-black text-[11px] text-[#22c55e]">{h.total} MT</div></div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {faturacaoInnerTab==='perfil' && (
+                    <div className="bg-white rounded-[12px] border p-4">
+                      <div className="font-bold text-[11px]">Editar formulario completo - perfil complexo igual ao que existe agora</div>
+                      <div className="grid grid-cols-2 gap-2 mt-3">
+                        <div><label className="text-[8px] font-bold">Nome loja</label><input value={formLoja.nome} onChange={e=>setFormLoja({...formLoja,nome:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div><label className="text-[8px] font-bold">NUIT</label><input value={formLoja.nuit} onChange={e=>setFormLoja({...formLoja,nuit:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div><label className="text-[8px] font-bold">Telefone</label><input value={formLoja.tel} onChange={e=>setFormLoja({...formLoja,tel:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div><label className="text-[8px] font-bold">Email</label><input value={formLoja.email} onChange={e=>setFormLoja({...formLoja,email:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                        <div className="col-span-2"><label className="text-[8px] font-bold">Endereco completo</label><input value={formLoja.endereco} onChange={e=>setFormLoja({...formLoja,endereco:e.target.value})} className="w-full h-8 border rounded text-[10px] px-2" /></div>
+                      </div>
+                      <button onClick={()=>{alert('Perfil actualizado - formulario complexo mantido');}} className="mt-3 px-4 h-8 bg-[#facc15] text-black rounded-full text-[10px] font-black">Guardar perfil completo</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+
+
       {tab==='viagens' && (
         <section className="max-w-[1200px] mx-auto p-2 sm:p-4 pb-10">
           <div className="bg-white rounded-[12px] border p-3 mb-3 flex flex-wrap items-center justify-between gap-2">

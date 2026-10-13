@@ -107,6 +107,13 @@ export default function App(){
  const [profissionais,setProfissionais]=useState([
   { id:1, nome:"Carlos Matsinhe", tipo:"Pedreiro", local:"Mocambique / Maputo Cidade", pais:"Mocambique", provincia:"Maputo Cidade", distrito:"KaMpfumo", nuit:"123456789", bi:"110100123456B", ramo:"Construcao Civil", profissao:"Pedreiro", rating:4.9, trabalhos:127, preco:"800MT/dia", descricao:"Construcao, reboco, ladrilho, 10 anos exp.", foto:"CM", verificado:true, whatsapp:"823832513", anexos:["BI","NUIT","Fotos obra","CV"] },
  ]);
+ const [filteredProfissionais, setFilteredProfissionais] = useState<any[]>([]);
+ useEffect(()=>{
+   // inicializa listagem filtrada com os profissionais existentes
+   const base = [...profissionais];
+   if(typeof PROFISSIONAIS_EXTRAS !== 'undefined') base.push(...PROFISSIONAIS_EXTRAS);
+   setFilteredProfissionais(base);
+ },[profissionais]);
  // ===== FACTURACAO - App_40 - MANTIDO App_39 INTACTO - SO ADICAO =====
  const [telFat, setTelFat] = useState("+258 84 123 4567");
  const [nomeFat, setNomeFat] = useState("");
@@ -433,13 +440,23 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
          <div className="flex-[2] min-w-[200px]"><label className="text-[11px] font-extrabold text-[#1e2f4a]">O que precisa? - Estas a procura de...?</label><input value={filtroBusca} onChange={e=>setFiltroBusca(e.target.value)} placeholder="Ex: Serralheiro, Pedreiro, Eletricista, Domestica... - encontre aqui" className="w-full px-3 py-2.5 rounded-[10px] border-2 border-[#c9a86a] mt-1 text-[12px]" /></div>
          <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Pais</label><select value={paisFiltro} onChange={e=>setPaisFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{Object.keys(PAISES).map(p=><option key={p}>{p}</option>)}</select></div>
          <div className="flex-1 min-w-[120px]"><label className="text-[10px] font-bold text-[#64748b]">Provincia</label><select value={provFiltro} onChange={e=>setProvFiltro(e.target.value)} className="w-full px-3 py-2.5 rounded-[10px] border border-[#e2e8f0] mt-1 text-[12px]">{provinciasFiltro.map((p:string)=><option key={p}>{p}</option>)}</select></div>
-         <button className="px-5 py-2.5 bg-[#1e2f4a] text-white border-none rounded-[10px] font-extrabold text-[12px] h-[40px]">PESQUISAR</button>
+         <button onClick={()=>{
+           const base = [...profissionais]; if(typeof PROFISSIONAIS_EXTRAS !== 'undefined') base.push(...PROFISSIONAIS_EXTRAS);
+           const q = filtroBusca.trim().toLowerCase();
+           const filtered = base.filter((p:any)=>{
+             const matchQ = q? (p.nome||'').toLowerCase().includes(q) || (p.tipo||'').toLowerCase().includes(q) || (p.local||'').toLowerCase().includes(q) : true;
+             const matchPais = paisFiltro? (p.pais||'').toLowerCase().includes(paisFiltro.toLowerCase()) : true;
+             const matchProv = provFiltro? (p.provincia||'').toLowerCase().includes(provFiltro.toLowerCase()) : true;
+             return matchQ && matchPais && matchProv;
+           });
+           setFilteredProfissionais(filtered);
+         }} className="px-5 py-2.5 bg-[#1e2f4a] text-white border-none rounded-[10px] font-extrabold text-[12px] h-[40px]">PESQUISAR</button>
        </div>
        <div className="flex gap-1.5 mt-3 flex-wrap"><span className="text-[10px] text-[#64748b] font-bold">Tags Populares:</span>{['Pedreiro','Carpinteiro','Eletricista','Canalizador','Pintor','Serralheiro','Domestica','Motorista'].map(t=><button key={t} onClick={()=>setFiltroBusca(t)} className={`px-3 py-1 rounded-full border text-[10px] font-semibold ${filtroBusca===t?'bg-[#1e2f4a] text-white border-[#1e2f4a]':'bg-white text-[#334155] border-[#e2e8f0]'}`}>{t}</button>)}</div>
        
-       <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({profissionais.length + (typeof PROFISSIONAIS_EXTRAS !== 'undefined' ? PROFISSIONAIS_EXTRAS.length : 0)}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
+       <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({filteredProfissionais.length}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2.5 max-h-[520px] overflow-auto pr-1">
-           {profissionais.map((p:any,i:number)=> <div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow">
+           {filteredProfissionais.map((p:any,i:number)=> <div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow">
              <div className="flex justify-between">
                <div className="flex gap-2.5 items-center">
                  <div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div>
@@ -455,7 +472,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
              <div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div>
              <div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos - M-Pesa OK - Fotos OK {p.anexos?.join(', ')}</div>
            </div>)}
-           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=> <div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow">
+           {/* extras merged into filteredProfissionais; no separate render */}
             <div className="flex justify-between">
               <div className="flex gap-2.5 items-center">
                 <div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div>

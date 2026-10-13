@@ -415,7 +415,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
      {/* TOPO LARANJA - INTERATIVO ENCONTRAR MESTRE */}
      <div className="bg-[#1e2f4a] text-white rounded-[14px] px-5 py-4 mb-3">
       <div className="text-center">
-        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ MAIS PROXIMO DE SI ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ MESTRE, PROFISSIONAL OU EMPRESA</div>
+        <div className="text-[10px] tracking-[2px] text-[#c9a86a] font-extrabold">ENCONTRE NA SUA ZONA MAIS PROXIMO DE SI - MESTRE, PROFISSIONAL OU EMPRESA</div>
         <h2 className="text-[20px] font-black mt-1.5 leading-tight">Estas a procura de um profissional, mestre ou empresa na sua zona ou mais proximo?</h2>
         <p className="text-[12px] opacity-80 mt-1.5">Encontre aqui - Pedreiro, Carpinteiro, Eletricista, Serralheiro, Domestica, Motorista... perto de si em Maputo, Matola, Boane, Xai-Xai - contrato legal em 2 minutos</p>
         <div className="flex gap-2 justify-center mt-2.5 flex-wrap">
@@ -439,8 +439,37 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
        
        <div className="mt-4"><div className="font-extrabold text-[12px] text-[#1e2f4a] mb-2.5">Profissionais verificados perto de si ({profissionais.length + (typeof PROFISSIONAIS_EXTRAS !== 'undefined' ? PROFISSIONAIS_EXTRAS.length : 0)}) - COM INFORMACAO - aparecem ao se cadastrar - Empresa e Singular</div>
          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-2.5 max-h-[520px] overflow-auto pr-1">
-           {profissionais.map((p:any,i:number)=><div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div></div></div><span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div><div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ M-Pesa OK ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ Fotos OK ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ {p.anexos?.join(', ')}</div></div>)}
-           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=><div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow"><div className="flex justify-between"><div className="flex gap-2.5 items-center"><div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div><div><div className="font-extrabold text-[12px]">{p.nome}</div><div className="text-[10px] text-[#64748b]">{p.tipo} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ {p.local}</div><div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div></div></div><span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ {p.rating}</span></div><div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div><div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div></div>)}
+           {profissionais.map((p:any,i:number)=> <div key={i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow">
+             <div className="flex justify-between">
+               <div className="flex gap-2.5 items-center">
+                 <div className="w-[36px] h-[36px] bg-[#1e2f4a] text-[#c9a86a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div>
+                 <div>
+                   <div className="font-extrabold text-[12px]">{p.nome}</div>
+                   <div className="text-[10px] text-[#64748b]">{p.tipo} - {p.local}</div>
+                   <div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div>
+                 </div>
+               </div>
+               <span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO - {p.rating}</span>
+             </div>
+             <div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div>
+             <div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div>
+             <div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos - M-Pesa OK - Fotos OK {p.anexos?.join(', ')}</div>
+           </div>)}
+           {typeof PROFISSIONAIS_EXTRAS !== 'undefined' && PROFISSIONAIS_EXTRAS.map((p:any,i:number)=> <div key={'extra-'+i} className="border border-[#e2e8f0] rounded-xl p-3 bg-white hover:shadow-md transition-shadow">
+            <div className="flex justify-between">
+              <div className="flex gap-2.5 items-center">
+                <div className="w-[36px] h-[36px] bg-[#c9a86a] text-[#1e2f4a] rounded-full grid place-items-center font-black text-[12px]">{p.foto}</div>
+                <div>
+                  <div className="font-extrabold text-[12px]">{p.nome}</div>
+                  <div className="text-[10px] text-[#64748b]">{p.tipo} - {p.local}</div>
+                  <div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - NUIT: {p.nuit}</div>
+                </div>
+              </div>
+              <span className={`px-2 py-1 rounded-full text-[9px] font-extrabold h-fit ${p.verificado?'bg-[#fef3c7]':'bg-[#f1f5f9]'}`}>{p.verificado?'VERIFICADO':'NOVO'} - {p.rating}</span>
+            </div>
+            <div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div>
+            <div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div>
+          </div>)}
          </div>
        </div>
       </div>

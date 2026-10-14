@@ -15,3 +15,4 @@ MVP 1: Contrato de Empregada Doméstica
 MVP 2: Marketplace de profissionais verificados (BI + avaliações)
 
 Stack: React + Supabase + Vercel (mesma do EasyPay)
+Redeploy trigger: 2026-10-14T06:40:10.8451720+02:00

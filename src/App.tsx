@@ -465,7 +465,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
                  <div>
                    <div className="font-extrabold text-[12px]">{p.nome}</div>
                    <div className="text-[10px] text-[#64748b]">{p.tipo} - {p.local}</div>
-                   <div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito} - NUIT: {p.nuit} - BI: {p.bi}</div>
+                   <div className="text-[9px] text-[#94a3b8]">{p.pais} / {p.provincia} - {p.distrito}</div>
                  </div>
                </div>
                <span className="px-2 py-1 bg-[#fef3c7] rounded-full text-[9px] font-extrabold h-fit">VERIFICADO - {p.rating}</span>

@@ -472,7 +472,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS NA HORIZONTAL NAO VERTICAL - 2 
              </div>
              <div className="text-[11px] text-[#334155] mt-2">{p.descricao}</div>
              <div className="flex gap-2 mt-2.5"><button onClick={()=>setTab('contratos')} className="flex-1 py-2 bg-[#1e2f4a] text-white border-none rounded-lg font-extrabold text-[10px]">GERAR CONTRATO</button><button className="px-3 py-2 bg-white text-[#1e2f4a] border border-[#c9a86a] rounded-lg font-extrabold text-[10px]">CONTRATAR</button></div>
-             <div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos - M-Pesa OK - Fotos OK {p.anexos?.join(', ')}</div>
+             <div className="text-[9px] text-[#94a3b8] mt-1.5">{p.trabalhos} trabalhos - M-Pesa OK - Fotos OK { (p.anexos||[]).filter((a:any)=>!['bi','nuit'].includes(String(a).toLowerCase())).join(', ') }</div>
            </div>)}
          </div>
        </div>

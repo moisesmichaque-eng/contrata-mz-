@@ -1,46 +1,38 @@
-import { createClient } from '@supabase/supabase-js';
-import crypto from 'crypto';
+const fetch = global.fetch || require('node-fetch');
+const crypto = require('crypto');
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  const { email, password } = req.body || {};
+  if (!email || !password) return res.status(400).json({ error: 'email and password required' });
 
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email e senha obrigatórios' });
-  }
-
-  // SEGURANÇA: só permite criar o teu email
+  // Only allow initial admin creation with the configured email
   if (email !== 'moisesmichaque@gmail.com') {
-    return res.status(403).json({ error: 'Email não autorizado' });
+    return res.status(403).json({ error: 'Initial admin can only be created with the allowed email' });
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const HASH_SECRET = process.env.HASH_SECRET;
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!SUPABASE_URL || !SUPABASE_KEY) return res.status(500).json({ error: 'Supabase credentials not configured' });
 
-  if (!SUPABASE_URL || !SERVICE_KEY || !HASH_SECRET) {
-    return res.status(500).json({ error: 'Variáveis de ambiente faltando no Vercel' });
-  }
-
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
-
-  // Verifica se já existe
-  const { data: existing } = await supabase.from('admins').select('email').eq('email', email).single();
-  if (existing) {
-    return res.status(409).json({ error: 'Admin já existe' });
-  }
-
-  // Gera hash com HASH_SECRET
+  const HASH_SECRET = process.env.HASH_SECRET || 'dev_secret_change_me';
   const password_hash = crypto.createHmac('sha256', HASH_SECRET).update(password).digest('hex');
 
-  const { error } = await supabase.from('admins').insert([{ email, password_hash }]);
-
-  if (error) {
-    return res.status(500).json({ error: error.message });
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/admins`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify({ email, password_hash })
+    });
+    const data = await r.json();
+    if (!r.ok) return res.status(r.status).json(data);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
   }
-
-  return res.status(200).json({ ok: true, message: 'Admin criado com sucesso' });
-}
+};

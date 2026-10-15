@@ -1,4 +1,0 @@
-import App from "./PagaFacil/src/App";
-export default function PagaFacilPage() {
-  return <App />;
-}

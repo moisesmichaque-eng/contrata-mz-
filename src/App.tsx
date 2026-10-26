@@ -12,11 +12,12 @@ import AdminPanel from './AdminPanel';
 
 // BOTAO LOCALIZAR - DENTRO DO COMPONENTE
 const LOGO_ESSE = "/logo_tipo.jpg";
-const LOGO_FALLBACK = "/logo_tipo.jfif";
+const LOGO_FALLBACK = "/logo_tipo.jpg";
 const LOGO_ESSE_DARK = "/logo_tipo.jpg";
 
 
 
+const isBaixoCheck = (n:number)=> n <= 49;
 const PAISES: any = {
   "Mocambique": ["Maputo Cidade","Matola","Boane","Gaza - Xai-Xai","Inhambane","Sofala - Beira","Nampula","Tete","Zambezia - Quelimane","Cabo Delgado - Pemba"],
   "South Africa": ["Gauteng - Johannesburg","Western Cape - Cape Town","KZN - Durban"],
@@ -716,7 +717,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS
   <div className="min-h-screen w-full overflow-x-hidden bg-[#f5f5f0] font-sans">
    <style>{`@media (max-width: 1023px) { input, select, textarea, button { touch-action: manipulation; } input, select, textarea { max-width: 100%; font-size: 16px; } } @media (max-width: 640px) { header { position: sticky; } }`}</style>
    <header className="h-14 bg-[#1e2f4a] text-white flex items-center justify-between px-4 border-b-[3px] border-[#c9a86a] sticky top-0 z-[100]">
-    <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="WEZHA" className="h-10 w-auto object-contain bg-white rounded-full p-1" onError={(e:any)=>{try{const t=e.currentTarget as HTMLImageElement; if(t.src.includes("logo_tipo.jpg")) t.src="/logo_tipo.jfif";}catch{}}} /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
+    <div className="flex items-center gap-3"><img src={LOGO_ESSE} alt="WEZHA" className="h-10 w-auto object-contain bg-white rounded-full p-1" onError={(e:any)=>{try{(e.currentTarget as HTMLImageElement).style.display="none";}catch{}}} /><div className="hidden sm:block text-[9px] tracking-[1.5px] opacity-80">ENCONTRE. NEGOCIE. FORMALIZE. 11 CLAUSULAS</div></div>
         <div className="flex items-center gap-2 overflow-x-auto flex-nowrap max-w-[62vw] sm:max-w-none scrollbar-hide -mx-1 px-1" style={{scrollbarWidth:'none', msOverflowStyle:'none'}}>
       {/* BOTAO CIRCULADO AMARELO - FATURAR - ADICIONADO App_40 - MANTIDO */}
       <button onClick={()=>setTab('faturar')} className={`px-3 sm:px-4 py-2 rounded-full font-black text-[10px] sm:text-[11px] flex-shrink-0 ${tab==='faturar'?'bg-[#facc15] text-black ring-2 ring-white':'bg-[#facc15] text-black hover:bg-[#fde047]'}`}>FATURAR</button>
@@ -1100,7 +1101,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS
               <div className="bg-white rounded-[12px] border p-4">
                 <div className="flex justify-between items-center"><div className="font-bold text-[11px]">Produtos e Servicos - do Stock - IVA no fim</div><span className="text-[8px] px-2 py-0.5 rounded-full bg-[#fef9c3] font-bold">{stockProdutos.length} produtos no stock</span></div>
                 <div className="mt-3"><input value={buscaFat} onChange={e=>setBuscaFat(e.target.value)} placeholder='Digite "Cimento" - busca no stock' className="w-full h-10 px-3 rounded-[8px] border text-[11px]" /></div>
-                <div className="mt-2 flex flex-wrap gap-1.5">{stockProdutos.filter(p=>!buscaFat||p.nome.toLowerCase().includes(buscaFat.toLowerCase())).slice(0,12).map(p=><button key={p.id} onClick={()=>{const ex=produtosFat.find(x=>x.nome===p.nome); if(ex){setProdutosFat(produtosFat.map(x=>x.nome===p.nome?{...x,qtd:x.qtd+1}:x))} else {setProdutosFat([...produtosFat,{id:p.id,nome:p.nome,preco:p.preco,qtd:1,desc:0}]); if(p.qtd>0){setStockProdutos(stockProdutos.map(s=>s.id===p.id?{...s, qtd:s.qtd-1}:s))}}}} className={`px-2.5 py-1 rounded-full text-[9px] font-bold border ${p.qtd<=p.qtdMin ? 'bg-red-50 border-red-200 text-red-700' : 'bg-[#1e293b] text-white'}`}>{p.nome} - {p.preco}MT - Stock:{p.qtd}</button>)}</div>
+                <div className="mt-2 flex flex-wrap gap-1.5">{stockProdutos.filter(p=>!buscaFat||p.nome.toLowerCase().includes(buscaFat.toLowerCase())).slice(0,12).map(p=><button key={p.id} onClick={()=>{const ex=produtosFat.find(x=>x.nome===p.nome); if(ex){setProdutosFat(produtosFat.map(x=>x.nome===p.nome?{...x,qtd:x.qtd+1}:x))} else {setProdutosFat([...produtosFat,{id:p.id,nome:p.nome,preco:p.preco,qtd:1,desc:0}]); if(p.qtd>0){setStockProdutos(stockProdutos.map(s=>s.id===p.id?{...s, qtd:s.qtd-1}:s))}}}} className={p.qtd<=p.qtdMin ? 'px-2.5 py-1 rounded-full text-[9px] font-bold border bg-red-50 border-red-200 text-red-700' : 'px-2.5 py-1 rounded-full text-[9px] font-bold border bg-[#1e293b] text-white'}>{p.nome} - {p.preco}MT - Stock:{p.qtd}</button>)}</div>
                 <div className="mt-4 overflow-x-auto"><table className="w-full text-[10px]"><thead><tr className="text-[8px] text-[#94a3b8] border-b"><th className="text-left py-1">DESCRICAO</th><th>QTD</th><th>PRECO UNIT.</th><th>DESC %</th><th className="text-right">SUBTOTAL</th><th></th></tr></thead><tbody>{produtosFat.map(pr=>(<tr key={pr.id} className="border-b"><td className="py-2"><div className="font-bold text-[10px]">{pr.nome}</div></td><td className="text-center"><input type="number" value={pr.qtd} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,qtd:Math.max(0,Number(e.target.value))}:x).filter(x=>x.qtd>0))} className="w-12 h-7 border rounded text-center text-[10px]" /></td><td className="text-center">{pr.preco}</td><td className="text-center"><input type="number" value={pr.desc} onChange={e=>setProdutosFat(produtosFat.map(x=>x.id===pr.id?{...x,desc:Math.max(0,Math.min(100,Number(e.target.value)))}:x))} className="w-10 h-7 border rounded text-center text-[10px]" /></td><td className="text-right font-bold">{(pr.preco*pr.qtd*(1-pr.desc/100)).toFixed(0)} MT</td><td><button onClick={()=>setProdutosFat(produtosFat.filter(x=>x.id!==pr.id))} className="text-red-400 ml-1">x</button></td></tr>))}</tbody></table></div>
                 <div className="mt-3 flex justify-end"><div className="w-[200px] space-y-1 text-[10px]"><div className="flex justify-between"><span className="text-[#64748b]">Subtotal bruto</span><span className="font-bold">{subtotalBrutoFat} MT</span></div><div className="flex justify-between text-red-500"><span>Descontos</span><span>- {totalDescFat} MT</span></div><div className="flex justify-between"><span>Subtotal liquido</span><span>{baseFat} MT</span></div><div className="flex justify-between"><span>IVA ({ivaTipo}%)</span><span>{ivaFat.toFixed(0)} MT</span></div><div className="flex justify-between font-black text-[12px] border-t pt-1"><span>TOTAL</span><span className="text-[#0f766e]">{totalFat.toFixed(0)} MT</span></div></div></div>
                 <div className="mt-3"><div className="text-[8px] font-bold">IVA NO RODAPE - GLOBAL</div><div className="flex gap-2 mt-1"><button onClick={()=>setIvaTipo('sem')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='sem'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Sem IVA</button><button onClick={()=>setIvaTipo('16')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='16'?'bg-[#0f766e] text-white':'bg-white'}`}>Com IVA 16%</button><button onClick={()=>setIvaTipo('5')} className={`px-3 h-7 rounded-full text-[9px] font-bold border ${ivaTipo==='5'?'bg-[#1e2f4a] text-white':'bg-white'}`}>Com IVA 5%</button></div></div>
@@ -1193,7 +1194,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS
                           const matchBusca = !filtroRapidoStock || p.nome.toLowerCase().includes(filtroRapidoStock.toLowerCase()) || p.codigo.toLowerCase().includes(filtroRapidoStock.toLowerCase()) || p.marca.toLowerCase().includes(filtroRapidoStock.toLowerCase());
                           const sf = p.noArmazem + p.stockLoja;
                           let matchTipo = true;
-                          if(filtroTipoStock==='baixo') matchTipo = sf <= 49;
+                          if(filtroTipoStock==='baixo') matchTipo = isBaixoCheck(sf);
                           else if(filtroTipoStock==='zerado') matchTipo = sf === 0;
                           else if(filtroTipoStock==='medio') matchTipo = sf >= 50 && sf <= 100;
                           else if(filtroTipoStock==='alto') matchTipo = sf >= 101;
@@ -1201,7 +1202,7 @@ ${agora} - PDF FINAL PARTILHAVEL COM ASSINATURAS
                         }).map((p:any)=>{
                             const sf=p.noArmazem+p.stockLoja;
                             const vv=p.venda*p.precoVenda;
-                            const isBaixo = sf <= 49;
+                            const isBaixo = isBaixoCheck(sf);
                             const rowBg = isBaixo ? 'bg-[#fee2e2]' : '';
                             const badgeBg = isBaixo ? 'bg-red-500 text-white' : 'bg-green-500 text-white';
                             return (
